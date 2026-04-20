@@ -8,3 +8,5 @@
 {"user_id":"u08","session_id":"s08","feature":"qa","message":"How do I debug tail latency?"}
 {"user_id":"u09","session_id":"s09","feature":"qa","message":"What is the policy for PII and credit card 4111 1111 1111 1111?"}
 {"user_id":"u10","session_id":"s10","feature":"qa","message":"How should alerts be designed?"}
+{"user_id":"u11","session_id":"s11","feature":"chamsoc_nganhang","message":"Tôi muốn khóa khẩn cấp thẻ credit mang số 4111 2222 3333 4444. Số passport mặt trước của tôi là B12345"}
+{"user_id":"u12","session_id":"s12","feature":"chamsoc_nganhang","message":"Mở lại thẻ tín dụng bị khóa. CMND cũ của tôi là B1234567 còn thẻ là 4111 1111 2222 3333."}

@@ -6,8 +6,9 @@ from dataclasses import dataclass
 from . import metrics
 from .mock_llm import FakeLLM
 from .mock_rag import retrieve
-from .pii import hash_user_id, summarize_text
+from .pii import hash_user_id, summarize_text, scrub_text
 from .tracing import langfuse_context, observe
+from .incidents import STATE
 
 
 @dataclass
@@ -25,8 +26,11 @@ class LabAgent:
         self.model = model
         self.llm = FakeLLM(model=model)
 
-    @observe()
+    @observe(capture_input=False, capture_output=False)
     def run(self, user_id: str, feature: str, session_id: str, message: str) -> AgentResult:
+        if STATE.get("core_banking_fail", False):
+            raise RuntimeError("Lỗi hệ thống khi móc nối API Core Banking")
+
         started = time.perf_counter()
         docs = retrieve(message)
         prompt = f"Feature={feature}\nDocs={docs}\nQuestion={message}"
@@ -38,9 +42,11 @@ class LabAgent:
         langfuse_context.update_current_trace(
             user_id=hash_user_id(user_id),
             session_id=session_id,
-            tags=["lab", feature, self.model],
+            tags=["lab", "banking", "credit-card", feature, self.model],
         )
         langfuse_context.update_current_observation(
+            input={"user_id": hash_user_id(user_id), "feature": feature, "session_id": session_id, "message": scrub_text(message)},
+            output={"answer": scrub_text(response.text)},
             metadata={"doc_count": len(docs), "query_preview": summarize_text(message)},
             usage_details={"input": response.usage.input_tokens, "output": response.usage.output_tokens},
         )
