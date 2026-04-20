@@ -8,7 +8,7 @@ from structlog.contextvars import bind_contextvars
 
 from .agent import LabAgent
 from .incidents import disable, enable, status
-from .logging_config import configure_logging, get_logger
+from .logging_config import LOG_PATH, configure_logging, get_logger
 from .metrics import record_error, snapshot
 from .middleware import CorrelationIdMiddleware
 from .pii import hash_user_id, summarize_text
@@ -18,8 +18,11 @@ from .tracing import tracing_enabled
 configure_logging()
 log = get_logger()
 app = FastAPI(title="Day 13 Observability Lab")
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 app.add_middleware(CorrelationIdMiddleware)
 agent = LabAgent()
+
+FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
 
 
 @app.on_event("startup")
@@ -32,6 +35,11 @@ async def startup() -> None:
     )
 
 
+@app.get("/")
+async def index() -> FileResponse:
+    return FileResponse(FRONTEND_DIR / "index.html")
+
+
 @app.get("/health")
 async def health() -> dict:
     return {"ok": True, "tracing_enabled": tracing_enabled(), "incidents": status()}
@@ -40,6 +48,21 @@ async def health() -> dict:
 @app.get("/metrics")
 async def metrics() -> dict:
     return snapshot()
+
+
+@app.get("/logs")
+async def get_logs(n: int = 200) -> list:
+    if not LOG_PATH.exists():
+        return []
+    lines = LOG_PATH.read_text(encoding="utf-8").strip().splitlines()
+    records = []
+    for line in lines:
+        if line.strip():
+            try:
+                records.append(json.loads(line))
+            except json.JSONDecodeError:
+                pass
+    return list(reversed(records[-n:]))
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -107,3 +130,7 @@ async def disable_incident(name: str) -> JSONResponse:
         return JSONResponse({"ok": True, "incidents": status()})
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+if FRONTEND_DIR.exists():
+    app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
