@@ -11,7 +11,7 @@
   - Member A: Nguyễn Quang Tùng | Role: Correlation ID & Incident Debug
   - Member B: Nguyễn Thị Quỳnh Trang | Role: Logging & PII Scrubbing
   - Member C: Đặng Văn Minh | Role: Tracing (Langfuse) + SLO + Alerts
-  - Member D: Đồng Văn Thịnh | Role: Dashboard + Docs + Report
+  - Member D: Đồng Văn Thịnh | Role: Dashboard + Docs + Report .
 
 ---
 
