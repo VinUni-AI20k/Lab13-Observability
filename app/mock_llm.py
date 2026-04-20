@@ -5,6 +5,7 @@ import time
 from dataclasses import dataclass
 
 from .incidents import STATE
+from .tracing import observe, langfuse_context
 
 
 @dataclass
@@ -24,10 +25,17 @@ class FakeLLM:
     def __init__(self, model: str = "claude-sonnet-4-5") -> None:
         self.model = model
 
+    @observe(as_type="generation")
     def generate(self, prompt: str) -> FakeResponse:
         time.sleep(0.15)
         input_tokens = max(20, len(prompt) // 4)
         output_tokens = random.randint(80, 180)
+        
+        langfuse_context.update_current_observation(
+            usage_details={"input": input_tokens, "output": output_tokens},
+            model=self.model
+        )
+        
         if STATE["cost_spike"]:
             output_tokens *= 4
         answer = (

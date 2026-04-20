@@ -1,11 +1,27 @@
 from __future__ import annotations
-
 import os
 from typing import Any
 
 try:
-    from langfuse.decorators import observe, langfuse_context
-except Exception:  # pragma: no cover
+    from langfuse import observe
+    from langfuse import get_client
+    _client = get_client()
+    
+    class _LangfuseContext:
+        def update_current_trace(self, **kwargs: Any) -> None:
+            try:
+                _client.update_current_trace(**kwargs)
+            except Exception:
+                pass
+        def update_current_observation(self, **kwargs: Any) -> None:
+            try:
+                _client.update_current_observation(**kwargs)
+            except Exception:
+                pass
+    
+    langfuse_context = _LangfuseContext()
+
+except Exception:
     def observe(*args: Any, **kwargs: Any):
         def decorator(func):
             return func
@@ -14,7 +30,6 @@ except Exception:  # pragma: no cover
     class _DummyContext:
         def update_current_trace(self, **kwargs: Any) -> None:
             return None
-
         def update_current_observation(self, **kwargs: Any) -> None:
             return None
 

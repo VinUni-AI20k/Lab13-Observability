@@ -1,0 +1,13 @@
+{"user_id":"u11","session_id":"s11","feature":"qa","message":"What is an SLO and why is it important?"}
+{"user_id":"u12","session_id":"s12","feature":"summary","message":"Summarize the main steps in incident management."}
+{"user_id":"u13","session_id":"s13","feature":"qa","message":"How does tracing help in debugging?"}
+{"user_id":"u14","session_id":"s14","feature":"qa","message":"What is the difference between metrics and logs?"}
+{"user_id":"u15","session_id":"s15","feature":"summary","message":"Summarize the benefits of observability in cloud systems."}
+{"user_id":"u16","session_id":"s16","feature":"qa","message":"How do you handle alert fatigue?"}
+{"user_id":"u17","session_id":"s17","feature":"qa","message":"What is a runbook and when should it be used?"}
+{"user_id":"u18","session_id":"s18","feature":"summary","message":"Summarize the process of root cause analysis."}
+{"user_id":"u19","session_id":"s19","feature":"qa","message":"Explain the role of correlation IDs in distributed tracing."}
+{"user_id":"u20","session_id":"s20","feature":"qa","message":"What are common challenges in log management?"}
+{"user_id":"u21","session_id":"s21","feature":"summary","message":"Summarize how to design effective SLOs."}
+{"user_id":"u22","session_id":"s22","feature":"qa","message":"How can you detect PII in logs?"}
+{"user_id":"u23","session_id":"s23","feature":"qa","message":"What is the impact of high cardinality in metrics?"}

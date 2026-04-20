@@ -17,3 +17,18 @@ alerts:
     type: symptom-based
     owner: finops-owner
     runbook: docs/alerts.md#3-cost-budget-spike
+  - name: quality_drop
+    severity: P2
+    condition: quality_score_avg < 0.65 for 30m
+    type: symptom-based
+    owner: product-owner
+    runbook: docs/alerts.md#4-quality-drop
+  #Điểm đáng chú ý:
+  #•
+  #high_error_rate để P1 là hợp lý vì ảnh hưởng trực tiếp tới người dùng.
+  #•
+  #high_latency_p95 để P2 vì dịch vụ vẫn sống nhưng trải nghiệm xấu.
+  #•
+  #cost_budget_spike là P2 vì ảnh hưởng tài chính, chưa chắc ảnh hưởng availability ngay.
+  #•
+  #Tôi thêm quality_drop để bạn có alert thứ 4, nhìn chuyên nghiệp hơn và bám vào quality_score_avg đang có trong SLO.

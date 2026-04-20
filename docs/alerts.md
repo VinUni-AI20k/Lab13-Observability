@@ -38,3 +38,15 @@
   - shorten prompts
   - route easy requests to cheaper model
   - apply prompt cache
+## 4. Quality drop
+- Severity: P2
+- Trigger: `quality_score_avg < 0.65 for 30m`
+- Impact: answers are still returned but usefulness or correctness degrades
+- First checks:
+  1. Review recent traces for low-quality responses
+  2. Compare retrieved documents and final answer output
+  3. Check whether incident toggles or prompt/model changes were introduced
+- Mitigation:
+  - adjust retrieval parameters
+  - reduce irrelevant context
+  - switch to a more reliable prompt or fallback model
