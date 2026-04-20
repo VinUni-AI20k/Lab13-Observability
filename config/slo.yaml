@@ -1,16 +1,28 @@
 service: day13-observability-lab
 window: 28d
+
 slis:
-  latency_p95_ms:
-    objective: 3000
-    target: 99.5
-    note: Replace with your group's target
-  error_rate_pct:
-    objective: 2
+  latency_p95:
+    objective: 1000
     target: 99.0
-  daily_cost_usd:
+    description: 99% evaluation windows should keep p95 latency under 1000 ms
+
+  latency_p99:
+    objective: 2000
+    target: 99.0
+    description: 99% evaluation windows should keep p99 latency under 2000 ms
+
+  total_error_count:
+    objective: 0
+    target: 95.0
+    description: 95% evaluation windows should have zero recorded errors
+
+  total_cost_usd:
     objective: 2.5
     target: 100.0
-  quality_score_avg:
+    description: Total cumulative cost should stay within the lab budget
+
+  quality_avg:
     objective: 0.75
     target: 95.0
+    description: Average answer quality should remain at or above 0.75

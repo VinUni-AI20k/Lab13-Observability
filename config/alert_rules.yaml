@@ -1,19 +1,35 @@
 alerts:
   - name: high_latency_p95
     severity: P2
-    condition: latency_p95_ms > 5000 for 30m
+    condition: latency_p95 > 1000 for 5m
     type: symptom-based
     owner: team-oncall
     runbook: docs/alerts.md#1-high-latency-p95
-  - name: high_error_rate
+
+  - name: critical_latency_p99
     severity: P1
-    condition: error_rate_pct > 5 for 5m
+    condition: latency_p99 > 2000 for 5m
     type: symptom-based
     owner: team-oncall
-    runbook: docs/alerts.md#2-high-error-rate
+    runbook: docs/alerts.md#2-critical-latency-p99
+
+  - name: tool_or_pipeline_errors
+    severity: P1
+    condition: total_error_count > 0 for 2m
+    type: symptom-based
+    owner: team-oncall
+    runbook: docs/alerts.md#3-tool-or-pipeline-errors
+
   - name: cost_budget_spike
     severity: P2
-    condition: hourly_cost_usd > 2x_baseline for 15m
-    type: symptom-based
+    condition: total_cost_usd > 2.5
+    type: budget-based
     owner: finops-owner
-    runbook: docs/alerts.md#3-cost-budget-spike
+    runbook: docs/alerts.md#4-cost-budget-spike
+
+  - name: quality_drop
+    severity: P2
+    condition: quality_avg < 0.75 for 10m
+    type: quality-based
+    owner: team-oncall
+    runbook: docs/alerts.md#5-quality-drop
