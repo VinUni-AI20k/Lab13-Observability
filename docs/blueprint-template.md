@@ -61,31 +61,30 @@
 
 ## 5. Individual Contributions & Evidence
 
-### [Nguyen Van A]
+### [MEMBER_A_NAME]
+- [TASKS_COMPLETED]: 
+- [EVIDENCE_LINK]: (Link to specific commit or PR)
 
-- [TASKS_COMPLETED]: Triển khai Structured Logging & PII Scrubbing.
-- [EVIDENCE_LINK]: [app/pii.py](file:///c:/Users/ADMIN/CV_Project/AI_Vin/assignments/Day13/Nhom10-403-Day13/app/pii.py)
+### Tạ Vĩnh Phúc (Tracing & Tags)
+- [TASKS_COMPLETED]: 
+  - Khởi tạo và code hoàn chỉnh thiết lập `Langfuse Global Client` tương thích với Langfuse v3 SDK (`app/tracing.py`).
+  - Gắn Decorator `@observe` vào các service core (`Agent`, `Mock RAG`, `Mock LLM`) để theo dõi chi tiết Waterfall Spans cho mỗi luồng xử lý.
+  - Tích hợp tự động gán metadata `Tags` (Feature, Model) và định danh (`userId`, `sessionId`) lên hệ thống màn hình Langfuse UI.
+- [EVIDENCE_LINK]: [Link commit](https://github.com/trunglap923/Nhom10-403-Day13/commit/f51d9afd788b2ec8f84e0dda9e564246a6e95e9a)
 
-### [MEMBER_C_NAME] (SLO & Alerts)
-
+### Bùi Quang Hải (SLO & Alerts)
 - [TASKS_COMPLETED]: Thiết kế và định nghĩa hoàn chỉnh 4 SLO (bao gồm Quality và Token Budget) trong `config/slo.yaml` với cơ chế tính error budget. Xây dựng 5 luật cảnh báo (symptom-based) trong `config/alert_rules.yaml`, tự phát hiện lỗi logic của Lab và linh hoạt hạ ngưỡng threshold xuống 2000ms để bắt đúng sự cố rag_slow. Hoàn thiện tài liệu Runbook `docs/alerts.md` xử lý sự cố. Cập nhật và fix lỗi Unicode/Pytest cho các công cụ checker (`check_slo.py`, `evaluate_alerts.py`) giúp toàn bộ 25/25 auto-tests báo xanh.
 - [EVIDENCE_LINK]: [Liên kết ](https://github.com/trunglap923/Nhom10-403-Day13/commit/bfb66910d39e92b44dc406c791ce560a863815d0)
 
-- [TASKS_COMPLETED]: Tích hợp Langfuse Tracing & Context Enrichment.
-- [EVIDENCE_LINK]: [app/tracing.py](file:///c:/Users/ADMIN/CV_Project/AI_Vin\assignments/Day13/Nhom10-403-Day13/app/tracing.py)
-
 ### [Le Thi C]
-
 - [TASKS_COMPLETED]: Thiết lập Alerting & SLO Thresholds.
 - [EVIDENCE_LINK]: [config/alert_rules.yaml](file:///c:/Users/ADMIN/CV_Project/AI_Vin/assignments/Day13/Nhom10-403-Day13/config/alert_rules.yaml)
 
 ### [Pham Van D]
-
 - [TASKS_COMPLETED]: Xây dựng Real-time Dashboard (6 panels).
 - [EVIDENCE_LINK]: [dashboard/index.html](file:///c:/Users/ADMIN/CV_Project/AI_Vin/assignments/Day13/Nhom10-403-Day13/dashboard/index.html)
 
 ### [Hoang Van E]
-
 - [TASKS_COMPLETED]: Hoàn thiện Report & Video demo.
 - [EVIDENCE_LINK]: [docs/blueprint-template.md](file:///c:/Users/ADMIN/CV_Project/AI_Vin/assignments/Day13/Nhom10-403-Day13/docs/blueprint-template.md)
 
