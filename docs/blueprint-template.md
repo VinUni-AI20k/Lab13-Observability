@@ -25,17 +25,22 @@
 
 ### 3.1 Logging & Tracing
 - [EVIDENCE_CORRELATION_ID_SCREENSHOT]: Tất cả logs chứa `req-<8hex>` unique
+  - Xem: `docs/screenshots/04_pii_redacted_logs.txt`
 - [EVIDENCE_PII_REDACTION_SCREENSHOT]: Verified:
   - `student@vinuni.edu.vn` → `[REDACTED_EMAIL]`
   - `0987654321` → `[REDACTED_PHONE_VN]`
   - `4111 1111 1111 1111` → `[REDACTED_CREDIT_CARD]`
   - `012345678901` → `[REDACTED_CCCD]`
   - `B12345678` → `[REDACTED_PASSPORT]`
-- [EVIDENCE_TRACE_WATERFALL_SCREENSHOT]: Traces gửi via REST API → Langfuse (201 Created)
+  - Xem: `docs/screenshots/04_pii_redacted_logs.txt`
+- [EVIDENCE_TRACE_WATERFALL_SCREENSHOT]: 20+ traces hiện trên Langfuse self-hosted (localhost:3000)
+  - Xem: `docs/screenshots/01_traces_list.png`
+  - Xem: `docs/screenshots/02_trace_detail.png`
 - [TRACE_WATERFALL_EXPLANATION]: Mỗi trace ghi nhận pipeline: request → PII scrub → RAG retrieval → LLM generation → response. Decorator `@observe()` trên `LabAgent.run()` tạo parent span, metadata gồm doc_count, query_preview, token usage.
 
 ### 3.2 Dashboard & SLOs
 - [DASHBOARD_6_PANELS_SCREENSHOT]: `dashboard.html` — 6 panels Chart.js:
+  - Xem: `docs/screenshots/03_langfuse_dashboard.png`
   1. **Latency P50/P95/P99** (line chart, SLO threshold 3000ms)
   2. **Traffic count** (line chart, request volume)
   3. **Error rate + breakdown** (doughnut chart)
