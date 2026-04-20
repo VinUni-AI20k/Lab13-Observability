@@ -28,6 +28,11 @@ async def startup() -> None:
         "app_started",
         service=os.getenv("APP_NAME", "day13-observability-lab"),
         env=os.getenv("APP_ENV", "dev"),
+        correlation_id="startup",
+        user_id_hash=None,
+        session_id=None,
+        feature=None,
+        model=None,
         payload={"tracing_enabled": tracing_enabled()},
     )
 
@@ -44,12 +49,24 @@ async def metrics() -> dict:
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
-    # TODO: Enrich logs with request context (user_id_hash, session_id, feature, model, env)
-    # bind_contextvars(...)
+    # Enrich logs with request context (user_id_hash, session_id, feature, model, env)
+    bind_contextvars(
+        user_id_hash=hash_user_id(body.user_id),
+        session_id=body.session_id,
+        feature=body.feature,
+        model=getattr(agent, "model", None),
+        env=os.getenv("APP_ENV", "dev"),
+    )
     
     log.info(
         "request_received",
         service="api",
+        correlation_id=request.state.correlation_id,
+        user_id_hash=hash_user_id(body.user_id),
+        session_id=body.session_id,
+        feature=body.feature,
+        model=getattr(agent, "model", None),
+        env=os.getenv("APP_ENV", "dev"),
         payload={"message_preview": summarize_text(body.message)},
     )
     try:
@@ -62,6 +79,12 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
         log.info(
             "response_sent",
             service="api",
+            correlation_id=request.state.correlation_id,
+            user_id_hash=hash_user_id(body.user_id),
+            session_id=body.session_id,
+            feature=body.feature,
+            model=getattr(agent, "model", None),
+            env=os.getenv("APP_ENV", "dev"),
             latency_ms=result.latency_ms,
             tokens_in=result.tokens_in,
             tokens_out=result.tokens_out,
@@ -83,6 +106,12 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
         log.error(
             "request_failed",
             service="api",
+            correlation_id=request.state.correlation_id,
+            user_id_hash=hash_user_id(body.user_id),
+            session_id=body.session_id,
+            feature=body.feature,
+            model=getattr(agent, "model", None),
+            env=os.getenv("APP_ENV", "dev"),
             error_type=error_type,
             payload={"detail": str(exc), "message_preview": summarize_text(body.message)},
         )
@@ -93,7 +122,17 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
 async def enable_incident(name: str) -> JSONResponse:
     try:
         enable(name)
-        log.warning("incident_enabled", service="control", payload={"name": name})
+        log.warning(
+            "incident_enabled",
+            service="control",
+            correlation_id=f"incident-{name}",
+            user_id_hash=None,
+            session_id=None,
+            feature=None,
+            model=None,
+            env=os.getenv("APP_ENV", "dev"),
+            payload={"name": name},
+        )
         return JSONResponse({"ok": True, "incidents": status()})
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
@@ -103,7 +142,17 @@ async def enable_incident(name: str) -> JSONResponse:
 async def disable_incident(name: str) -> JSONResponse:
     try:
         disable(name)
-        log.warning("incident_disabled", service="control", payload={"name": name})
+        log.warning(
+            "incident_disabled",
+            service="control",
+            correlation_id=f"incident-{name}",
+            user_id_hash=None,
+            session_id=None,
+            feature=None,
+            model=None,
+            env=os.getenv("APP_ENV", "dev"),
+            payload={"name": name},
+        )
         return JSONResponse({"ok": True, "incidents": status()})
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
