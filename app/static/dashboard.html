@@ -3,422 +3,371 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Day 13 Local Dashboard</title>
+  <title>System Observability | Pro Dashboard</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
+    /* =========================================
+       1. DESIGN SYSTEM & VARIABLES
+       ========================================= */
     :root {
-      --bg: #f2f1ea;
-      --surface: rgba(255, 255, 255, 0.9);
-      --surface-strong: #ffffff;
-      --text: #18231f;
-      --muted: #5d6f67;
-      --line: rgba(109, 135, 126, 0.2);
-      --ok: #1f7a5d;
-      --warn: #b66a10;
-      --danger: #c13f2a;
-      --accent: #136f63;
-      --accent-soft: #d9f0ec;
-      --teal-glow: rgba(19, 111, 99, 0.16);
-      --amber-glow: rgba(182, 106, 16, 0.14);
-      --coral-glow: rgba(193, 63, 42, 0.14);
-      --blue-glow: rgba(39, 102, 168, 0.14);
-      --font: "IBM Plex Sans", "Segoe UI", sans-serif;
+      /* Backgrounds & Surfaces */
+      --bg-body: #f8fafc;
+      --bg-surface: #ffffff;
+      
+      /* Typography Colors */
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      
+      /* Borders & Shadows */
+      --border-light: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+      --shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+      
+      /* Semantic Palette (Tailwind Inspired) */
+      --color-emerald: #10b981;  /* Success / Latency / Quality */
+      --color-blue: #3b82f6;     /* Traffic / Info */
+      --color-rose: #f43f5e;     /* Error / Critical */
+      --color-amber: #f59e0b;    /* Cost / Warning */
+      --color-violet: #8b5cf6;   /* Tokens */
+
+      /* Typography */
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      margin: 0;
-      background:
-        radial-gradient(1200px 500px at 5% -20%, #e7efe3 0%, transparent 60%),
-        radial-gradient(1000px 450px at 95% -20%, #efe4cd 0%, transparent 55%),
-        linear-gradient(180deg, #f7f4ec 0%, #edf2ef 100%),
-        var(--bg);
-      color: var(--text);
-      font-family: var(--font);
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     .wrap {
-      width: min(1200px, 94vw);
-      margin: 24px auto 40px;
+      width: min(1320px, 96vw);
+      margin: 32px auto 64px;
     }
 
+    /* =========================================
+       2. HEADER SECTION
+       ========================================= */
     .head {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: flex-end;
       gap: 16px;
-      margin-bottom: 14px;
+      margin-bottom: 28px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-light);
     }
 
     .title {
-      margin: 0;
-      font-size: clamp(1.2rem, 2.3vw, 1.9rem);
-      letter-spacing: 0.01em;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      background-color: var(--color-emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
     }
 
     .subtitle {
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 6px;
+      font-weight: 500;
     }
 
     .meta {
       text-align: right;
-      color: var(--muted);
-      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
+    .meta-time {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* =========================================
+       3. METRICS GRID & PANELS
+       ========================================= */
     .grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
     }
 
     .panel {
-      background: var(--surface);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-      box-shadow: 0 14px 30px rgba(16, 34, 26, 0.08);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 24px 24px 0;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
       position: relative;
       overflow: hidden;
+      transition: all 0.2s ease;
     }
 
+    .panel:hover {
+      box-shadow: var(--shadow-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    /* Top Accent Line */
     .panel::before {
       content: "";
-      position: absolute;
-      inset: 0 auto auto 0;
-      width: 100%;
-      height: 4px;
-      background: linear-gradient(90deg, rgba(19, 111, 99, 0.92), rgba(19, 111, 99, 0.05));
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px; background: var(--theme-color, #cbd5e1);
     }
-
-    #panel-latency { background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(224, 244, 239, 0.92)); }
-    #panel-traffic { background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(228, 239, 249, 0.92)); }
-    #panel-error { background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255, 239, 235, 0.95)); }
-    #panel-cost { background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255, 244, 224, 0.94)); }
-    #panel-tokens { background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247, 237, 221, 0.94)); }
-    #panel-quality { background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(235, 244, 228, 0.94)); }
-
-    #panel-latency::before { background: linear-gradient(90deg, #136f63, transparent); }
-    #panel-traffic::before { background: linear-gradient(90deg, #2766a8, transparent); }
-    #panel-error::before { background: linear-gradient(90deg, #c13f2a, transparent); }
-    #panel-cost::before { background: linear-gradient(90deg, #b66a10, transparent); }
-    #panel-tokens::before { background: linear-gradient(90deg, #8b5e1c, transparent); }
-    #panel-quality::before { background: linear-gradient(90deg, #4d8b31, transparent); }
-
-    #panel-latency .value { color: #136f63; }
-    #panel-traffic .value { color: #2766a8; }
-    #panel-error .value { color: #c13f2a; }
-    #panel-cost .value { color: #b66a10; }
-    #panel-tokens .value { color: #8b5e1c; }
-    #panel-quality .value { color: #4d8b31; }
-
-    #panel-latency svg.spark { box-shadow: inset 0 0 0 1px rgba(19, 111, 99, 0.05), 0 10px 24px var(--teal-glow); }
-    #panel-traffic svg.spark { box-shadow: inset 0 0 0 1px rgba(39, 102, 168, 0.05), 0 10px 24px var(--blue-glow); }
-    #panel-error svg.spark { box-shadow: inset 0 0 0 1px rgba(193, 63, 42, 0.05), 0 10px 24px var(--coral-glow); }
-    #panel-cost svg.spark,
-    #panel-tokens svg.spark { box-shadow: inset 0 0 0 1px rgba(182, 106, 16, 0.05), 0 10px 24px var(--amber-glow); }
-    #panel-quality svg.spark { box-shadow: inset 0 0 0 1px rgba(77, 139, 49, 0.05), 0 10px 24px rgba(77, 139, 49, 0.12); }
+    #panel-latency { --theme-color: var(--color-emerald); }
+    #panel-traffic { --theme-color: var(--color-blue); }
+    #panel-error { --theme-color: var(--color-rose); }
+    #panel-cost { --theme-color: var(--color-amber); }
+    #panel-tokens { --theme-color: var(--color-violet); }
+    #panel-quality { --theme-color: var(--color-emerald); }
 
     .panel-header {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
-      gap: 12px;
+      align-items: flex-start;
       margin-bottom: 8px;
     }
 
     .panel h2 {
-      margin: 0;
-      font-size: 0.98rem;
+      font-size: 0.85rem;
       font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .value {
-      margin: 0;
-      font-size: 1.3rem;
+      font-family: var(--font-mono);
+      font-size: 1.875rem;
       font-weight: 700;
-      color: var(--accent);
+      color: var(--text-main);
+      margin: 4px 0 8px;
+      font-variant-numeric: tabular-nums; /* Bí quyết giúp số không nhảy giật */
+      line-height: 1.2;
     }
 
     .value-updated {
-      animation: valuePulse 520ms ease-out;
+      animation: valuePop 0.4s ease-out;
     }
-
-    @keyframes valuePulse {
-      0% {
-        transform: translateY(0);
-        text-shadow: 0 0 0 rgba(19, 111, 99, 0);
-      }
-      35% {
-        transform: translateY(-1px);
-        text-shadow: 0 0 14px rgba(19, 111, 99, 0.3);
-      }
-      100% {
-        transform: translateY(0);
-        text-shadow: 0 0 0 rgba(19, 111, 99, 0);
-      }
+    @keyframes valuePop {
+      0% { color: var(--theme-color); transform: scale(1.03); text-shadow: 0 0 12px rgba(0,0,0,0.1); }
+      100% { color: var(--text-main); transform: scale(1); text-shadow: none; }
     }
 
     .hint {
-      margin: 2px 0 8px;
-      color: var(--muted);
-      font-size: 0.84rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      min-height: 20px;
     }
 
-    svg.spark {
-      width: 100%;
-      height: 128px;
-      display: block;
-      border: 1px solid #ecf0ec;
-      border-radius: 10px;
-      background: linear-gradient(180deg, #fbfdfb 0%, #f5faf8 100%);
-    }
-
-    .spark .grid-line {
-      stroke: rgba(27, 58, 45, 0.12);
-      stroke-width: 1;
-    }
-
-    .spark .chart-area {
-      opacity: 0.58;
-    }
-
-    .spark .chart-line {
-      fill: none;
-      stroke-width: 2.4;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .spark.animate .chart-area {
-      animation: areaFade 420ms ease-out;
-    }
-
-    .spark.animate .chart-line {
-      animation: lineSweep 520ms ease-out;
-    }
-
-    .spark.animate .chart-last {
-      animation: pointPop 520ms ease-out;
-    }
-
-    @keyframes areaFade {
-      from { opacity: 0.18; }
-      to { opacity: 0.58; }
-    }
-
-    @keyframes lineSweep {
-      from {
-        opacity: 0.45;
-        transform: translateX(5px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    @keyframes pointPop {
-      0% { transform: scale(0.72); opacity: 0.55; }
-      60% { transform: scale(1.2); opacity: 1; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .spark .chart-last {
-      stroke: #ffffff;
-      stroke-width: 2;
-      r: 4;
-    }
-
-    .spark .threshold-label {
-      font-size: 9px;
-      font-weight: 700;
-      opacity: 0.9;
-    }
-
+    /* Status Pills */
+    .status-wrap { min-height: 24px; margin-bottom: 12px; }
     .pill {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      border: 1px solid;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.725rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
+    .pill.ok { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .pill.warn { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .pill.danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 
-    .pill.ok { color: var(--ok); border-color: #9fd0bf; background: #eef9f5; }
-    .pill.warn { color: var(--warn); border-color: #f0ce9d; background: #fff8ed; }
-    .pill.danger { color: var(--danger); border-color: #efb2a8; background: #fff2f0; }
-
+    /* Breakdown List */
     .error-list {
-      margin: 8px 0 0;
-      padding: 0;
+      margin: 0 0 12px;
+      padding: 8px 12px;
       list-style: none;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      color: var(--color-rose);
+      background: #fff1f2;
+      border-radius: 8px;
       display: grid;
       gap: 4px;
-      font-size: 0.87rem;
-      color: var(--muted);
     }
+    .error-list:empty { display: none; }
+    .error-list li { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(244,63,94,0.2); padding-bottom: 4px; }
+    .error-list li:last-child { border: none; padding-bottom: 0; }
 
-    @media (max-width: 920px) {
-      .grid { grid-template-columns: 1fr; }
-      .head { flex-direction: column; }
-      .meta { text-align: left; }
+    /* =========================================
+       4. SPARKLINE CHARTS
+       ========================================= */
+    .spark-container {
+      margin-top: auto;
+      height: 85px;
+      width: calc(100% + 48px);
+      margin-left: -24px;
+      margin-bottom: -2px;
     }
+    svg.spark { width: 100%; height: 100%; overflow: visible; display: block; }
+    .spark .grid-line { stroke: var(--border-light); stroke-width: 1; stroke-dasharray: 4 4; }
+    .spark .chart-line { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .spark .chart-last { stroke: #fff; stroke-width: 2.5; r: 4; }
+    .spark .threshold-label { font-size: 10px; font-weight: 600; font-family: var(--font-sans); }
 
+    /* =========================================
+       5. PRO TERMINAL LOGS
+       ========================================= */
     .log-panel {
-      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(241, 246, 244, 0.95));
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-      margin-top: 14px;
-      box-shadow: 0 14px 30px rgba(16, 34, 26, 0.08);
-      position: relative;
+      background: #0f172a; /* Slate 900 */
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
       overflow: hidden;
+      color: #e2e8f0; /* Slate 200 */
     }
 
-    .log-panel::before {
-      content: "";
-      position: absolute;
-      inset: 0 auto auto 0;
-      width: 100%;
-      height: 4px;
-      background: linear-gradient(90deg, #18231f, #136f63, #b66a10, transparent);
-    }
-
-    .log-panel h2 {
-      margin: 0 0 10px;
-      font-size: 0.98rem;
-      font-weight: 600;
-    }
-
-    .log-panel .log-controls {
+    .log-header {
+      padding: 16px 24px;
+      background: #020617; /* Slate 950 */
+      border-bottom: 1px solid #1e293b;
       display: flex;
-      gap: 8px;
+      justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
       flex-wrap: wrap;
+      gap: 16px;
     }
 
-    .log-panel .log-controls label {
-      font-size: 0.85rem;
-      color: var(--muted);
+    .log-header h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .log-panel .log-controls select,
-    .log-panel .log-controls input {
+    .log-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    
+    .log-controls input, .log-controls select {
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #f8fafc;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-family: var(--font-sans);
       font-size: 0.85rem;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 4px 8px;
-      color: var(--text);
-      background: #f9faf9;
+      outline: none;
+      transition: border-color 0.2s;
     }
+    .log-controls input:focus, .log-controls select:focus { border-color: var(--color-blue); }
 
     .log-stream {
-      max-height: 340px;
+      max-height: 480px;
       overflow-y: auto;
-      font-family: "IBM Plex Mono", "Fira Mono", monospace;
-      font-size: 0.78rem;
-      line-height: 1.55;
-      display: grid;
-      gap: 8px;
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
     }
+    
+    /* Terminal Custom Scrollbar */
+    .log-stream::-webkit-scrollbar { width: 8px; }
+    .log-stream::-webkit-scrollbar-track { background: transparent; }
+    .log-stream::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    .log-stream::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    .log-empty { color: #64748b; text-align: center; padding: 40px 0; font-family: var(--font-sans); }
 
     .log-row {
-      display: grid;
-      grid-template-columns: 156px 66px 1fr;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      align-items: start;
-      border: 1px solid rgba(109, 135, 126, 0.16);
-      background: rgba(255, 255, 255, 0.72);
-      box-shadow: 0 8px 18px rgba(16, 34, 26, 0.05);
-    }
-
-    .log-row:hover {
-      background: rgba(255, 255, 255, 0.94);
-      transform: translateY(-1px);
-    }
-
-    .log-row.level-info { border-color: rgba(31, 122, 93, 0.18); }
-    .log-row.level-warning { background: linear-gradient(180deg, #fffdf6, #fff6e8); border-color: rgba(182, 106, 16, 0.28); }
-    .log-row.level-error { background: linear-gradient(180deg, #fff8f7, #fff0ed); border-color: rgba(193, 63, 42, 0.28); }
-    .log-row.level-critical { background: linear-gradient(180deg, #fff1ef, #ffe8e3); border-color: rgba(193, 63, 42, 0.36); box-shadow: 0 12px 24px rgba(193, 63, 42, 0.12); }
-    .log-row.is-important { outline: 2px solid rgba(193, 63, 42, 0.14); }
-
-    .log-ts { color: var(--muted); white-space: nowrap; font-size: 0.75rem; }
-    .log-level {
-      font-weight: 700;
-      text-transform: uppercase;
-      font-size: 0.72rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 58px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid currentColor;
-      background: rgba(255, 255, 255, 0.75);
-    }
-    .log-level.info { color: var(--ok); }
-    .log-level.warning { color: var(--warn); }
-    .log-level.error, .log-level.critical { color: var(--danger); }
-    .log-main { display: grid; gap: 6px; min-width: 0; }
-    .log-topline {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      min-width: 0;
+      gap: 16px;
+      padding: 10px 16px;
+      border-radius: 6px;
+      border-left: 3px solid transparent;
+      transition: background 0.15s;
+      margin-bottom: 2px;
     }
-    .log-service {
-      color: #205c55;
-      font-weight: 700;
-      font-size: 0.73rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+    .log-row:hover { background: rgba(255, 255, 255, 0.03); }
+
+    /* Row Colors based on Level */
+    .log-row.level-info { border-left-color: var(--color-blue); }
+    .log-row.level-warning { border-left-color: var(--color-amber); background: rgba(245, 158, 11, 0.05); }
+    .log-row.level-error { border-left-color: var(--color-rose); background: rgba(244, 63, 94, 0.1); }
+    .log-row.level-critical { border-left-color: #e11d48; background: rgba(225, 29, 72, 0.15); }
+
+    .log-ts { color: #64748b; min-width: 75px; flex-shrink: 0; padding-top: 2px; }
+    .log-level { 
+      min-width: 65px; flex-shrink: 0; 
+      font-weight: 700; text-transform: uppercase; font-size: 0.7rem; 
+      padding-top: 2px; letter-spacing: 0.05em;
     }
-    .log-event {
-      color: var(--text);
-      word-break: break-word;
-      font-weight: 700;
-      font-size: 0.86rem;
-    }
-    .log-message {
-      color: var(--muted);
-      word-break: break-word;
-      font-size: 0.77rem;
-    }
-    .log-tags {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
+    
+    .level-info .log-level { color: #38bdf8; }
+    .level-warning .log-level { color: #fbbf24; }
+    .level-error .log-level { color: #f87171; }
+    .level-critical .log-level { color: #ef4444; }
+
+    .log-main { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+    .log-topline { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .log-service { color: #a78bfa; font-weight: 600; font-size: 0.75rem; }
+    .log-event { color: #f8fafc; font-weight: 600; }
+    
+    .log-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
     .log-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(19, 111, 99, 0.08);
-      color: #175a51;
-      border: 1px solid rgba(19, 111, 99, 0.14);
-      font-size: 0.71rem;
-      font-weight: 600;
+      font-size: 0.7rem; padding: 2px 6px; border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08); color: #cbd5e1; 
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .log-tag.alert { background: rgba(193, 63, 42, 0.08); color: #9c2f20; border-color: rgba(193, 63, 42, 0.16); }
-    .log-tag.warn { background: rgba(182, 106, 16, 0.09); color: #8c5510; border-color: rgba(182, 106, 16, 0.16); }
-    .log-tag.info { background: rgba(39, 102, 168, 0.08); color: #255d97; border-color: rgba(39, 102, 168, 0.15); }
-    .log-empty { color: var(--muted); font-size: 0.85rem; padding: 12px 0; }
+    .log-tag strong { color: #94a3b8; margin-right: 4px; font-weight: 500; }
+    .log-tag.warn { border-color: rgba(245, 158, 11, 0.3); color: #fcd34d; }
+    .log-tag.alert { border-color: rgba(244, 63, 94, 0.3); color: #fca5a5; }
 
-    @media (max-width: 920px) {
-      .log-row { grid-template-columns: 1fr; }
-      .log-topline { align-items: flex-start; }
+    .log-message {
+      color: #94a3b8; word-break: break-word; font-size: 0.75rem;
+      background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px; margin-top: 4px;
+    }
+
+    /* =========================================
+       6. RESPONSIVE QUERIES
+       ========================================= */
+    @media (max-width: 768px) {
+      .head { flex-direction: column; align-items: flex-start; }
+      .meta { text-align: left; }
+      .log-row { flex-wrap: wrap; gap: 4px; }
+      .log-ts { display: inline; margin-right: 8px; }
+      .log-level { display: inline; }
     }
   </style>
 </head>
@@ -426,11 +375,14 @@
   <main class="wrap">
     <header class="head">
       <div>
-        <h1 class="title">Day 13 Observability Dashboard</h1>
-        <p class="subtitle">Default range: 1h | Auto refresh: 15s | Main layer: 6 panels | SLOs from config/slo.yaml | Alerts from docs/alerts.md</p>
+        <h1 class="title">
+          <span class="live-dot"></span>
+          Observability Deck
+        </h1>
+        <p class="subtitle">Default range: 1h &bull; Auto refresh: 15s &bull; SLOs from config/slo.yaml</p>
       </div>
       <div class="meta">
-        <div id="lastUpdated">Last updated: --</div>
+        <div id="lastUpdated" class="meta-time">Waiting for sync...</div>
         <div>Source: <code>/metrics</code></div>
       </div>
     </header>
@@ -438,115 +390,130 @@
     <section class="grid">
       <article class="panel" id="panel-latency">
         <div class="panel-header">
-          <h2>1) Latency P50/P95/P99 (ms)</h2>
-          <p class="value" id="latencyValue">P95: 0 ms</p>
+          <h2>Latency P95/P99</h2>
         </div>
-        <div class="hint">SLO: P95 &lt; 1000 ms | Alert P2: latency_p95_ms &gt; 1500 for 10m</div>
-        <div id="latencyStatus"></div>
-        <svg class="spark" id="latencyChart" viewBox="0 0 520 128" preserveAspectRatio="none"></svg>
+        <div class="value" id="latencyValue">0 ms</div>
+        <div class="hint">SLO: P95 &lt; 1000ms | Alert P2: &gt; 1500ms</div>
+        <div class="status-wrap" id="latencyStatus"></div>
+        <div class="spark-container"><svg class="spark" id="latencyChart" preserveAspectRatio="none"></svg></div>
       </article>
 
       <article class="panel" id="panel-traffic">
         <div class="panel-header">
-          <h2>2) Traffic (QPS and request count)</h2>
-          <p class="value" id="trafficValue">0 req | 0.00 qps</p>
+          <h2>Traffic (QPS)</h2>
         </div>
-        <div class="hint">Unit: requests and queries/sec</div>
-        <svg class="spark" id="trafficChart" viewBox="0 0 520 128" preserveAspectRatio="none"></svg>
+        <div class="value" id="trafficValue">0 / 0.00</div>
+        <div class="hint">Global requests and queries per second</div>
+        <div class="status-wrap"></div>
+        <div class="spark-container"><svg class="spark" id="trafficChart" preserveAspectRatio="none"></svg></div>
       </article>
 
       <article class="panel" id="panel-error">
         <div class="panel-header">
-          <h2>3) Error rate with breakdown (%)</h2>
-          <p class="value" id="errorValue">0.00%</p>
+          <h2>Error Rate</h2>
         </div>
-        <div class="hint">SLO: error rate &lt; 1% | Alert P1: error_rate_pct &gt; 1 for 5m</div>
-        <div id="errorStatus"></div>
-        <svg class="spark" id="errorChart" viewBox="0 0 520 128" preserveAspectRatio="none"></svg>
+        <div class="value" id="errorValue">0.00%</div>
+        <div class="hint">SLO: &lt; 1% | Alert P1: &gt; 1% for 5m</div>
+        <div class="status-wrap" id="errorStatus"></div>
         <ul class="error-list" id="errorBreakdown"></ul>
+        <div class="spark-container"><svg class="spark" id="errorChart" preserveAspectRatio="none"></svg></div>
       </article>
 
       <article class="panel" id="panel-cost">
         <div class="panel-header">
-          <h2>4) Cost over time (USD)</h2>
-          <p class="value" id="costValue">$0.0000 total</p>
+          <h2>Compute Cost</h2>
         </div>
-        <div class="hint">SLO: daily cost &lt; $5.00 | Alert P2: hourly cost &gt; 2x baseline (~$0.0042/req avg guide)</div>
-        <svg class="spark" id="costChart" viewBox="0 0 520 128" preserveAspectRatio="none"></svg>
+        <div class="value" id="costValue">$0.0000</div>
+        <div class="hint">SLO: &lt; $5.00/day | Guide: ~$0.0042/req</div>
+        <div class="status-wrap"></div>
+        <div class="spark-container"><svg class="spark" id="costChart" preserveAspectRatio="none"></svg></div>
       </article>
 
       <article class="panel" id="panel-tokens">
         <div class="panel-header">
-          <h2>5) Tokens In/Out</h2>
-          <p class="value" id="tokenValue">in: 0 | out: 0</p>
+          <h2>Tokens I/O</h2>
         </div>
-        <div class="hint">Alert P3: tokens_out_total &gt; 50000 in 1h | Leading indicator for daily cost</div>
-        <svg class="spark" id="tokenChart" viewBox="0 0 520 128" preserveAspectRatio="none"></svg>
+        <div class="value" id="tokenValue">0 / 0</div>
+        <div class="hint">Alert P3: tokens_out &gt; 50k in 1h</div>
+        <div class="status-wrap"></div>
+        <div class="spark-container"><svg class="spark" id="tokenChart" preserveAspectRatio="none"></svg></div>
       </article>
 
       <article class="panel" id="panel-quality">
         <div class="panel-header">
-          <h2>6) Quality proxy (average)</h2>
-          <p class="value" id="qualityValue">0.00</p>
+          <h2>Quality Proxy</h2>
         </div>
-        <div class="hint">SLO: quality avg &gt;= 0.70 | Alert P2: quality_score_avg &lt; 0.70 for 15m</div>
-        <div id="qualityStatus"></div>
-        <svg class="spark" id="qualityChart" viewBox="0 0 520 128" preserveAspectRatio="none"></svg>
+        <div class="value" id="qualityValue">0.00</div>
+        <div class="hint">SLO: avg &ge; 0.70 | Alert P2: &lt; 0.70</div>
+        <div class="status-wrap" id="qualityStatus"></div>
+        <div class="spark-container"><svg class="spark" id="qualityChart" preserveAspectRatio="none"></svg></div>
       </article>
     </section>
 
     <section class="log-panel" id="panel-logs">
-      <h2>Live Logs — <code>data/logs.jsonl</code></h2>
-      <div class="log-controls">
-        <label>Level:</label>
-        <select id="logLevelFilter">
-          <option value="">All</option>
-          <option value="info">info</option>
-          <option value="warning">warning</option>
-          <option value="error">error</option>
-          <option value="critical">critical</option>
-        </select>
-        <label>Search:</label>
-        <input id="logSearch" type="text" placeholder="event / service / correlation_id" style="width:220px" />
-        <label>Rows:</label>
-        <select id="logRowCount">
-          <option value="30">30</option>
-          <option value="50" selected>50</option>
-          <option value="100">100</option>
-          <option value="200">200</option>
-        </select>
+      <div class="log-header">
+        <h2>
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+          Live System Logs
+        </h2>
+        <div class="log-controls">
+          <select id="logLevelFilter">
+            <option value="">All Levels</option>
+            <option value="info">Info</option>
+            <option value="warning">Warning</option>
+            <option value="error">Error</option>
+            <option value="critical">Critical</option>
+          </select>
+          <input id="logSearch" type="text" placeholder="Search event, service, CID..." style="width: 220px;" />
+          <select id="logRowCount">
+            <option value="30">30 rows</option>
+            <option value="50" selected>50 rows</option>
+            <option value="100">100 rows</option>
+          </select>
+        </div>
       </div>
-      <div class="log-stream" id="logStream"><p class="log-empty">Loading logs...</p></div>
+      <div class="log-stream" id="logStream">
+        <p class="log-empty">Loading secure telemetry stream...</p>
+      </div>
     </section>
   </main>
 
   <script>
+    // ==========================================
+    // CORE LOGIC & STATE
+    // ==========================================
     const REFRESH_MS = 15000;
     const WINDOW_MS = 60 * 60 * 1000;
     const MAX_POINTS = Math.floor(WINDOW_MS / REFRESH_MS) + 5;
-
     const history = [];
 
+    // --- Utilities ---
+    const formatNum = (val, digits = 2) => Number(val || 0).toFixed(digits);
+    const pill = (type, text) => `<span class="pill ${type}">${text}</span>`;
+    const escapeHtml = (val) => String(val).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+    // Debounce cho ô Search Input
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
+    // Cập nhật text kèm Animation
     function setAnimatedText(elementId, newText) {
       const el = document.getElementById(elementId);
       if (!el) return;
       if (el.textContent !== newText) {
         el.textContent = newText;
         el.classList.remove("value-updated");
-        // Force reflow so animation restarts for every new update.
-        void el.offsetWidth;
+        void el.offsetWidth; // Force CSS Reflow
         el.classList.add("value-updated");
       }
     }
 
-    function formatNum(value, digits = 2) {
-      return Number(value || 0).toFixed(digits);
-    }
-
-    function pill(type, text) {
-      return `<span class="pill ${type}">${text}</span>`;
-    }
-
+    // --- Draw Sparklines (Bezier Curves) ---
     function toPoints(values, width, chartHeight, minV, maxV, padTop) {
       if (!values.length) return [];
       const safeMin = Number.isFinite(minV) ? minV : Math.min(...values);
@@ -564,10 +531,8 @@
       if (points.length === 1) return `M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`;
       let d = `M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`;
       for (let i = 1; i < points.length; i++) {
-        const prev = points[i - 1];
-        const curr = points[i];
-        const mx = (prev.x + curr.x) / 2;
-        const my = (prev.y + curr.y) / 2;
+        const prev = points[i - 1], curr = points[i];
+        const mx = (prev.x + curr.x) / 2, my = (prev.y + curr.y) / 2;
         d += ` Q ${prev.x.toFixed(2)} ${prev.y.toFixed(2)}, ${mx.toFixed(2)} ${my.toFixed(2)}`;
       }
       const last = points[points.length - 1];
@@ -577,72 +542,56 @@
 
     function drawSpark(svgId, values, options = {}) {
       const svg = document.getElementById(svgId);
-      const width = 520;
-      const height = 128;
-      const padTop = 8;
-      const padBottom = 8;
+      if (!svg) return;
+      
+      const rect = svg.getBoundingClientRect();
+      const width = rect.width || 350;
+      const height = rect.height || 85;
+      const padTop = 10, padBottom = 5;
       const chartHeight = height - padTop - padBottom;
-      const lineColor = options.lineColor || "#136f63";
-      const fillTop = options.fillTop || lineColor;
-      const fillBottom = options.fillBottom || "#ffffff";
+      
+      const themeColor = options.color || "#10b981";
       const minValue = options.min ?? Math.min(...values, 0);
       const maxValue = options.max ?? Math.max(...values, 1);
+      
       const points = toPoints(values, width, chartHeight, minValue, maxValue, padTop);
-      const polyPts = points.map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" ");
       const linePath = smoothPath(points);
-      const first = points[0];
-      const last = points[points.length - 1];
-      const areaPath = points.length
-        ? `M ${first.x.toFixed(2)} ${height - padBottom} L ${polyPts} L ${last.x.toFixed(2)} ${height - padBottom} Z`
+      const first = points[0], last = points[points.length - 1];
+      
+      const areaPath = points.length > 1
+        ? `M ${first.x.toFixed(2)} ${height} L ${points.map(p => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" L ")} L ${last.x.toFixed(2)} ${height} Z`
         : "";
 
       let thresholdLine = "";
       const range = Math.max(1e-9, maxValue - minValue);
+      
       if (typeof options.threshold === "number") {
         const y = chartHeight - ((options.threshold - minValue) / range) * chartHeight + padTop;
-        const color = options.thresholdColor || "#1f7a5d";
-        thresholdLine += `<line x1="0" y1="${y.toFixed(2)}" x2="${width}" y2="${y.toFixed(2)}" stroke="${color}" stroke-dasharray="6 4" stroke-width="1.5" />`;
-        thresholdLine += `<text x="${(width - 4).toFixed(2)}" y="${Math.max(10, y - 3).toFixed(2)}" text-anchor="end" fill="${color}" class="threshold-label">SLO</text>`;
+        thresholdLine += `<line x1="0" y1="${y.toFixed(2)}" x2="${width}" y2="${y.toFixed(2)}" stroke="#94a3b8" stroke-dasharray="4 4" stroke-width="1.2" />`;
+        thresholdLine += `<text x="${(width - 2).toFixed(2)}" y="${Math.max(10, y - 4).toFixed(2)}" text-anchor="end" fill="#94a3b8" class="threshold-label">SLO</text>`;
       }
       if (typeof options.threshold2 === "number") {
         const y = chartHeight - ((options.threshold2 - minValue) / range) * chartHeight + padTop;
-        const color = options.threshold2Color || "#c13f2a";
-        thresholdLine += `<line x1="0" y1="${y.toFixed(2)}" x2="${width}" y2="${y.toFixed(2)}" stroke="${color}" stroke-dasharray="4 3" stroke-width="1.5" />`;
-        thresholdLine += `<text x="${(width - 4).toFixed(2)}" y="${Math.max(10, y - 3).toFixed(2)}" text-anchor="end" fill="${color}" class="threshold-label">ALERT</text>`;
+        thresholdLine += `<line x1="0" y1="${y.toFixed(2)}" x2="${width}" y2="${y.toFixed(2)}" stroke="#f43f5e" stroke-dasharray="4 4" stroke-width="1.2" opacity="0.8"/>`;
+        thresholdLine += `<text x="${(width - 2).toFixed(2)}" y="${Math.max(10, y - 4).toFixed(2)}" text-anchor="end" fill="#f43f5e" class="threshold-label">ALERT</text>`;
       }
 
-      const gridLines = [0.2, 0.4, 0.6, 0.8]
-        .map((r) => {
-          const y = padTop + chartHeight * r;
-          return `<line class="grid-line" x1="0" y1="${y.toFixed(2)}" x2="${width}" y2="${y.toFixed(2)}" />`;
-        })
-        .join("");
-
       const gradientId = `${svgId}-grad`;
-      const marker = last
-        ? `<circle class="chart-last" cx="${last.x.toFixed(2)}" cy="${last.y.toFixed(2)}" fill="${lineColor}" />`
-        : "";
-
       svg.innerHTML = `
         <defs>
           <linearGradient id="${gradientId}" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="${fillTop}" stop-opacity="0.35"></stop>
-            <stop offset="100%" stop-color="${fillBottom}" stop-opacity="0.05"></stop>
+            <stop offset="0%" stop-color="${themeColor}" stop-opacity="0.25"></stop>
+            <stop offset="100%" stop-color="${themeColor}" stop-opacity="0.0"></stop>
           </linearGradient>
         </defs>
-        <rect x="0" y="0" width="${width}" height="${height}" fill="transparent"></rect>
-        ${gridLines}
         ${thresholdLine}
         ${areaPath ? `<path class="chart-area" d="${areaPath}" fill="url(#${gradientId})"></path>` : ""}
-        ${linePath ? `<path class="chart-line" d="${linePath}" stroke="${lineColor}"></path>` : ""}
-        ${marker}
+        ${linePath ? `<path class="chart-line" d="${linePath}" stroke="${themeColor}"></path>` : ""}
+        ${last ? `<circle class="chart-last" cx="${last.x.toFixed(2)}" cy="${last.y.toFixed(2)}" fill="${themeColor}" />` : ""}
       `;
-
-      svg.classList.remove("animate");
-      void svg.offsetWidth;
-      svg.classList.add("animate");
     }
 
+    // --- Update Dashboard ---
     function updatePanels(snapshot, now) {
       const traffic = snapshot.traffic || 0;
       const errors = Object.values(snapshot.error_breakdown || {}).reduce((a, b) => a + b, 0);
@@ -656,239 +605,133 @@
         qps = reqDelta / seconds;
       }
 
-      document.getElementById("lastUpdated").textContent =
-        `Last updated: ${new Date(now).toLocaleTimeString()}`;
+      document.getElementById("lastUpdated").textContent = `Last sync: ${new Date(now).toLocaleTimeString()}`;
 
-      setAnimatedText("latencyValue", `P95: ${formatNum(snapshot.latency_p95, 0)} ms`);
-      document.getElementById("latencyStatus").innerHTML =
-        snapshot.latency_p95 <= 1000
-          ? pill("ok", "Within SLO <1000ms")
-          : snapshot.latency_p95 <= 1500
-            ? pill("warn", "SLO breached, below alert")
-            : pill("danger", "P2 alert zone >1500ms");
+      // Panel Updates
+      setAnimatedText("latencyValue", `${formatNum(snapshot.latency_p95, 0)} ms`);
+      document.getElementById("latencyStatus").innerHTML = snapshot.latency_p95 <= 1000 ? pill("ok", "Healthy") : snapshot.latency_p95 <= 1500 ? pill("warn", "Warning") : pill("danger", "Alert P2");
 
-      setAnimatedText("trafficValue", `${traffic} req | ${formatNum(qps, 2)} qps`);
+      setAnimatedText("trafficValue", `${traffic} / ${formatNum(qps, 2)} qps`);
 
       setAnimatedText("errorValue", `${formatNum(errorRate, 2)}%`);
-      document.getElementById("errorStatus").innerHTML =
-        errorRate < 1 ? pill("ok", "Within SLO <1%") : pill("danger", "P1 alert zone >1% error rate");
-
-      setAnimatedText(
-        "costValue",
-        `$${formatNum(snapshot.total_cost_usd, 4)} total | avg $${formatNum(snapshot.avg_cost_usd, 4)}/req`
-      );
-
-      setAnimatedText("tokenValue", `in: ${snapshot.tokens_in_total || 0} | out: ${snapshot.tokens_out_total || 0}`);
-
-      setAnimatedText("qualityValue", formatNum(snapshot.quality_avg, 2));
-      document.getElementById("qualityStatus").innerHTML =
-        snapshot.quality_avg >= 0.7 ? pill("ok", "Meets SLO >=0.70") : pill("warn", "P2 alert zone <0.70");
-
+      document.getElementById("errorStatus").innerHTML = errorRate < 1 ? pill("ok", "Stable") : pill("danger", "Alert P1");
+      
       const breakdown = snapshot.error_breakdown || {};
-      const items = Object.keys(breakdown).length
-        ? Object.entries(breakdown).map(([k, v]) => `<li>${k}: ${v}</li>`).join("")
-        : "<li>No errors yet</li>";
-      document.getElementById("errorBreakdown").innerHTML = items;
+      const errList = document.getElementById("errorBreakdown");
+      const errHtml = Object.keys(breakdown).length ? Object.entries(breakdown).map(([k, v]) => `<li><span>${escapeHtml(k)}</span> <strong>${v}</strong></li>`).join("") : "";
+      if(errHtml) { errList.style.display = 'grid'; errList.innerHTML = errHtml; } else { errList.style.display = 'none'; }
 
-      const lastPoints = history.slice(-MAX_POINTS);
-      const p95Vals = lastPoints.map((h) => Number(h.snapshot.latency_p95 || 0));
-      drawSpark("latencyChart", p95Vals, {
-        min: 0,
-        max: Math.max(2000, ...p95Vals, 1),
-        threshold: 1000,
-        thresholdColor: "#1f7a5d",
-        threshold2: 1500,
-        threshold2Color: "#c13f2a",
-        lineColor: "#136f63",
-        fillTop: "#56b6a4",
-        fillBottom: "#dff5ef",
-      });
+      setAnimatedText("costValue", `$${formatNum(snapshot.total_cost_usd, 4)}`);
+      setAnimatedText("tokenValue", `In: ${snapshot.tokens_in_total || 0} | Out: ${snapshot.tokens_out_total || 0}`);
+      
+      setAnimatedText("qualityValue", formatNum(snapshot.quality_avg, 2));
+      document.getElementById("qualityStatus").innerHTML = snapshot.quality_avg >= 0.7 ? pill("ok", "Good") : pill("warn", "Review");
 
-      const qpsVals = lastPoints.map((h, idx) => {
-        if (idx === 0) return 0;
-        const prev = lastPoints[idx - 1];
-        const reqDelta = Math.max(0, (h.snapshot.traffic || 0) - (prev.snapshot.traffic || 0));
-        const seconds = Math.max(1, (h.time - prev.time) / 1000);
-        return reqDelta / seconds;
-      });
-      drawSpark("trafficChart", qpsVals, {
-        min: 0,
-        max: Math.max(1, ...qpsVals, 1),
-        lineColor: "#2766a8",
-        fillTop: "#79ace2",
-        fillBottom: "#e3effb",
-      });
-
-      const errVals = lastPoints.map((h) => {
-        const t = h.snapshot.traffic || 0;
-        const e = Object.values(h.snapshot.error_breakdown || {}).reduce((a, b) => a + b, 0);
-        return t > 0 ? (e / t) * 100 : 0;
-      });
-      drawSpark("errorChart", errVals, {
-        min: 0,
-        max: Math.max(2, ...errVals, 1),
-        threshold: 1,
-        thresholdColor: "#c13f2a",
-        lineColor: "#c13f2a",
-        fillTop: "#e79184",
-        fillBottom: "#fde9e5",
-      });
-
-      const costVals = lastPoints.map((h) => Number(h.snapshot.total_cost_usd || 0));
-      drawSpark("costChart", costVals, {
-        min: 0,
-        max: Math.max(5, ...costVals, 0.1),
-        threshold: 5,
-        thresholdColor: "#1f7a5d",
-        lineColor: "#b66a10",
-        fillTop: "#e1ad6c",
-        fillBottom: "#fdf2e4",
-      });
-
-      const tokenVals = lastPoints.map((h) => Number(h.snapshot.tokens_out_total || 0));
-      drawSpark("tokenChart", tokenVals, {
-        min: 0,
-        max: Math.max(50000, ...tokenVals, 1),
-        threshold: 50000,
-        thresholdColor: "#b66a10",
-        lineColor: "#8b5e1c",
-        fillTop: "#c79857",
-        fillBottom: "#fbf1e2",
-      });
-
-      const qualityVals = lastPoints.map((h) => Number(h.snapshot.quality_avg || 0));
-      drawSpark("qualityChart", qualityVals, {
-        min: 0,
-        max: 1,
-        threshold: 0.7,
-        thresholdColor: "#1f7a5d",
-        lineColor: "#4d8b31",
-        fillTop: "#8bbb72",
-        fillBottom: "#ebf6e4",
-      });
+      // Draw Charts
+      const lastPts = history.slice(-MAX_POINTS);
+      drawSpark("latencyChart", lastPts.map(h => Number(h.snapshot.latency_p95 || 0)), { color: "#10b981", min: 0, max: Math.max(2000, snapshot.latency_p95), threshold: 1000, threshold2: 1500 });
+      drawSpark("trafficChart", lastPts.map((h, i) => i === 0 ? 0 : Math.max(0, (h.snapshot.traffic || 0) - (lastPts[i-1].snapshot.traffic || 0)) / Math.max(1, (h.time - lastPts[i-1].time) / 1000)), { color: "#3b82f6", min: 0 });
+      drawSpark("errorChart", lastPts.map(h => { const t = h.snapshot.traffic || 0; const e = Object.values(h.snapshot.error_breakdown || {}).reduce((a, b) => a + b, 0); return t > 0 ? (e / t) * 100 : 0; }), { color: "#f43f5e", min: 0, max: Math.max(2, errorRate), threshold: 1 });
+      drawSpark("costChart", lastPts.map(h => Number(h.snapshot.total_cost_usd || 0)), { color: "#f59e0b", min: 0, threshold: 5 });
+      drawSpark("tokenChart", lastPts.map(h => Number(h.snapshot.tokens_out_total || 0)), { color: "#8b5cf6", min: 0, threshold: 50000 });
+      drawSpark("qualityChart", lastPts.map(h => Number(h.snapshot.quality_avg || 0)), { color: "#10b981", min: 0, max: 1, threshold: 0.7 });
     }
 
-    async function poll() {
-      try {
-        const response = await fetch('/metrics', { cache: 'no-store' });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const snapshot = await response.json();
-        const now = Date.now();
-
-        history.push({ time: now, snapshot });
-        const cutoff = now - WINDOW_MS;
-        while (history.length > 1 && history[0].time < cutoff) {
-          history.shift();
-        }
-
-        updatePanels(snapshot, now);
-      } catch (err) {
-        document.getElementById('lastUpdated').textContent =
-          `Last updated: failed (${String(err)})`;
-      }
-    }
-
-    poll();
-    setInterval(poll, REFRESH_MS);
-
-    // ---------- Logs panel ----------
-    function fmtTs(ts) {
-      if (!ts) return '-';
-      try { return new Date(ts).toLocaleTimeString(); } catch { return ts; }
-    }
-
+    // --- Render Terminal Logs ---
     function renderLogs(records) {
       const levelFilter = document.getElementById('logLevelFilter').value.toLowerCase();
       const search = document.getElementById('logSearch').value.toLowerCase();
       const stream = document.getElementById('logStream');
 
-      function escapeHtml(value) {
-        return String(value)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#39;');
-      }
-
-      function tag(label, value, kind = '') {
-        const safeLabel = escapeHtml(label);
-        const safeValue = escapeHtml(value);
-        const cls = kind ? `log-tag ${kind}` : 'log-tag';
-        return `<span class="${cls}"><strong>${safeLabel}</strong> ${safeValue}</span>`;
-      }
-
-      const filtered = records.filter((r) => {
+      const filtered = records.filter(r => {
         if (levelFilter && (r.level || '').toLowerCase() !== levelFilter) return false;
-        if (search) {
-          const haystack = JSON.stringify(r).toLowerCase();
-          if (!haystack.includes(search)) return false;
-        }
+        if (search && !JSON.stringify(r).toLowerCase().includes(search)) return false;
         return true;
       });
 
       if (!filtered.length) {
-        stream.innerHTML = '<p class="log-empty">No log entries match the filter.</p>';
+        stream.innerHTML = '<p class="log-empty">No log entries match the filter criteria.</p>';
         return;
       }
 
-      stream.innerHTML = filtered.map((r) => {
+      stream.innerHTML = filtered.map(r => {
         const level = (r.level || 'info').toLowerCase();
-        const ts = fmtTs(r.ts);
-        const service = r.service || '-';
-        const event = r.event || '';
+        let ts = '-';
+        try { 
+          const d = new Date(r.ts); 
+          ts = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')}.${d.getMilliseconds().toString().padStart(3,'0')}`;
+        } catch {}
+        
         const tags = [];
-        const isImportant = level === 'error' || level === 'critical' || level === 'warning' || r.error_type || r.latency_ms > 1000;
+        const mkTag = (l, v, c='') => `<span class="log-tag ${c}"><strong>${l}</strong>${escapeHtml(v)}</span>`;
 
-        if (r.correlation_id && r.correlation_id !== 'MISSING') tags.push(tag('CID', r.correlation_id.slice(0, 12), 'info'));
-        if (r.session_id) tags.push(tag('Session', r.session_id, 'info'));
-        if (r.feature) tags.push(tag('Feature', r.feature));
-        if (r.model) tags.push(tag('Model', r.model));
-        if (r.latency_ms != null) tags.push(tag('Latency', `${r.latency_ms}ms`, r.latency_ms > 1000 ? 'warn' : ''));
-        if (r.tokens_out != null) tags.push(tag('Out', r.tokens_out, r.tokens_out > 500 ? 'warn' : ''));
-        if (r.cost_usd != null) tags.push(tag('Cost', `$${Number(r.cost_usd).toFixed(4)}`, Number(r.cost_usd) > 0.0042 ? 'warn' : ''));
-        if (r.error_type) tags.push(tag('Error', r.error_type, 'alert'));
+        if (r.correlation_id && r.correlation_id !== 'MISSING') tags.push(mkTag('CID', r.correlation_id.slice(0, 8)));
+        if (r.latency_ms != null) tags.push(mkTag('Lat', `${r.latency_ms}ms`, r.latency_ms > 1000 ? 'warn' : ''));
+        if (r.tokens_out != null) tags.push(mkTag('Out', r.tokens_out));
+        if (r.cost_usd != null) tags.push(mkTag('Cost', `$${Number(r.cost_usd).toFixed(4)}`));
+        if (r.error_type) tags.push(mkTag('Err', r.error_type, 'alert'));
 
-        const messageBits = [];
-        if (r.payload?.detail) messageBits.push(`detail=${r.payload.detail}`);
-        if (r.payload?.message_preview) messageBits.push(`message=${r.payload.message_preview}`);
-        if (r.payload?.answer_preview) messageBits.push(`answer=${r.payload.answer_preview}`);
-        const message = messageBits.length ? `<div class="log-message">${escapeHtml(messageBits.join(' | '))}</div>` : '';
+        const msgBits = [];
+        if (r.payload?.detail) msgBits.push(r.payload.detail);
+        if (r.payload?.message_preview) msgBits.push(r.payload.message_preview);
+        const msgHtml = msgBits.length ? `<div class="log-message">${escapeHtml(msgBits.join(' | '))}</div>` : '';
 
-        return `<div class="log-row level-${level} ${isImportant ? 'is-important' : ''}">
-          <span class="log-ts">${escapeHtml(ts)}</span>
-          <span class="log-level ${level}">${escapeHtml(level)}</span>
-          <div class="log-main">
-            <div class="log-topline">
-              <span class="log-service">${escapeHtml(service)}</span>
-              <span class="log-event">${escapeHtml(event)}</span>
+        return `
+          <div class="log-row level-${level}">
+            <div class="log-ts">${escapeHtml(ts)}</div>
+            <div class="log-level">${escapeHtml(level)}</div>
+            <div class="log-main">
+              <div class="log-topline">
+                <span class="log-service">[${escapeHtml(r.service || 'system')}]</span>
+                <span class="log-event">${escapeHtml(r.event || 'unknown')}</span>
+              </div>
+              ${tags.length ? `<div class="log-tags">${tags.join('')}</div>` : ''}
+              ${msgHtml}
             </div>
-            <div class="log-tags">${tags.join('')}</div>
-            ${message}
           </div>
-        </div>`;
+        `;
       }).join('');
+    }
+
+    // --- API Fetching ---
+    async function poll() {
+      try {
+        const response = await fetch('/metrics', { cache: 'no-store' });
+        if (!response.ok) throw new Error();
+        const snapshot = await response.json();
+        const now = Date.now();
+
+        history.push({ time: now, snapshot });
+        const cutoff = now - WINDOW_MS;
+        while (history.length > 1 && history[0].time < cutoff) history.shift();
+
+        updatePanels(snapshot, now);
+      } catch (err) {
+        document.getElementById('lastUpdated').innerHTML = `<span style="color:var(--color-rose)">Connection lost</span>`;
+      }
     }
 
     async function pollLogs() {
       const n = document.getElementById('logRowCount').value || 50;
       try {
         const res = await fetch(`/logs?n=${n}`, { cache: 'no-store' });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const records = await res.json();
-        renderLogs(records);
-      } catch (err) {
-        document.getElementById('logStream').innerHTML =
-          `<p class="log-empty">Failed to load logs: ${String(err)}</p>`;
-      }
+        if (res.ok) renderLogs(await res.json());
+      } catch (err) {}
     }
 
-    document.getElementById('logLevelFilter').addEventListener('change', pollLogs);
-    document.getElementById('logSearch').addEventListener('input', pollLogs);
-    document.getElementById('logRowCount').addEventListener('change', pollLogs);
-
-    pollLogs();
+    // --- Init & Event Listeners ---
+    poll(); pollLogs();
+    setInterval(poll, REFRESH_MS);
     setInterval(pollLogs, REFRESH_MS);
+
+    document.getElementById('logLevelFilter').addEventListener('change', pollLogs);
+    document.getElementById('logRowCount').addEventListener('change', pollLogs);
+    document.getElementById('logSearch').addEventListener('input', debounce(pollLogs, 300));
+
+    // Fix Resize cho Sparkline
+    window.addEventListener('resize', debounce(() => {
+      if (history.length) updatePanels(history[history.length - 1].snapshot, history[history.length - 1].time);
+    }, 200));
   </script>
 </body>
 </html>
