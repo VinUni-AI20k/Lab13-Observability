@@ -39,15 +39,15 @@ def configure_logging() -> None:
     logging.basicConfig(format="%(message)s", level=getattr(logging, os.getenv("LOG_LEVEL", "INFO")))
     structlog.configure(
         processors=[
-            merge_contextvars,
-            structlog.processors.add_log_level,
-            structlog.processors.TimeStamper(fmt="iso", utc=True, key="ts"),
+            merge_contextvars, # Lau user_id + correlation_id tu middleware
+            structlog.processors.add_log_level, # Them level log
+            structlog.processors.TimeStamper(fmt="iso", utc=True, key="ts"), # Gan thoi gian xu ly 
             # TODO: Register your PII scrubbing processor here
-            # scrub_event,
+            scrub_event, # Xoa thong tin nhay cam
             structlog.processors.StackInfoRenderer(),
-            structlog.processors.format_exc_info,
-            JsonlFileProcessor(),
-            structlog.processors.JSONRenderer(),
+            structlog.processors.format_exc_info, # Neu co loi crash tu dong ghi chi tiet vao log 
+            JsonlFileProcessor(), # Luu log vao file jsonl
+            structlog.processors.JSONRenderer(), # Render log ra man hinh
         ],
         wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
         cache_logger_on_first_use=True,
