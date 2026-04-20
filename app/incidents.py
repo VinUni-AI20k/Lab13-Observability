@@ -12,6 +12,7 @@ STATE = {
     "rate_limiter_triggered": False,     # Rate limiter kicks in (429 errors)
     "high_token_usage": False,           # Queries use 2x tokens (verbose responses)
     "core_banking_fail": False,          # Core banking system unavailable
+    "random_10_percent_error": False,    # Giả lập lỗi 10%
 }
 
 
