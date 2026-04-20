@@ -10,6 +10,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 
 from .logging_config import LOG_PATH
+from .pii import scrub_text
 
 _SAMPLES: list[tuple[str, str, str]] = [
     # (user_query_preview, issue_type, event)
@@ -104,7 +105,7 @@ def seed(n: int = 20, reset: bool = False) -> int:
             "cost_usd":       cost_usd,
             "issue_type":     issue_type,
             "payload": {
-                "answer_preview": _ANSWERS[issue_type][:80] + "…",
+                "answer_preview": scrub_text(_ANSWERS[issue_type])[:80] + "…",
                 "metadata": {
                     "latency_ms":    latency_ms,
                     "tokens":        tokens_in + tokens_out,
