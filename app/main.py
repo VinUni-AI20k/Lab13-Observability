@@ -1,9 +1,9 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import os
 
 from dotenv import load_dotenv
-load_dotenv()  # Load .env TRƯỚC khi import langfuse/tracing
+load_dotenv()  # Load .env TRÆ¯á»C khi import langfuse/tracing
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
