@@ -64,7 +64,6 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
         env=os.getenv("APP_ENV", "dev"),
     )
 
-
     log.info(
         "request_received",
         service="api",
@@ -76,7 +75,6 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             feature=body.feature,
             session_id=body.session_id,
             message=body.message,
-            correlation_id=request.state.correlation_id,
         )
         log.info(
             "response_sent",
