@@ -10,24 +10,24 @@
 
 | Member | Role | Task Chính | Rubric Phụ Trách | KPI |
 |---|---|---|---|---|
-| **A** | Logging Core | middleware.py + main.py enrich | A1-Logging (10đ) | correlation_id + context binding |
-| **B** | PII & Security | pii.py regex + logging_config scrubber | A1-PII (5đ từ 10đ Alerts) | 0 PII leaks |
-| **C** | Tracing & Instrumentation | tracing.py + @observe decorator | A1-Tracing (10đ) | ≥10 traces waterfall |
-| **D** | SLO & Alerts | slo.yaml + alert_rules.yaml + runbook | A1-Alerts (5đ) | ≥3 alert rules chạy |
-| **E** | Dashboard & Metrics | metrics.py + 6-panel dashboard | A1-Dashboard (10đ) | screenshot + validate_logs.py ≥80 |
-| **F** | Load Test & Incident | load_test.py + inject_incident.py | A2 Incident Debug (10đ) | root cause analysis |
-| **G** | Demo Lead & Report | blueprint-template.md + demo script | A3 Live Demo (20đ) | evidence + Q&A prep |
+| **Thuận** | Logging Core | middleware.py + main.py enrich | A1-Logging (10đ) | correlation_id + context binding |
+| **Tuấn** | PII & Security | pii.py regex + logging_config scrubber | A1-PII (5đ từ 10đ Alerts) | 0 PII leaks |
+| **Quang** | Tracing & Instrumentation | tracing.py + @observe decorator | A1-Tracing (10đ) | ≥10 traces waterfall |
+| **Long** | SLO & Alerts | slo.yaml + alert_rules.yaml + runbook | A1-Alerts (5đ) | ≥3 alert rules chạy |
+| **Hải** | Dashboard & Metrics | metrics.py + 6-panel dashboard | A1-Dashboard (10đ) | screenshot + validate_logs.py ≥80 |
+| **Huy** | Load Test & Incident | load_test.py + inject_incident.py | A2 Incident Debug (10đ) | root cause analysis |
+| **Dũng** | Demo Lead & Report | blueprint-template.md + demo script | A3 Live Demo (20đ) | evidence + Q&A prep |
 
 **Dependency Flow**:
 ```
-A → B → [C, D, E, F] → G
+Thuận → Tuấn → [Quang, Long, Hải, Huy] → Dũng
 ```
 
 ---
 
 ## Chi Tiết Công Việc
 
-### MEMBER A: Logging Core & Correlation ID
+### MEMBER Thuận: Logging Core & Correlation ID
 
 **Rubric Score**: A1 - Logging (10 điểm)
 
@@ -61,7 +61,7 @@ A → B → [C, D, E, F] → G
 
 ---
 
-### MEMBER B: PII Scrubbing & Security
+### MEMBER Tuấn: PII Scrubbing & Security
 
 **Rubric Score**: A1 - Alerts & PII (5 điểm từ 10đ)
 
@@ -99,7 +99,7 @@ A → B → [C, D, E, F] → G
 
 ---
 
-### MEMBER C: Tracing & Enrichment
+### MEMBER Quang: Tracing & Enrichment
 
 **Rubric Score**: A1 - Logging & Tracing (10 điểm)
 
@@ -137,7 +137,7 @@ A → B → [C, D, E, F] → G
 
 ---
 
-### MEMBER D: SLO & Alerting
+### MEMBER Long: SLO & Alerting
 
 **Rubric Score**: A1 - Alerts & PII (5 điểm từ 10đ)
 
@@ -222,7 +222,7 @@ A → B → [C, D, E, F] → G
 
 ---
 
-### MEMBER E: Dashboard & Metrics
+### MEMBER Hải: Dashboard & Metrics
 
 **Rubric Score**: A1 - Dashboard & SLO (10 điểm) + Bonus Dashboard Design (+3đ)
 
@@ -272,7 +272,7 @@ A → B → [C, D, E, F] → G
 
 ---
 
-### MEMBER F: Load Testing & Incident Injection
+### MEMBER Huy: Load Testing & Incident Injection
 
 **Rubric Score**: A2 - Incident Response & Debugging (10 điểm) + Bonus (+2đ)
 
@@ -325,7 +325,7 @@ A → B → [C, D, E, F] → G
 
 ---
 
-### MEMBER G: Demo Lead & Final Report
+### MEMBER Dũng: Demo Lead & Final Report
 
 **Rubric Score**: A3 - Live Demo & Communication (20 điểm) + Bonus Audit Logs (+2đ)
 
@@ -337,16 +337,16 @@ A → B → [C, D, E, F] → G
    - Fill in GROUP_NAME, REPO_URL, all 7 MEMBERS with names + roles
    
    **Section 2: Auto-Verified Metrics** (collect from others)
-   - VALIDATE_LOGS_FINAL_SCORE: Ask Member E for validate_logs.py score
-   - TOTAL_TRACES_COUNT: Ask Member C for Langfuse count
-   - PII_LEAKS_FOUND: Ask Member B for test result
+   - VALIDATE_LOGS_FINAL_SCORE: Ask Member Hải for validate_logs.py score
+   - TOTAL_TRACES_COUNT: Ask Member Quang for Langfuse count
+   - PII_LEAKS_FOUND: Ask Member Tuấn for test result
    
    **Section 3: Technical Evidence** (collect screenshots from all)
-   - 3.1: correlation_id log (from A), PII redaction (from B), trace waterfall (from C)
-   - 3.2: 6-panel dashboard (from E), fill SLO table with current values
-   - 3.3: alert_rules (from D), runbook links
+   - 3.1: correlation_id log (from Thuận), PII redaction (from Tuấn), trace waterfall (from Quang)
+   - 3.2: 6-panel dashboard (from Hải), fill SLO table with current values
+   - 3.3: alert_rules (from Long), runbook links
    
-   **Section 4: Incident Response** (from F)
+   **Section 4: Incident Response** (from Huy)
    - Fill in scenario name, symptoms, root cause, fix, prevention
    
    **Section 5: Individual Contributions** (each member fills their own)
@@ -370,12 +370,12 @@ A → B → [C, D, E, F] → G
 3. **[CRITICAL]** Prepare Q&A for giảng viên
    - Study `docs/mock-debug-qa.md` if available
    - Assign Q&A responsibility:
-     - A answers about correlation IDs
-     - B answers about PII redaction
-     - C answers about tracing
-     - D answers about SLOs & alerts
-     - E answers about dashboard & metrics
-     - F answers about incident debugging
+     - Thuận answers about correlation IDs
+     - Tuấn answers about PII redaction
+     - Quang answers about tracing
+     - Long answers about SLOs & alerts
+     - Hải answers about dashboard & metrics
+     - Huy answers about incident debugging
    - Practice explaining regex, JSON schema, middleware flow
 
 4. **[OPTIONAL]** Bonus: Set up audit logs
@@ -410,10 +410,10 @@ A → B → [C, D, E, F] → G
 
 | Phase | Duration | Members | Deliverable |
 |---|---|---|---|
-| **Phase 1: Logging** | 30 min | A | logs.jsonl with correlation_id |
-| **Phase 2: PII** | 20 min | B | 0 PII leaks (validate_logs.py) |
-| **Phase 3: Parallel** | 45 min | C, D, E, F | traces, SLOs, alerts, dashboard, incident analysis |
-| **Phase 4: Integration** | 30 min | G (all support) | blueprint-template.md + demo test |
+| **Phase 1: Logging** | 30 min | Thuận | logs.jsonl with correlation_id |
+| **Phase 2: PII** | 20 min | Tuấn | 0 PII leaks (validate_logs.py) |
+| **Phase 3: Parallel** | 45 min | Quang, Long, Hải, Huy | traces, SLOs, alerts, dashboard, incident analysis |
+| **Phase 4: Integration** | 30 min | Dũng (all support) | blueprint-template.md + demo test |
 | **Phase 5: Final Polish** | 15 min | All | commit cleanup, final checklist |
 | **DEMO** | 10 min | G (all present) | live presentation |
 
@@ -435,10 +435,10 @@ A → B → [C, D, E, F] → G
 
 | Bonus | Points | Owner | Task |
 |---|---|---|---|
-| Cost Optimization | +3 | F | Calculate before/after cost savings |
-| Dashboard Design | +3 | E | Polished, professional looking |
-| Auto-instrumentation | +2 | F | Script to auto-inject scenarios |
-| Audit Logs | +2 | G | Separate audit.jsonl tracking |
+| Cost Optimization | +3 | Huy | Calculate before/after cost savings |
+| Dashboard Design | +3 | Hải | Polished, professional looking |
+| Auto-instrumentation | +2 | Huy | Script to auto-inject scenarios |
+| Audit Logs | +2 | Dũng | Separate audit.jsonl tracking |
 
 ---
 
@@ -454,7 +454,7 @@ A → B → [C, D, E, F] → G
 **Commit naming convention**:
 ```
 feat: [MEMBER_INITIAL]_[TASK] - brief description
-e.g., "feat: A_correlation-id - implement x-request-id header"
+e.g., "feat: Thuận_correlation-id - implement x-request-id header"
 ```
 
 ---
@@ -462,10 +462,10 @@ e.g., "feat: A_correlation-id - implement x-request-id header"
 ## Communication & Checkpoints
 
 **Slack/Discord Check-ins**:
-- 00:00-00:30 → A completes logging (critical path)
-- 00:30-00:45 → B completes PII (blocks A)
-- 00:45-01:30 → C, D, E, F work in parallel
-- 01:30-02:00 → G coordinates blueprint + final merge
+- 00:00-00:30 → Thuận completes logging (critical path)
+- 00:30-00:45 → Tuấn completes PII (blocks Thuận)
+- 00:45-01:30 → Quang, Long, Hải, Huy work in parallel
+- 01:30-02:00 → Dũng coordinates blueprint + final merge
 - 02:00-02:30 → All polish + demo rehearsal
 
 **Red flags** (escalate immediately):
