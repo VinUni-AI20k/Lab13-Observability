@@ -31,7 +31,7 @@
 ### 👤 Member C: SLO & Alerts
 - [ ] **Alert rules screenshot**: `[Link ảnh]`
 - [ ] **Link Runbook**: `[docs/alerts.md#L...]`
-- [X] **SLO Results**: `Latency P95: 151ms, Error Rate: 0%, Cost: $0.0399, Quality: 0.88`
+- [ ] **SLO Results**: `Latency: ..., Error: ..., Cost: ...`
 
 ### 👤 Member D: Load Test & Incident
 - [ ] **Scenario đã chạy**: `[Vd: rag_slow / llm_outage]`
