@@ -4,6 +4,7 @@ import time
 from dataclasses import dataclass
 
 from . import metrics
+from .incidents import status
 from .mock_llm import FakeLLM
 from .mock_rag import retrieve
 from .pii import hash_user_id, summarize_text
@@ -28,6 +29,7 @@ class LabAgent:
     @observe()
     def run(self, user_id: str, feature: str, session_id: str, message: str) -> AgentResult:
         started = time.perf_counter()
+        active_incidents = [name for name, enabled in status().items() if enabled]
         docs = retrieve(message)
         prompt = f"Feature={feature}\nDocs={docs}\nQuestion={message}"
         response = self.llm.generate(prompt)
@@ -38,10 +40,18 @@ class LabAgent:
         langfuse_context.update_current_trace(
             user_id=hash_user_id(user_id),
             session_id=session_id,
-            tags=["lab", feature, self.model],
+            tags=["lab", feature, self.model, *active_incidents],
         )
         langfuse_context.update_current_observation(
-            metadata={"doc_count": len(docs), "query_preview": summarize_text(message)},
+            input=summarize_text(message),
+            output=summarize_text(response.text),
+            metadata={
+                "feature": feature,
+                "model": self.model,
+                "doc_count": len(docs),
+                "active_incidents": active_incidents,
+                "query_preview": summarize_text(message),
+            },
             usage_details={"input": response.usage.input_tokens, "output": response.usage.output_tokens},
         )
 
