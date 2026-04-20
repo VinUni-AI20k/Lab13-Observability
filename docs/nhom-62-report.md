@@ -33,17 +33,17 @@
 - [Log có ngữ cảnh để truy vết user]: [Log Context](./LOG_CONTEXT.jpg)
 
 ### 3.2 Dashboard & SLOs
-- [DASHBOARD_6_PANELS_SCREENSHOT]: [Path to image]
+- [DASHBOARD_6_PANELS_SCREENSHOT]: [Dashboard 6 Panels](./DASHBOARD_6_PANELS_SCREENSHOT.png)
 - [SLO_TABLE]:
 | SLI | Target | Window | Current Value |
 |---|---:|---|---:|
-| Latency P95 | < 3000ms | 28d | |
-| Error Rate | < 2% | 28d | |
-| Cost Budget | < $2.5/day | 1d | |
+| Latency P95 | < 3000ms | 28d | 156ms |
+| Error Rate | < 2% | 28d | 0% |
+| Cost Budget | < $2.5/day | 1d | $0.0574 |
 
 ### 3.3 Alerts & Runbook
-- [ALERT_RULES_SCREENSHOT]: [Path to image]
-- [SAMPLE_RUNBOOK_LINK]: [docs/alerts.md#L...]
+- [ALERT_RULES_SCREENSHOT]: [Alert Rules](./ALERT_RULES_SCREENSHOT.png)
+- [SAMPLE_RUNBOOK_LINK]: docs/alerts.md#2-high-error-rate
 
 ---
 
@@ -74,9 +74,16 @@
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: 
 
-### [MEMBER_E_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+### Ngô Hải Văn
+- [TASKS_COMPLETED]: |
+  1. Xây dựng dashboard 6 panel (docs/dashboard.html) đọc real-time từ /metrics endpoint, auto-refresh 15s, có SLO threshold line trên từng panel.
+  2. Tạo Grafana-compatible JSON (config/grafana_dashboard.json) với đầy đủ 6 panel: Latency P50/P95/P99, Traffic, Error Rate, Cost, Tokens In/Out, Quality Score.
+  3. Rà soát và annotate SLO (config/slo.yaml) với observed values và alert cross-reference.
+  4. Bổ sung alert rule thứ 4 (quality_score_degradation P3) và thêm rationale + SLO link vào 4 rules (config/alert_rules.yaml).
+  5. Hoàn thiện runbook cho cả 4 alerts với diagnostic steps và mitigation (docs/alerts.md).
+  6. Fix Python 3.9 compatibility cho app/schemas.py (Optional[str] thay str|None).
+  7. Điền report nhóm (docs/nhom-62-report.md) và viết demo script (docs/demo-script.md).
+- [EVIDENCE_LINK]: https://github.com/dokhiem2k4/Lab13-Observability/pull/5
 
 ---
 
