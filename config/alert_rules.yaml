@@ -1,19 +1,57 @@
 alerts:
-  - name: high_latency_p95
-    severity: P2
-    condition: latency_p95_ms > 5000 for 30m
-    type: symptom-based
-    owner: team-oncall
-    runbook: docs/alerts.md#1-high-latency-p95
+  # --- P1: Critical alerts (immediate page) ---
   - name: high_error_rate
     severity: P1
-    condition: error_rate_pct > 5 for 5m
+    condition: error_rate_pct > 1 for 5m
     type: symptom-based
     owner: team-oncall
     runbook: docs/alerts.md#2-high-error-rate
+    action: Page on-call immediately. Check error_type breakdown in logs.
+    slo_link: error_rate_pct (objective < 1%)
+
+  # --- P2: Warning alerts (investigate within 30m) ---
+  - name: high_latency_p95
+    severity: P2
+    condition: latency_p95_ms > 1500 for 10m
+    type: symptom-based
+    owner: team-oncall
+    runbook: docs/alerts.md#1-high-latency-p95
+    action: Check slowest traces. Compare RAG vs LLM span duration.
+    slo_link: latency_p95_ms (objective < 1000ms)
+
   - name: cost_budget_spike
     severity: P2
     condition: hourly_cost_usd > 2x_baseline for 15m
     type: symptom-based
     owner: finops-owner
     runbook: docs/alerts.md#3-cost-budget-spike
+    action: Check tokens_out per request. Look for cost_spike incident toggle.
+    slo_link: daily_cost_usd (objective < $5.00/day)
+
+  - name: low_quality_score
+    severity: P2
+    condition: quality_score_avg < 0.70 for 15m
+    type: symptom-based
+    owner: ml-oncall
+    runbook: docs/alerts.md#4-low-quality-score
+    action: Check if RAG returns empty docs. Compare doc_count in traces.
+    slo_link: quality_score_avg (objective > 0.70)
+
+  - name: token_budget_exceeded
+    severity: P3
+    condition: tokens_out_total > 50000 in 1h
+    type: cause-based
+    owner: finops-owner
+    runbook: docs/alerts.md#5-token-budget-exceeded
+    action: Investigate which feature/user is generating high token output.
+    slo_link: daily_cost_usd (leading indicator)
+
+  # --- Incident D: Core Banking API Integration Error (Slack Alert) ---
+  - name: core_banking_500_error
+    severity: P1
+    condition: http_500_errors > 5 for 1m
+    type: cause-based
+    owner: backend-team
+    runbook: docs/alerts.md#6-core-banking-500-error
+    action: "Send Slack Alert to #banking-alerts immediately. Check Core API connection."
+    slo_link: error_rate_pct (objective < 1%)

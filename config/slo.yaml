@@ -1,16 +1,42 @@
 service: day13-observability-lab
 window: 28d
+
+# Baselines measured from load_test.py (10 requests, concurrency 5):
+#   latency_p95 = 151ms | error_rate = 0% | avg_cost = $0.0021/req | quality_avg = 0.88
+
 slis:
   latency_p95_ms:
-    objective: 3000
+    objective: 1000
     target: 99.5
-    note: Replace with your group's target
+    unit: ms
+    note: >
+      Baseline P95 is ~151ms. Setting SLO at 1000ms gives 6x headroom.
+      The rag_slow incident pushes latency to ~2500ms+, which will breach this SLO
+      and trigger the high_latency_p95 alert.
+
   error_rate_pct:
-    objective: 2
+    objective: 1
     target: 99.0
+    unit: "%"
+    note: >
+      Baseline error rate is 0%. Setting SLO at 1% is tight but realistic.
+      The tool_fail incident causes RuntimeError (500s), which will breach this SLO
+      and trigger the high_error_rate alert (P1).
+
   daily_cost_usd:
-    objective: 2.5
+    objective: 5.00
     target: 100.0
+    unit: USD
+    note: >
+      Baseline avg cost is $0.0021/req. At 1000 req/day that is ~$2.10.
+      Budget of $5.00/day provides buffer. The cost_spike incident (4x token
+      multiplier) pushes cost to ~$0.0084/req, which at volume breaches budget.
+
   quality_score_avg:
-    objective: 0.75
+    objective: 0.70
     target: 95.0
+    unit: score (0-1)
+    note: >
+      Baseline quality is 0.88 (heuristic: doc match + answer length + keyword overlap).
+      SLO at 0.70 allows for some degradation but catches severe regressions
+      (e.g., if RAG returns no docs, score drops to ~0.6).
