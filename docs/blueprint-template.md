@@ -7,7 +7,7 @@
 - X3:
 - [https://github.com/BanBannBannn/Day13-C401-X3.git]:
 - [MEMBERS]:
-  - Member A: [Name] | Role: Logging & PII
+  - Member A: Kiều Đức Lâm | Role: Logging & PII
   - Member B: Trần Văn Gia Bân | Role: Tracing & Enrichment
   - Member C: [Name] | Role: SLO & Alerts
   - Member D: [Name] | Role: Load Test & Dashboard
