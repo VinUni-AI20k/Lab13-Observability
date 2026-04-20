@@ -1,0 +1,1 @@
+{"root":["./src/main.tsx","./src/lib/api.ts","./src/ui/app.tsx","./src/ui/components/chartcard.tsx","./src/ui/panels/costpanel.tsx","./src/ui/panels/errorspanel.tsx","./src/ui/panels/latencypanel.tsx","./src/ui/panels/qualitypanel.tsx","./src/ui/panels/tokenspanel.tsx","./src/ui/panels/trafficpanel.tsx"],"version":"5.9.3"}

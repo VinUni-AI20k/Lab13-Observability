@@ -45,45 +45,49 @@ class LabAgent:
             },
             input={"message_preview": summarize_text(message)},
         )
-        
+
         started = time.perf_counter()
-        docs = retrieve(message)
-        retrieval_hit = 1.0 if (len(docs) > 0 and "No domain document matched" not in docs[0]) else 0.0
-        prompt = f"Feature={feature}\nDocs={docs}\nQuestion={message}"
-        response = self.llm.generate(prompt)
-        quality_score = self._heuristic_quality(message, response.text, docs)
-        latency_ms = int((time.perf_counter() - started) * 1000)
-        cost_usd = self._estimate_cost(response.usage.input_tokens, response.usage.output_tokens)
+        try:
+            docs = retrieve(message)
+            retrieval_hit = 1.0 if (len(docs) > 0 and "No domain document matched" not in docs[0]) else 0.0
+            prompt = f"Feature={feature}\nDocs={docs}\nQuestion={message}"
+            response = self.llm.generate(prompt)
+            quality_score = self._heuristic_quality(message, response.text, docs)
+            latency_ms = int((time.perf_counter() - started) * 1000)
+            cost_usd = self._estimate_cost(response.usage.input_tokens, response.usage.output_tokens)
 
-        safe_update_current_observation(
-            output=summarize_text(response.text, max_len=240),
-            metadata={
-                "doc_count": len(docs),
-                "retrieval_hit": bool(retrieval_hit),
-                "query_preview": summarize_text(message),
-            },
-        )
+            safe_update_current_observation(
+                output=summarize_text(response.text, max_len=240),
+                metadata={
+                    "doc_count": len(docs),
+                    "retrieval_hit": bool(retrieval_hit),
+                    "query_preview": summarize_text(message),
+                },
+            )
 
-        safe_score_current_observation("quality_score", float(quality_score))
-        safe_score_current_observation("retrieval_hit", float(retrieval_hit))
-        safe_score_current_observation("response_helpful_heuristic", float(1.0 if quality_score >= 0.7 else 0.0))
+            safe_score_current_observation("quality_score", float(quality_score))
+            safe_score_current_observation("retrieval_hit", float(retrieval_hit))
+            safe_score_current_observation("response_helpful_heuristic", float(1.0 if quality_score >= 0.7 else 0.0))
 
-        metrics.record_request(
-            latency_ms=latency_ms,
-            cost_usd=cost_usd,
-            tokens_in=response.usage.input_tokens,
-            tokens_out=response.usage.output_tokens,
-            quality_score=quality_score,
-        )
+            metrics.record_request(
+                latency_ms=latency_ms,
+                cost_usd=cost_usd,
+                tokens_in=response.usage.input_tokens,
+                tokens_out=response.usage.output_tokens,
+                quality_score=quality_score,
+            )
 
-        return AgentResult(
-            answer=response.text,
-            latency_ms=latency_ms,
-            tokens_in=response.usage.input_tokens,
-            tokens_out=response.usage.output_tokens,
-            cost_usd=cost_usd,
-            quality_score=quality_score,
-        )
+            return AgentResult(
+                answer=response.text,
+                latency_ms=latency_ms,
+                tokens_in=response.usage.input_tokens,
+                tokens_out=response.usage.output_tokens,
+                cost_usd=cost_usd,
+                quality_score=quality_score,
+            )
+        except Exception as exc:
+            safe_update_current_observation(metadata={"error_type": type(exc).__name__}, tags=["error"])
+            raise
 
     def _estimate_cost(self, tokens_in: int, tokens_out: int) -> float:
         input_cost = (tokens_in / 1_000_000) * 3

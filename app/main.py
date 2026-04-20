@@ -4,6 +4,7 @@ import os
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from structlog.contextvars import bind_contextvars
 
 try:
@@ -12,13 +13,14 @@ except Exception:  # pragma: no cover
     load_dotenv = None
 
 from .agent import LabAgent
+from .dashboard import build_dashboard_series
 from .incidents import disable, enable, status
 from .logging_config import configure_logging, get_logger
 from .metrics import record_error, snapshot
 from .middleware import CorrelationIdMiddleware
 from .pii import hash_user_id, summarize_text
 from .schemas import ChatRequest, ChatResponse
-from .tracing import get_tracing_status, observe, safe_flush, safe_update_current_observation
+from .tracing import get_tracing_status, safe_flush, safe_update_current_observation
 
 if load_dotenv is not None:
     load_dotenv()
@@ -26,6 +28,16 @@ if load_dotenv is not None:
 configure_logging()
 log = get_logger()
 app = FastAPI(title="Day 13 Observability Lab")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
+)
 app.add_middleware(CorrelationIdMiddleware)
 agent = LabAgent()
 
@@ -68,8 +80,13 @@ async def metrics() -> dict:
     return snapshot()
 
 
+@app.get("/dashboard/series")
+async def dashboard_series(window_minutes: int = 60, bucket_seconds: int = 60) -> dict:
+    log_path = os.getenv("LOG_PATH", "data/logs.jsonl")
+    return build_dashboard_series(log_path=log_path, window_minutes=window_minutes, bucket_seconds=bucket_seconds)
+
+
 @app.post("/chat", response_model=ChatResponse)
-@observe(name="http-chat")
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
     # Enrich logs with request context (user_id_hash, session_id, feature, model, env)
     bind_contextvars(
@@ -92,15 +109,6 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
         payload={"message_preview": summarize_text(body.message)},
     )
 
-    safe_update_current_observation(
-        tags=["lab", body.feature, getattr(agent, "model", "unknown")],
-        metadata={
-            "correlation_id": request.state.correlation_id,
-            "feature": body.feature,
-            "environment": os.getenv("APP_ENV", "dev"),
-        },
-        input={"message_preview": summarize_text(body.message)},
-    )
     try:
         result = agent.run(
             user_id=body.user_id,
@@ -137,18 +145,6 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
         error_type = type(exc).__name__
         record_error(error_type)
         incidents = status()
-        safe_update_current_observation(
-            tags=["error", "lab", body.feature, getattr(agent, "model", "unknown")],
-            metadata={
-                "error_type": error_type,
-                "correlation_id": request.state.correlation_id,
-                "feature": body.feature,
-                "environment": os.getenv("APP_ENV", "dev"),
-                "incident_rag_slow": incidents.get("rag_slow", False),
-                "incident_tool_fail": incidents.get("tool_fail", False),
-                "incident_cost_spike": incidents.get("cost_spike", False),
-            },
-        )
         log.error(
             "request_failed",
             service="api",

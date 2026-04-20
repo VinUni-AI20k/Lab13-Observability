@@ -84,7 +84,10 @@ def main() -> None:
                 failed += 1
 
             corr = (data or {}).get("correlation_id")
-            print(f"[{idx:02d}/{args.traces}] incident={incident or 'none'} status={status} correlation_id={corr}")
+            detail = ""
+            if status == 422 and isinstance(data, dict) and "detail" in data:
+                detail = f" detail={data['detail']}"
+            print(f"[{idx:02d}/{args.traces}] incident={incident or 'none'} status={status} correlation_id={corr}{detail}")
             time.sleep(args.sleep)
 
         for incident in ["rag_slow", "tool_fail", "cost_spike"]:

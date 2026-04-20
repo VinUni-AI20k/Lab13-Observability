@@ -7,3 +7,9 @@ data/audit.jsonl
 .env
 .pytest_cache/
 .antigravity/
+
+# Frontend (Vite)
+frontend-dashboard/node_modules/
+frontend-dashboard/dist/
+frontend-dashboard/.env
+frontend-dashboard/.env.local
