@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 13 Observability Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #09111f;
+      --panel: #101d33;
+      --panel-soft: #142743;
+      --border: #244064;
+      --text: #ecf3ff;
+      --muted: #9fb4d1;
+      --accent: #69d2e7;
+      --accent-2: #f5b971;
+      --good: #67e8a5;
+      --warn: #ffd166;
+      --danger: #ff6b6b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(105, 210, 231, 0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(245, 185, 113, 0.16), transparent 24%),
+        linear-gradient(180deg, #08101d 0%, #0b1527 100%);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 2rem;
+      letter-spacing: 0.02em;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 760px;
+      line-height: 1.5;
+    }
+
+    .status {
+      min-width: 260px;
+      background: rgba(16, 29, 51, 0.9);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
+    }
+
+    .status-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .status-line strong {
+      color: var(--text);
+    }
+
+    .chips {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(105, 210, 231, 0.14);
+      border: 1px solid rgba(105, 210, 231, 0.28);
+      color: var(--text);
+      font-size: 0.88rem;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      margin: 28px 0 14px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .section-title span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .flowchart {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .node {
+      position: relative;
+      padding: 18px 16px;
+      min-height: 110px;
+      background: rgba(16, 29, 51, 0.88);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .node h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      color: var(--accent);
+    }
+
+    .node p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .arrow {
+      position: relative;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(105, 210, 231, 0.15), rgba(105, 210, 231, 0.95));
+      margin: 0 -4px;
+    }
+
+    .arrow::after {
+      content: "";
+      position: absolute;
+      right: -2px;
+      top: -4px;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 8px solid var(--accent);
+    }
+
+    .panels {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(320px, 1fr));
+      gap: 18px;
+    }
+
+    .panel {
+      background: rgba(16, 29, 51, 0.9);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 18px;
+      min-height: 320px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
+    }
+
+    .panel h3 {
+      margin: 0 0 6px;
+      font-size: 1.04rem;
+    }
+
+    .panel p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .metric-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .metric-pill {
+      padding: 7px 10px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .metric-pill strong {
+      color: var(--text);
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 210px !important;
+    }
+
+    .footnote {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1080px) {
+      .hero {
+        flex-direction: column;
+      }
+
+      .flowchart {
+        grid-template-columns: 1fr;
+      }
+
+      .arrow {
+        width: 2px;
+        height: 20px;
+        margin: -4px auto;
+      }
+
+      .arrow::after {
+        right: -3px;
+        top: 14px;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 8px solid var(--accent);
+        border-bottom: 0;
+      }
+
+      .panels {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div>
+        <h1>Day 13 Observability Dashboard</h1>
+        <p>
+          Live dashboard powered by <code>/metrics</code>. Use this page during the demo to show the six required panels
+          and the observability flow from request ingestion to metrics, traces, and logs.
+        </p>
+      </div>
+      <aside class="status">
+        <div class="status-line"><span>Metrics Source</span><strong>/metrics</strong></div>
+        <div class="status-line"><span>Refresh Interval</span><strong>15 seconds</strong></div>
+        <div class="status-line"><span>Dashboard State</span><strong id="dashboard-state">Connecting...</strong></div>
+        <div class="status-line"><span>Last Updated</span><strong id="last-updated">Waiting</strong></div>
+        <div class="chips">
+          <div class="chip">SLO line: P95 &lt; 3000ms</div>
+          <div class="chip">Alert line: Error Rate &lt; 2%</div>
+          <div class="chip">Budget line: Avg Cost &lt; 0.003</div>
+        </div>
+      </aside>
+    </section>
+
+    <div class="section-title">
+      <h2>Observability Flow</h2>
+      <span>Use this diagram to explain how one request turns into logs, traces, and metrics.</span>
+    </div>
+    <section class="flowchart" aria-label="Observability Flow">
+      <div class="node">
+        <h3>1. Request</h3>
+        <p>User traffic hits the FastAPI app and carries request body, headers, and feature context.</p>
+      </div>
+      <div class="arrow" aria-hidden="true"></div>
+      <div class="node">
+        <h3>2. Middleware</h3>
+        <p>Correlation ID is injected or propagated so every request can be followed across evidence sources.</p>
+      </div>
+      <div class="arrow" aria-hidden="true"></div>
+      <div class="node">
+        <h3>3. Logging</h3>
+        <p>Structured JSON logs capture request context while PII is scrubbed before it reaches the log file.</p>
+      </div>
+      <div class="arrow" aria-hidden="true"></div>
+      <div class="node">
+        <h3>4. Tracing</h3>
+        <p>Langfuse records the agent run, input/output previews, latency, token usage, and incident clues.</p>
+      </div>
+      <div class="arrow" aria-hidden="true"></div>
+      <div class="node">
+        <h3>5. Metrics</h3>
+        <p><code>/metrics</code> aggregates latency, traffic, errors, cost, tokens, and quality for dashboard panels.</p>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <h2>Six Required Panels</h2>
+      <span>These panels match the rubric and the fields defined in <code>docs/dashboard-spec.md</code>.</span>
+    </div>
+    <section class="panels">
+      <article class="panel">
+        <h3>Latency P50 / P95 / P99</h3>
+        <p>Tail latency panel with the 3000ms SLO line.</p>
+        <div class="metric-row">
+          <div class="metric-pill"><strong id="latency-p50-value">0</strong> ms P50</div>
+          <div class="metric-pill"><strong id="latency-p95-value">0</strong> ms P95</div>
+          <div class="metric-pill"><strong id="latency-p99-value">0</strong> ms P99</div>
+        </div>
+        <canvas id="latency-chart"></canvas>
+      </article>
+
+      <article class="panel">
+        <h3>Traffic</h3>
+        <p>Request volume and error-inclusive total over the current demo session.</p>
+        <div class="metric-row">
+          <div class="metric-pill"><strong id="traffic-value">0</strong> success traffic</div>
+          <div class="metric-pill"><strong id="request-total-value">0</strong> total requests</div>
+        </div>
+        <canvas id="traffic-chart"></canvas>
+      </article>
+
+      <article class="panel">
+        <h3>Error Rate With Breakdown</h3>
+        <p>Error rate line with a breakdown bar so incident spikes are easy to explain.</p>
+        <div class="metric-row">
+          <div class="metric-pill"><strong id="error-rate-value">0</strong>% error rate</div>
+          <div class="metric-pill"><strong id="error-count-value">0</strong> total errors</div>
+        </div>
+        <canvas id="error-chart"></canvas>
+      </article>
+
+      <article class="panel">
+        <h3>Cost Over Time</h3>
+        <p>Average cost and total accumulated cost with the budget threshold line.</p>
+        <div class="metric-row">
+          <div class="metric-pill"><strong id="avg-cost-value">0</strong> avg cost</div>
+          <div class="metric-pill"><strong id="total-cost-value">0</strong> total cost</div>
+        </div>
+        <canvas id="cost-chart"></canvas>
+      </article>
+
+      <article class="panel">
+        <h3>Tokens In / Out</h3>
+        <p>Tracks total token movement and helps visualize the `cost_spike` incident.</p>
+        <div class="metric-row">
+          <div class="metric-pill"><strong id="tokens-in-value">0</strong> tokens in</div>
+          <div class="metric-pill"><strong id="tokens-out-value">0</strong> tokens out</div>
+        </div>
+        <canvas id="tokens-chart"></canvas>
+      </article>
+
+      <article class="panel">
+        <h3>Quality Proxy</h3>
+        <p>Heuristic quality view with the 0.75 reference line for the lab target.</p>
+        <div class="metric-row">
+          <div class="metric-pill"><strong id="quality-value">0</strong> average quality</div>
+        </div>
+        <canvas id="quality-chart"></canvas>
+      </article>
+    </section>
+
+    <p class="footnote">
+      Tip for the demo: keep this page open during baseline traffic, then rerun load after enabling an incident so the charts visibly change.
+    </p>
+  </div>
+
+  <script>
+    const history = [];
+    const maxPoints = 20;
+    const refreshIntervalMs = 15000;
+    const thresholdStyles = {
+      latency: getComputedStyle(document.documentElement).getPropertyValue("--warn").trim(),
+      error: getComputedStyle(document.documentElement).getPropertyValue("--danger").trim(),
+      cost: getComputedStyle(document.documentElement).getPropertyValue("--accent-2").trim(),
+      quality: getComputedStyle(document.documentElement).getPropertyValue("--good").trim(),
+    };
+
+    function buildLineChart(canvasId, datasets) {
+      return new Chart(document.getElementById(canvasId), {
+        type: "line",
+        data: { labels: [], datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: {
+            legend: { labels: { color: "#ecf3ff" } }
+          },
+          scales: {
+            x: {
+              ticks: { color: "#9fb4d1" },
+              grid: { color: "rgba(159, 180, 209, 0.12)" }
+            },
+            y: {
+              ticks: { color: "#9fb4d1" },
+              grid: { color: "rgba(159, 180, 209, 0.12)" }
+            }
+          }
+        }
+      });
+    }
+
+    const latencyChart = buildLineChart("latency-chart", [
+      { label: "P50", data: [], borderColor: "#69d2e7", backgroundColor: "rgba(105, 210, 231, 0.15)", tension: 0.25 },
+      { label: "P95", data: [], borderColor: "#ffd166", backgroundColor: "rgba(255, 209, 102, 0.15)", tension: 0.25 },
+      { label: "P99", data: [], borderColor: "#ff6b6b", backgroundColor: "rgba(255, 107, 107, 0.15)", tension: 0.25 },
+      { label: "P95 SLO", data: [], borderColor: thresholdStyles.latency, borderDash: [6, 6], pointRadius: 0, tension: 0 }
+    ]);
+
+    const trafficChart = buildLineChart("traffic-chart", [
+      { label: "Traffic", data: [], borderColor: "#69d2e7", backgroundColor: "rgba(105, 210, 231, 0.15)", tension: 0.25 },
+      { label: "Request Total", data: [], borderColor: "#f5b971", backgroundColor: "rgba(245, 185, 113, 0.15)", tension: 0.25 }
+    ]);
+
+    const errorChart = new Chart(document.getElementById("error-chart"), {
+      type: "bar",
+      data: {
+        labels: [],
+        datasets: [
+          { label: "Error Count", data: [], backgroundColor: "rgba(255, 107, 107, 0.55)", borderColor: "#ff6b6b", borderWidth: 1 },
+          { label: "Error Rate %", data: [], type: "line", borderColor: "#ffd166", yAxisID: "y1", tension: 0.25 },
+          { label: "Alert Threshold", data: [], type: "line", borderColor: thresholdStyles.error, borderDash: [6, 6], pointRadius: 0, yAxisID: "y1", tension: 0 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: "#ecf3ff" } } },
+        scales: {
+          x: {
+            ticks: { color: "#9fb4d1" },
+            grid: { color: "rgba(159, 180, 209, 0.12)" }
+          },
+          y: {
+            ticks: { color: "#9fb4d1" },
+            grid: { color: "rgba(159, 180, 209, 0.12)" }
+          },
+          y1: {
+            position: "right",
+            ticks: { color: "#9fb4d1" },
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
+
+    const costChart = buildLineChart("cost-chart", [
+      { label: "Avg Cost USD", data: [], borderColor: "#f5b971", backgroundColor: "rgba(245, 185, 113, 0.15)", tension: 0.25 },
+      { label: "Total Cost USD", data: [], borderColor: "#69d2e7", backgroundColor: "rgba(105, 210, 231, 0.15)", tension: 0.25 },
+      { label: "Budget Alert", data: [], borderColor: thresholdStyles.cost, borderDash: [6, 6], pointRadius: 0, tension: 0 }
+    ]);
+
+    const tokensChart = buildLineChart("tokens-chart", [
+      { label: "Tokens In", data: [], borderColor: "#69d2e7", backgroundColor: "rgba(105, 210, 231, 0.15)", tension: 0.25 },
+      { label: "Tokens Out", data: [], borderColor: "#67e8a5", backgroundColor: "rgba(103, 232, 165, 0.15)", tension: 0.25 }
+    ]);
+
+    const qualityChart = buildLineChart("quality-chart", [
+      { label: "Quality Avg", data: [], borderColor: "#67e8a5", backgroundColor: "rgba(103, 232, 165, 0.15)", tension: 0.25 },
+      { label: "Target", data: [], borderColor: thresholdStyles.quality, borderDash: [6, 6], pointRadius: 0, tension: 0 }
+    ]);
+
+    function setText(id, value) {
+      document.getElementById(id).textContent = value;
+    }
+
+    function syncMetricPills(metrics) {
+      setText("latency-p50-value", Number(metrics.latency_p50 || 0).toFixed(0));
+      setText("latency-p95-value", Number(metrics.latency_p95 || 0).toFixed(0));
+      setText("latency-p99-value", Number(metrics.latency_p99 || 0).toFixed(0));
+      setText("traffic-value", metrics.traffic ?? 0);
+      setText("request-total-value", metrics.request_total ?? 0);
+      setText("error-rate-value", Number(metrics.error_rate_pct || 0).toFixed(2));
+      setText("error-count-value", metrics.error_count_total ?? 0);
+      setText("avg-cost-value", Number(metrics.avg_cost_usd || 0).toFixed(6));
+      setText("total-cost-value", Number(metrics.total_cost_usd || 0).toFixed(6));
+      setText("tokens-in-value", metrics.tokens_in_total ?? 0);
+      setText("tokens-out-value", metrics.tokens_out_total ?? 0);
+      setText("quality-value", Number(metrics.quality_avg || 0).toFixed(2));
+    }
+
+    function pushPoint(metrics) {
+      const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      history.push({ timestamp, metrics });
+      if (history.length > maxPoints) {
+        history.shift();
+      }
+    }
+
+    function updateCharts() {
+      const labels = history.map((item) => item.timestamp);
+      const metricSeries = (field) => history.map((item) => item.metrics[field] ?? 0);
+      const fillThreshold = (value) => history.map(() => value);
+
+      latencyChart.data.labels = labels;
+      latencyChart.data.datasets[0].data = metricSeries("latency_p50");
+      latencyChart.data.datasets[1].data = metricSeries("latency_p95");
+      latencyChart.data.datasets[2].data = metricSeries("latency_p99");
+      latencyChart.data.datasets[3].data = fillThreshold(3000);
+      latencyChart.update();
+
+      trafficChart.data.labels = labels;
+      trafficChart.data.datasets[0].data = metricSeries("traffic");
+      trafficChart.data.datasets[1].data = metricSeries("request_total");
+      trafficChart.update();
+
+      errorChart.data.labels = labels;
+      errorChart.data.datasets[0].data = metricSeries("error_count_total");
+      errorChart.data.datasets[1].data = metricSeries("error_rate_pct");
+      errorChart.data.datasets[2].data = fillThreshold(2);
+      errorChart.update();
+
+      costChart.data.labels = labels;
+      costChart.data.datasets[0].data = metricSeries("avg_cost_usd");
+      costChart.data.datasets[1].data = metricSeries("total_cost_usd");
+      costChart.data.datasets[2].data = fillThreshold(0.003);
+      costChart.update();
+
+      tokensChart.data.labels = labels;
+      tokensChart.data.datasets[0].data = metricSeries("tokens_in_total");
+      tokensChart.data.datasets[1].data = metricSeries("tokens_out_total");
+      tokensChart.update();
+
+      qualityChart.data.labels = labels;
+      qualityChart.data.datasets[0].data = metricSeries("quality_avg");
+      qualityChart.data.datasets[1].data = fillThreshold(0.75);
+      qualityChart.update();
+    }
+
+    async function refreshMetrics() {
+      const dashboardState = document.getElementById("dashboard-state");
+      try {
+        const response = await fetch("/metrics", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("Metrics request failed");
+        }
+
+        const metrics = await response.json();
+        pushPoint(metrics);
+        syncMetricPills(metrics);
+        updateCharts();
+        dashboardState.textContent = "Live";
+        dashboardState.style.color = "#67e8a5";
+        document.getElementById("last-updated").textContent = new Date().toLocaleTimeString();
+      } catch (error) {
+        dashboardState.textContent = "Metrics unavailable";
+        dashboardState.style.color = "#ff6b6b";
+      }
+    }
+
+    refreshMetrics();
+    setInterval(refreshMetrics, refreshIntervalMs);
+  </script>
+</body>
+</html>

@@ -4,7 +4,7 @@ import os
 from typing import Any
 
 try:
-    from langfuse.decorators import observe, langfuse_context
+    from langfuse import get_client, observe
 except Exception:  # pragma: no cover
     def observe(*args: Any, **kwargs: Any):
         def decorator(func):
@@ -15,10 +15,17 @@ except Exception:  # pragma: no cover
         def update_current_trace(self, **kwargs: Any) -> None:
             return None
 
-        def update_current_observation(self, **kwargs: Any) -> None:
+        def update_current_span(self, **kwargs: Any) -> None:
             return None
 
-    langfuse_context = _DummyContext()
+        def update_current_generation(self, **kwargs: Any) -> None:
+            return None
+
+    def get_client(*args: Any, **kwargs: Any) -> _DummyContext:
+        return _DummyContext()
+
+
+langfuse_context = get_client()
 
 
 def tracing_enabled() -> bool:
