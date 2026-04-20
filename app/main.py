@@ -24,6 +24,15 @@ app = FastAPI(title="Day 13 Observability Lab")
 app.add_middleware(CorrelationIdMiddleware)
 agent = LabAgent()
 
+# Force Langfuse client initialization early so auth/env issues
+# show up during startup rather than being silent at first request.
+try:  # pragma: no cover
+    from langfuse import Langfuse
+
+    _langfuse_client = Langfuse()
+except Exception:  # pragma: no cover
+    _langfuse_client = None
+
 
 @app.on_event("startup")
 async def startup() -> None:
@@ -54,7 +63,8 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
         model=agent.model,
         env=os.getenv("APP_ENV", "dev"),
     )
-    
+
+
     log.info(
         "request_received",
         service="api",
