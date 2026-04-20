@@ -55,7 +55,7 @@
 
 ### Nguyễn Bằng Anh - 2A202600136
 - TASKS_COMPLETED: Created the blueprint report, set up the initial repository, generated dashboard specification, and orchestrated demo.
-- EVIDENCE_LINK: [Điền link PR/commit của bạn vào đây]
+- EVIDENCE_LINK: 9bc30e6d26b5eb0560132b6171e69029be01e4d3
 
 ### Đỗ Thị Thùy Trang - 2A202600041
 - TASKS_COMPLETED: Configured `alert_rules.yaml` and documented the alert runbooks in `alerts.md`.
@@ -73,9 +73,3 @@
 - TASKS_COMPLETED: Executed load testing scripts and managed incident injection to test alerts.
 - EVIDENCE_LINK: [Điền link PR/commit của Trọng Anh vào đây]
 
----
-
-## 6. Bonus Items (Optional)
-- BONUS_COST_OPTIMIZATION: (Description + Evidence)
-- BONUS_AUDIT_LOGS: (Description + Evidence)
-- BONUS_CUSTOM_METRIC: (Description + Evidence)
