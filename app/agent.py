@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import time
+import random
 from dataclasses import dataclass
 
 from . import metrics
@@ -34,15 +35,30 @@ class LabAgent:
         quality_score = self._heuristic_quality(message, response.text, docs)
         latency_ms = int((time.perf_counter() - started) * 1000)
         cost_usd = self._estimate_cost(response.usage.input_tokens, response.usage.output_tokens)
+        
+        # Mock Severity for dashboard
+        severities = ["Critical", "High", "Normal", "Low"]
+        weights = [0.1, 0.2, 0.5, 0.2]
+        severity = random.choices(severities, weights=weights)[0]
+        
+        tags = ["lab", feature, self.model, f"severity:{severity}"]
+        if latency_ms > 3000:
+            tags.append("SLO_BREACH:latency")
+        if quality_score < 0.75:
+            tags.append("SLO_BREACH:quality")
 
         langfuse_context.update_current_trace(
             user_id=hash_user_id(user_id),
             session_id=session_id,
-            tags=["lab", feature, self.model],
+            tags=tags,
         )
         langfuse_context.update_current_observation(
-            metadata={"doc_count": len(docs), "query_preview": summarize_text(message)},
+            metadata={"doc_count": len(docs), "query_preview": summarize_text(message), "severity": severity},
             usage_details={"input": response.usage.input_tokens, "output": response.usage.output_tokens},
+        )
+        langfuse_context.score_current_trace(
+            name="quality_score_avg",
+            value=quality_score
         )
 
         metrics.record_request(
@@ -51,6 +67,7 @@ class LabAgent:
             tokens_in=response.usage.input_tokens,
             tokens_out=response.usage.output_tokens,
             quality_score=quality_score,
+            severity=severity
         )
 
         return AgentResult(

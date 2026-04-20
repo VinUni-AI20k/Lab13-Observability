@@ -2,8 +2,13 @@ from __future__ import annotations
 
 import os
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from structlog.contextvars import bind_contextvars
 
 from .agent import LabAgent
@@ -13,14 +18,19 @@ from .metrics import record_error, snapshot
 from .middleware import CorrelationIdMiddleware
 from .pii import hash_user_id, summarize_text
 from .schemas import ChatRequest, ChatResponse
-from .tracing import tracing_enabled
+from .tracing import tracing_enabled, langfuse_context
 
 configure_logging()
 log = get_logger()
 app = FastAPI(title="Day 13 Observability Lab")
 app.add_middleware(CorrelationIdMiddleware)
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
 agent = LabAgent()
 
+# Create static directory if not exists
+os.makedirs("static", exist_ok=True)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.on_event("startup")
 async def startup() -> None:
@@ -41,6 +51,9 @@ async def health() -> dict:
 async def metrics() -> dict:
     return snapshot()
 
+@app.get("/api/dashboard-data")
+async def dashboard_data() -> dict:
+    return snapshot()
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
@@ -92,6 +105,10 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             error_type=error_type,
             payload={"detail": str(exc), "message_preview": summarize_text(body.message)},
         )
+        try:
+            langfuse_context.update_current_trace(level="ERROR", status_message=str(exc))
+        except Exception:
+            pass
         raise HTTPException(status_code=500, detail=error_type) from exc
 
 
