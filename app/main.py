@@ -6,6 +6,10 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from structlog.contextvars import bind_contextvars
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from .agent import LabAgent
 from .incidents import disable, enable, status
 from .logging_config import configure_logging, get_logger
@@ -17,6 +21,20 @@ from .tracing import tracing_enabled
 
 configure_logging()
 log = get_logger()
+
+def audit_log(event: str, payload: dict):
+    """Bonus: Tách Audit Logs cho các sự kiện quan trọng."""
+    import json
+    from datetime import datetime
+    audit_path = os.getenv("AUDIT_LOG_PATH", "data/audit.jsonl")
+    entry = {
+        "ts": datetime.utcnow().isoformat() + "Z",
+        "service": "audit",
+        "event": event,
+        "payload": payload
+    }
+    with open(audit_path, "a") as f:
+        f.write(json.dumps(entry) + "\n")
 app = FastAPI(title="Day 13 Observability Lab")
 app.add_middleware(CorrelationIdMiddleware)
 agent = LabAgent()
@@ -44,8 +62,14 @@ async def metrics() -> dict:
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
-    # TODO: Enrich logs with request context (user_id_hash, session_id, feature, model, env)
-    # bind_contextvars(...)
+    # ✅ Enrich logs with request context (user_id_hash, session_id, feature, model, env)
+    bind_contextvars(
+        user_id_hash=hash_user_id(body.user_id),
+        session_id=body.session_id,
+        feature=body.feature,
+        model=agent.model,
+        env=os.getenv("APP_ENV", "dev")
+    )
     
     log.info(
         "request_received",
@@ -94,6 +118,7 @@ async def enable_incident(name: str) -> JSONResponse:
     try:
         enable(name)
         log.warning("incident_enabled", service="control", payload={"name": name})
+        audit_log("incident_enabled", {"scenario": name})
         return JSONResponse({"ok": True, "incidents": status()})
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
@@ -104,6 +129,7 @@ async def disable_incident(name: str) -> JSONResponse:
     try:
         disable(name)
         log.warning("incident_disabled", service="control", payload={"name": name})
+        audit_log("incident_disabled", {"scenario": name})
         return JSONResponse({"ok": True, "incidents": status()})
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
