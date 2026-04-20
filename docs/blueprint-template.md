@@ -3,14 +3,12 @@
 > **Instruction**: Fill in all sections below. This report is designed to be parsed by an automated grading assistant. Ensure all tags (e.g., `[GROUP_NAME]`) are preserved.
 
 ## 1. Team Metadata
-- [GROUP_NAME]: 
-- [REPO_URL]: 
+- [GROUP_NAME]: Nhom70-403-Day13
+- [REPO_URL]: https://github.com/Wan1302/Nhom70-403-Day13
 - [MEMBERS]:
-  - Member A: [Name] | Role: Logging & PII
-  - Member B: [Name] | Role: Tracing & Enrichment
-  - Member C: [Name] | Role: SLO & Alerts
-  - Member D: [Name] | Role: Load Test & Dashboard
-  - Member E: [Name] | Role: Demo & Report
+  - Member A: 2A202600080 - Hồ Trần Đình Nguyên | Role: Logging & PII
+  - Member B: 2A202600081 - Hồ Trọng Duy Quang | Role: Tracing & Enrichment
+  - Member C: 2A202600057 - Hồ Đắc Toàn | Role: Load Test & Dashboard
 
 ---
 
@@ -24,8 +22,8 @@
 ## 3. Technical Evidence (Group)
 
 ### 3.1 Logging & Tracing
-- [EVIDENCE_CORRELATION_ID_SCREENSHOT]: [Path to image]
-- [EVIDENCE_PII_REDACTION_SCREENSHOT]: [Path to image]
+- [EVIDENCE_CORRELATION_ID_SCREENSHOT]: docs/screenshot_correlation_id.png
+- [EVIDENCE_PII_REDACTION_SCREENSHOT]: docs/screenshot_pii_redaction.png
 - [EVIDENCE_TRACE_WATERFALL_SCREENSHOT]: [Path to image]
 - [TRACE_WATERFALL_EXPLANATION]: (Briefly explain one interesting span in your trace)
 
@@ -39,8 +37,8 @@
 | Cost Budget | < $2.5/day | 1d | |
 
 ### 3.3 Alerts & Runbook
-- [ALERT_RULES_SCREENSHOT]: [Path to image]
-- [SAMPLE_RUNBOOK_LINK]: [docs/alerts.md#L...]
+- [ALERT_RULES_SCREENSHOT]: config/alert_rules.yaml
+- [SAMPLE_RUNBOOK_LINK]: docs/alerts.md#1-high-latency-p95
 
 ---
 
@@ -55,23 +53,15 @@
 
 ## 5. Individual Contributions & Evidence
 
-### [MEMBER_A_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: (Link to specific commit or PR)
+### 2A202600080 - Hồ Trần Đình Nguyên
+- [TASKS_COMPLETED]: Implement Correlation ID middleware, PII scrubbing processor, bổ sung PII patterns (passport, địa chỉ VN)
+- [EVIDENCE_LINK]: https://github.com/Wan1302/Nhom70-403-Day13/commit/0ffe61a
 
-### [MEMBER_B_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
-
-### [MEMBER_C_NAME]
+### 2A202600081 - Hồ Trọng Duy Quang
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: 
 
-### [MEMBER_D_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
-
-### [MEMBER_E_NAME]
+### 2A202600057 - Hồ Đắc Toàn
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: 
 
