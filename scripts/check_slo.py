@@ -27,9 +27,6 @@ from pathlib import Path
 
 import yaml
 
-# Fix Unicode output trên Windows (PowerShell dùng cp1252 mặc định)
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-
 # ---------------------------------------------------------------------------
 # Hằng số
 # ---------------------------------------------------------------------------
@@ -264,6 +261,10 @@ def print_report(results: list[dict], config: dict) -> None:
 # Main
 # ---------------------------------------------------------------------------
 def main() -> None:
+    # Fix Unicode output trên Windows
+    if hasattr(sys.stdout, "buffer") and sys.stdout.encoding.lower() != "utf-8":
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+
     parser = argparse.ArgumentParser(description="Check SLO compliance against live metrics")
     parser.add_argument("--offline", action="store_true", help="Use mock data (no app required)")
     args = parser.parse_args()

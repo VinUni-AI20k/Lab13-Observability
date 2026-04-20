@@ -31,9 +31,6 @@ from pathlib import Path
 
 import yaml
 
-# Fix Unicode output on Windows
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-
 ALERT_PATH = Path("config/alert_rules.yaml")
 BASE_URL = "http://127.0.0.1:8000"
 
@@ -224,6 +221,10 @@ def print_alert_status(alerts: list[dict], metrics_data: dict) -> None:
 # Main
 # ---------------------------------------------------------------------------
 def main() -> None:
+    # Fix Unicode output on Windows
+    if hasattr(sys.stdout, "buffer") and sys.stdout.encoding.lower() != "utf-8":
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+
     parser = argparse.ArgumentParser(description="Evaluate alert rules against live metrics")
     parser.add_argument("--offline", action="store_true", help="Use mock data")
     parser.add_argument(
