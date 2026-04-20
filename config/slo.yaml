@@ -4,13 +4,20 @@ slis:
   latency_p95_ms:
     objective: 3000
     target: 99.5
-    note: Replace with your group's target
+    unit: ms
+    note: "95% of chat requests should complete under 3000ms."
   error_rate_pct:
     objective: 2
     target: 99.0
+    unit: percent
+    note: "Error rate should stay below 2% over the SLO window."
   daily_cost_usd:
     objective: 2.5
     target: 100.0
+    unit: USD
+    note: "Estimated daily LLM cost should stay under the team budget."
   quality_score_avg:
     objective: 0.75
     target: 95.0
+    unit: score
+    note: "Average heuristic quality score should stay at or above 0.75."
