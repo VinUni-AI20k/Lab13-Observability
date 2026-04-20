@@ -41,6 +41,7 @@
 ### 3.2 Dashboard & SLOs
 - [DASHBOARD_6_PANELS_SCREENSHOT]: `dashboard.html` — 6 panels Chart.js:
   - Xem: `docs/screenshots/03_langfuse_dashboard.png`
+  - Xem: `docs/screenshots/07_langfuse_full_dashboard.png` ← Langfuse Dashboard: **20 Traces tracked**, biểu đồ traces theo thời gian (4/19-4/20/2026)
   1. **Latency P50/P95/P99** (line chart, SLO threshold 3000ms)
   2. **Traffic count** (line chart, request volume)
   3. **Error rate + breakdown** (doughnut chart)
