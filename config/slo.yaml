@@ -1,16 +1,85 @@
+# =============================================================================
+# SLO Configuration — Day 13 Observability Lab
+# Member C responsibility
+#
+# KHÁI NIỆM:
+#   SLI (Service Level Indicator) = CHỈ SỐ ĐO THỰC TẾ
+#     → "Latency P95 hiện tại là 1200ms"
+#   SLO (Service Level Objective) = MỤC TIÊU CẦN ĐẠT
+#     → "Latency P95 phải < 3000ms, đạt 99.5% thời gian"
+#   Error Budget = NGÂN SÁCH LỖI CHO PHÉP
+#     → "Trong 28 ngày, chỉ được vi phạm SLO tối đa 0.5% thời gian"
+#
+# TẠI SAO CẦN SLO?
+#   - Không có SLO → không biết hệ thống "tốt" hay "xấu"
+#   - SLO giúp team ra quyết định: deploy tính năng mới vs sửa bug
+#   - Còn error budget → thoải mái thử nghiệm
+#   - Hết error budget → freeze deploy, tập trung ổn định
+# =============================================================================
+
 service: day13-observability-lab
-window: 28d
+window: 28d               # Cửa sổ đo: 28 ngày cuốn chiếu (rolling window)
+
 slis:
+  # ---------------------------------------------------------------------------
+  # SLI 1: Latency P95
+  # Ý nghĩa: 95% request phải hoàn thành trong bao lâu?
+  # Tại sao P95 mà không phải P50?
+  #   → P50 (trung vị) ẩn đi những request chậm bất thường
+  #   → P95 bắt được "tail latency" — trải nghiệm của 5% user xui nhất
+  # ---------------------------------------------------------------------------
   latency_p95_ms:
-    objective: 3000
-    target: 99.5
-    note: Replace with your group's target
+    description: "95th percentile response latency"
+    objective: 2000        # Request phải < 2000ms (2 giây)
+    target: 99.5           # Đạt 99.5% thời gian trong 28 ngày
+    error_budget_minutes: 201.6  # = 28 * 24 * 60 * 0.005 = 201.6 phút được vi phạm
+    unit: milliseconds
+    data_source: "GET /metrics → latency_p95"
+
+  # ---------------------------------------------------------------------------
+  # SLI 2: Error Rate
+  # Ý nghĩa: Tỉ lệ request trả về lỗi (5xx)
+  # Tại sao objective = 2%?
+  #   → Dưới 2% người dùng hầu như không nhận thấy lỗi
+  #   → Trên 5% hệ thống coi như "down"
+  # ---------------------------------------------------------------------------
   error_rate_pct:
-    objective: 2
-    target: 99.0
+    description: "Percentage of requests returning errors"
+    objective: 2           # Tỉ lệ lỗi phải < 2%
+    target: 99.0           # Đạt 99% thời gian
+    error_budget_minutes: 403.2  # = 28 * 24 * 60 * 0.01
+    unit: percent
+    data_source: "GET /metrics → error_breakdown / traffic"
+
+  # ---------------------------------------------------------------------------
+  # SLI 3: Daily Cost
+  # Ý nghĩa: Chi phí gọi LLM mỗi ngày
+  # Tại sao quan trọng?
+  #   → AI system có thể "cháy tiền" nếu prompt quá dài hoặc model đắt
+  #   → 1 bug cost_spike có thể gấp 4x chi phí bình thường
+  # ---------------------------------------------------------------------------
   daily_cost_usd:
-    objective: 2.5
-    target: 100.0
+    description: "Total LLM cost per day"
+    objective: 2.5         # Chi phí < $2.5/ngày
+    target: 100.0          # Phải đạt 100% (không bao giờ vượt)
+    error_budget_minutes: 0  # Không có ngân sách lỗi cho cost
+    unit: usd
+    data_source: "GET /metrics → total_cost_usd"
+
+  # ---------------------------------------------------------------------------
+  # SLI 4: Quality Score
+  # Ý nghĩa: Điểm chất lượng câu trả lời (0.0 → 1.0)
+  # Cách tính trong project:
+  #   +0.5 base
+  #   +0.2 nếu có docs từ RAG
+  #   +0.1 nếu answer dài > 40 ký tự
+  #   +0.1 nếu answer chứa từ khóa của question
+  #   -0.2 nếu answer chứa [REDACTED] (PII leak)
+  # ---------------------------------------------------------------------------
   quality_score_avg:
-    objective: 0.75
-    target: 95.0
+    description: "Average heuristic quality score of responses"
+    objective: 0.75        # Điểm trung bình >= 0.75
+    target: 95.0           # Đạt 95% thời gian
+    error_budget_minutes: 2016.0  # = 28 * 24 * 60 * 0.05
+    unit: score_0_to_1
+    data_source: "GET /metrics → quality_avg"

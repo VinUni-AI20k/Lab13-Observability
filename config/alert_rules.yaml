@@ -1,19 +1,110 @@
+# =============================================================================
+# Alert Rules — Day 13 Observability Lab
+# Member C responsibility
+#
+# NGUYÊN TẮC THIẾT KẾ ALERT:
+#
+# 1. Symptom-based (dựa trên triệu chứng) > Cause-based (dựa trên nguyên nhân)
+#    → Alert "latency cao" THAY VÌ "CPU 90%"
+#    → Tại sao? CPU 90% có thể vẫn hoạt động tốt. Chỉ alert khi USER bị ảnh hưởng.
+#
+# 2. Mỗi alert PHẢI CÓ:
+#    - severity: độ nghiêm trọng (P1 = khẩn cấp, P2 = quan trọng, P3 = cảnh báo)
+#    - condition: điều kiện kích hoạt (kèm thời gian duy trì)
+#    - runbook: link hướng dẫn xử lý (để oncall không phải đoán)
+#
+# 3. Tại sao có "for 30m", "for 5m"?
+#    → Tránh false alarm do spike ngắn
+#    → P1 (critical) dùng window ngắn (5m) vì cần xử lý nhanh
+#    → P2 (warning) dùng window dài hơn (15-30m) để tránh nhiễu
+# =============================================================================
+
 alerts:
+  # ---------------------------------------------------------------------------
+  # Alert 1: LATENCY CAO
+  # Kịch bản thực tế:
+  #   RAG bị chậm → vector store quá tải → latency P95 tăng vọt
+  # Cách test: python scripts/inject_incident.py --scenario rag_slow
+  # ---------------------------------------------------------------------------
   - name: high_latency_p95
     severity: P2
-    condition: latency_p95_ms > 5000 for 30m
+    condition: "latency_p95_ms > 2000 for 30m"
     type: symptom-based
     owner: team-oncall
-    runbook: docs/alerts.md#1-high-latency-p95
+    runbook: "docs/alerts.md#1-high-latency-p95"
+    slo_link: latency_p95_ms
+    description: >
+      P95 latency vượt ngưỡng 2 giây trong 30 phút liên tục.
+      Ảnh hưởng: 5% user chờ quá lâu, trải nghiệm xấu.
+
+  # ---------------------------------------------------------------------------
+  # Alert 2: TỈ LỆ LỖI CAO
+  # Kịch bản thực tế:
+  #   Vector store timeout → RuntimeError → 500 response
+  # Cách test: python scripts/inject_incident.py --scenario tool_fail
+  # ---------------------------------------------------------------------------
   - name: high_error_rate
     severity: P1
-    condition: error_rate_pct > 5 for 5m
+    condition: "error_rate_pct > 5 for 5m"
     type: symptom-based
     owner: team-oncall
-    runbook: docs/alerts.md#2-high-error-rate
+    runbook: "docs/alerts.md#2-high-error-rate"
+    slo_link: error_rate_pct
+    description: >
+      Tỉ lệ lỗi vượt 5% trong 5 phút. Đây là P1 vì user
+      nhận response lỗi trực tiếp → mất niềm tin vào hệ thống.
+
+  # ---------------------------------------------------------------------------
+  # Alert 3: CHI PHÍ TĂNG ĐỘT NGỘT
+  # Kịch bản thực tế:
+  #   LLM sinh quá nhiều token (cost_spike) → bill tăng gấp 4x
+  # Cách test: python scripts/inject_incident.py --scenario cost_spike
+  # ---------------------------------------------------------------------------
   - name: cost_budget_spike
     severity: P2
-    condition: hourly_cost_usd > 2x_baseline for 15m
+    condition: "hourly_cost_usd > 2x_baseline for 15m"
     type: symptom-based
     owner: finops-owner
-    runbook: docs/alerts.md#3-cost-budget-spike
+    runbook: "docs/alerts.md#3-cost-budget-spike"
+    slo_link: daily_cost_usd
+    description: >
+      Chi phí LLM tăng gấp đôi so với baseline trong 15 phút.
+      Nguyên nhân phổ biến: prompt quá dài, model đắt, hoặc retry loop.
+
+  # ---------------------------------------------------------------------------
+  # Alert 4: CHẤT LƯỢNG GIẢM (MEMBER C THÊM MỚI)
+  # Kịch bản thực tế:
+  #   RAG trả về doc sai → câu trả lời không liên quan → quality giảm
+  # Tại sao cần alert này?
+  #   → Latency tốt + error rate thấp KHÔNG có nghĩa AI trả lời đúng
+  #   → Cần theo dõi "quality" riêng vì nó là metric QUAN TRỌNG NHẤT với AI
+  # ---------------------------------------------------------------------------
+  - name: quality_degradation
+    severity: P2
+    condition: "quality_score_avg < 0.6 for 15m"
+    type: symptom-based
+    owner: ml-team
+    runbook: "docs/alerts.md#4-quality-degradation"
+    slo_link: quality_score_avg
+    description: >
+      Điểm chất lượng trung bình dưới 0.6 trong 15 phút.
+      Hệ thống vẫn hoạt động nhưng câu trả lời kém chất lượng.
+
+  # ---------------------------------------------------------------------------
+  # Alert 5: TOKEN BUDGET VƯỢT MỨC (MEMBER C THÊM MỚI)
+  # Kịch bản thực tế:
+  #   User gửi prompt injection dài → tokens_in quá lớn → tốn tiền + chậm
+  # Tại sao tách riêng khỏi cost_budget_spike?
+  #   → Token budget giúp phát hiện SỚM trước khi cost tăng
+  #   → 1 request 50k tokens input = cảnh báo dù tổng cost vẫn thấp
+  # ---------------------------------------------------------------------------
+  - name: token_budget_exceeded
+    severity: P3
+    condition: "tokens_in_total > 50000 per hour"
+    type: symptom-based
+    owner: ml-team
+    runbook: "docs/alerts.md#5-token-budget-exceeded"
+    slo_link: daily_cost_usd
+    description: >
+      Tổng token input vượt 50,000 mỗi giờ. Dấu hiệu sớm
+      của cost spike hoặc prompt injection attack.
