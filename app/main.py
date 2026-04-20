@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import json
 import os
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from structlog.contextvars import bind_contextvars
 
 from .agent import LabAgent
@@ -67,9 +71,13 @@ async def get_logs(n: int = 200) -> list:
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
-    # TODO: Enrich logs with request context (user_id_hash, session_id, feature, model, env)
-    # bind_contextvars(...)
-    
+    bind_contextvars(
+        user_id_hash=hash_user_id(body.user_id),
+        session_id=body.session_id,
+        feature=body.feature,
+        model=os.getenv("MODEL_NAME", "mock-llm"),
+        env=os.getenv("APP_ENV", "dev"),
+    )
     log.info(
         "request_received",
         service="api",
