@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -30,6 +33,16 @@ async def startup() -> None:
         env=os.getenv("APP_ENV", "dev"),
         payload={"tracing_enabled": tracing_enabled()},
     )
+
+
+@app.on_event("shutdown")
+async def shutdown() -> None:
+    """Flush Langfuse traces before server stops."""
+    try:
+        from langfuse.decorators import langfuse_context
+        langfuse_context.flush()
+    except Exception:
+        pass
 
 
 @app.get("/health")

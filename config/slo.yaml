@@ -1,16 +1,37 @@
 service: day13-observability-lab
 window: 28d
+
 slis:
+  # SLI-1: Latency — P95 response time phải dưới 3s
+  # Lý do: Agent gồm RAG lookup (~100ms) + LLM generate (~150ms) + overhead.
+  #         P95 ≤ 3000ms đảm bảo trải nghiệm người dùng chấp nhận được.
+  #         Target 99.5% nghĩa là chỉ cho phép 0.5% request vượt ngưỡng trong 28 ngày.
   latency_p95_ms:
     objective: 3000
     target: 99.5
-    note: Replace with your group's target
+    unit: ms
+
+  # SLI-2: Error Rate — tỷ lệ lỗi toàn hệ thống phải dưới 2%
+  # Lý do: Bao gồm lỗi LLM timeout, RAG failure, schema validation.
+  #         2% là ngưỡng tiêu chuẩn cho internal-facing service.
   error_rate_pct:
     objective: 2
     target: 99.0
+    unit: "%"
+
+  # SLI-3: Cost Budget — chi phí token LLM không vượt $2.50/ngày
+  # Lý do: Mock LLM tính giá ~$0.002/1K tokens. Với ~500 req/ngày,
+  #         ngân sách $2.50 đủ thoải mái và phát hiện được cost spike.
   daily_cost_usd:
-    objective: 2.5
+    objective: 2.50
     target: 100.0
+    unit: USD/day
+
+  # SLI-4: Quality — điểm chất lượng trung bình câu trả lời ≥ 0.75
+  # Lý do: Quality score dựa trên heuristic (keyword match, length check).
+  #         0.75 là baseline cho câu trả lời "acceptable" của agent.
+  #         Target 95% nghĩa là 95% thời gian phải đạt trên ngưỡng này.
   quality_score_avg:
     objective: 0.75
     target: 95.0
+    unit: score

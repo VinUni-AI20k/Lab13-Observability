@@ -30,17 +30,25 @@
 - [TRACE_WATERFALL_EXPLANATION]: (Briefly explain one interesting span in your trace)
 
 ### 3.2 Dashboard & SLOs
-- [DASHBOARD_6_PANELS_SCREENSHOT]: [Path to image]
+- [DASHBOARD_6_PANELS_SCREENSHOT]: ⏳ _Chờ load test chạy xong để chụp screenshot_
+- Dashboard gồm 6 panels: Latency (P50/P95/P99), Traffic (QPS), Error Rate, Cost over time, Tokens in/out, Quality score
 - [SLO_TABLE]:
-| SLI | Target | Window | Current Value |
-|---|---:|---|---:|
-| Latency P95 | < 3000ms | 28d | |
-| Error Rate | < 2% | 28d | |
-| Cost Budget | < $2.5/day | 1d | |
+| SLI | Objective | Target | Window | Unit | Current Value |
+|---|---:|---:|---|---|---:|
+| Latency P95 | < 3000ms | 99.5% requests đạt | 28d | ms | **151.0** |
+| Error Rate | < 2% | 99.0% thời gian đạt | 28d | % | **0.0** |
+| Cost Budget | < $2.50/day | 100% thời gian đạt | 1d | USD/day | **~$0.02** |
+| Quality Score | ≥ 0.75 | 95% thời gian đạt | 28d | score | **0.88** |
 
 ### 3.3 Alerts & Runbook
-- [ALERT_RULES_SCREENSHOT]: [Path to image]
-- [SAMPLE_RUNBOOK_LINK]: [docs/alerts.md#L...]
+- [ALERT_RULES_SCREENSHOT]: ⏳ _Chờ app chạy để chụp screenshot_
+- Tổng cộng **5 alert rules** đã cấu hình trong `config/alert_rules.yaml`:
+  1. `high_latency_p95` (P2) — Runbook: [docs/alerts.md#1-high-latency-p95](docs/alerts.md#1-high-latency-p95)
+  2. `high_error_rate` (P1) — Runbook: [docs/alerts.md#2-high-error-rate](docs/alerts.md#2-high-error-rate)
+  3. `cost_budget_spike` (P2) — Runbook: [docs/alerts.md#3-cost-budget-spike](docs/alerts.md#3-cost-budget-spike)
+  4. `quality_degradation` (P2) — Runbook: [docs/alerts.md#4-quality-degradation](docs/alerts.md#4-quality-degradation)
+  5. `token_anomaly` (P3) — Runbook: [docs/alerts.md#5-token-anomaly](docs/alerts.md#5-token-anomaly)
+- [SAMPLE_RUNBOOK_LINK]: [docs/alerts.md](docs/alerts.md)
 
 ---
 

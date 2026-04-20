@@ -38,7 +38,7 @@ class FakeLLM:
         )
         
         langfuse_context.update_current_observation(
-            usage_details={"input": input_tokens, "output": output_tokens},
+            usage={"input": input_tokens, "output": output_tokens},
             model=self.model,
             input=prompt,
             output=answer

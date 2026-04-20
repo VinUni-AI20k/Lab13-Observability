@@ -1,19 +1,56 @@
 alerts:
+  # ── Alert 1: Độ trễ cao ──────────────────────────────────────
   - name: high_latency_p95
     severity: P2
     condition: latency_p95_ms > 5000 for 30m
     type: symptom-based
     owner: team-oncall
     runbook: docs/alerts.md#1-high-latency-p95
+    description: >
+      P95 latency vượt 5s trong 30 phút liên tục.
+      Thường do RAG retrieval chậm hoặc LLM timeout.
+
+  # ── Alert 2: Tỷ lệ lỗi cao ──────────────────────────────────
   - name: high_error_rate
     severity: P1
     condition: error_rate_pct > 5 for 5m
     type: symptom-based
     owner: team-oncall
     runbook: docs/alerts.md#2-high-error-rate
+    description: >
+      Tỷ lệ lỗi vượt 5% trong 5 phút. Alert P1 (khẩn cấp)
+      vì user nhận response lỗi trực tiếp.
+
+  # ── Alert 3: Chi phí tăng đột biến ──────────────────────────
   - name: cost_budget_spike
     severity: P2
     condition: hourly_cost_usd > 2x_baseline for 15m
     type: symptom-based
     owner: finops-owner
     runbook: docs/alerts.md#3-cost-budget-spike
+    description: >
+      Chi phí token vượt gấp 2 lần baseline trong 15 phút.
+      Có thể do prompt quá dài hoặc incident cost_spike.
+
+  # ── Alert 4: Chất lượng AI giảm ─────────────────────────────
+  - name: quality_degradation
+    severity: P2
+    condition: quality_score_avg < 0.5 for 15m
+    type: symptom-based
+    owner: team-oncall
+    runbook: docs/alerts.md#4-quality-degradation
+    description: >
+      Điểm chất lượng trung bình câu trả lời rơi xuống dưới 0.5
+      trong 15 phút. Có thể do RAG trả context sai hoặc prompt bị hỏng.
+
+  # ── Alert 5: Token bất thường ────────────────────────────────
+  - name: token_anomaly
+    severity: P3
+    condition: tokens_out_avg > 3x_baseline for 10m
+    type: cause-based
+    owner: finops-owner
+    runbook: docs/alerts.md#5-token-anomaly
+    description: >
+      Output tokens trung bình vượt 3x baseline trong 10 phút.
+      Cảnh báo sớm trước khi cost_budget_spike kích hoạt.
+
