@@ -8,9 +8,9 @@
 - [MEMBERS]:
   - Member A: [Name] | Role: Logging & PII
   - Member B: [Name] | Role: Tracing & Enrichment
-  - Member C: [Your Name] | Role: SLO & Alerts
+  - Member C:  | Role: SLO & Alerts
   - Member D: [Name] | Role: Load Test & Dashboard
-  - Member E: [Name] | Role: Demo & Report
+  - Member E: Phạm Tuấn Anh | Role: Demo & Report
 
 ---
 
