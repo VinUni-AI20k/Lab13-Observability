@@ -301,6 +301,8 @@
                     </div>
                 </div>
             </div>
+            <div class="card-value"><span id="val-p95">--</span><span style="font-size: 1rem; color: var(--text-secondary);">ms</span></div>
+            <div class="card-subtext">SLO: < 2000ms | P50: <span id="val-p50">--</span>ms</div>
             <div class="chart-container">
                 <canvas id="chart-latency"></canvas>
             </div>
@@ -397,17 +399,37 @@
         const ctxLatency = document.getElementById('chart-latency').getContext('2d');
         const ctxTraffic = document.getElementById('chart-traffic').getContext('2d');
 
-        const chartConfig = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { 
-                x: { display: false },
-                y: { 
-                    grid: { color: 'rgba(255,255,255,0.02)' },
-                    ticks: { color: '#475569', font: { size: 10 } }
-                }
-            }
+        let prevTraffic = null;
+        let prevP95 = null;
+
+        const latencyData = {
+            labels: [],
+            datasets: [{
+                label: 'P95 Latency',
+                data: [],
+                borderColor: '#38bdf8',
+                backgroundColor: '#38bdf8',
+                tension: 0.1,
+                fill: false,
+                borderWidth: 2,
+                pointRadius: 3,
+                pointHoverRadius: 5
+            }]
+        };
+
+        const trafficData = {
+            labels: [],
+            datasets: [{
+                label: 'Req/s',
+                data: [],
+                borderColor: '#4ade80',
+                backgroundColor: 'rgba(74, 222, 128, 0.3)',
+                tension: 0.1,
+                fill: true,
+                borderWidth: 2,
+                pointRadius: 3,
+                pointHoverRadius: 5
+            }]
         };
 
         const chartLatency = new Chart(ctxLatency, {
@@ -470,29 +492,57 @@
                 const errors = Object.values(data.error_breakdown || {}).reduce((a,b) => a+b, 0);
                 const errRate = data.traffic > 0 ? (errors / data.traffic * 100) : 0;
                 document.getElementById('val-error-rate').innerText = errRate.toFixed(2);
+                document.getElementById('val-error-count').innerText = errCount;
 
-                // LED Logic
-                const setLed = (id, condition) => {
-                    const el = document.getElementById(id);
-                    el.className = 'led-dot ' + (condition ? 'led-green' : 'led-red');
-                };
+                // Thresholds & Status
+                const latencyCard = document.getElementById('card-latency');
+                const latencyStatus = document.getElementById('latency-status');
+                if (data.latency_p95 >= 2000) {
+                    latencyCard.classList.add('breach');
+                    latencyStatus.innerText = 'BREACH';
+                    latencyStatus.style.backgroundColor = 'var(--accent-red)';
+                } else {
+                    latencyCard.classList.remove('breach');
+                    latencyStatus.innerText = 'OK';
+                    latencyStatus.style.backgroundColor = 'rgba(74, 222, 128, 0.2)';
+                }
 
-                setLed('latency-led', data.latency_p95 < 2000);
-                setLed('error-led', errRate < 1);
-                setLed('quality-led', data.quality_avg >= 0.7);
-                setLed('main-status-led', data.latency_p95 < 2000 && errRate < 1);
+                const errorStatus = document.getElementById('error-status');
+                if (errRate >= 2) {
+                    errorStatus.innerText = 'BREACH';
+                    errorStatus.style.backgroundColor = 'var(--accent-red)';
+                } else {
+                    errorStatus.innerText = 'OK';
+                    errorStatus.style.backgroundColor = 'rgba(74, 222, 128, 0.2)';
+                }
 
-                // Charts
-                [chartLatency, chartTraffic].forEach(c => {
-                    if (c.data.labels.length > 30) {
-                        c.data.labels.shift();
-                        c.data.datasets[0].data.shift();
-                    }
-                });
-                chartLatency.data.labels.push(now);
-                chartLatency.data.datasets[0].data.push(data.latency_p95);
-                chartTraffic.data.labels.push(now);
-                chartTraffic.data.datasets[0].data.push(delta);
+                const qualityStatus = document.getElementById('quality-status');
+                if (data.traffic > 0) {
+                    qualityStatus.innerText = data.quality_avg >= 0.75 ? 'GOOD' : 'LOW';
+                    qualityStatus.style.backgroundColor = data.quality_avg >= 0.75 ? 'rgba(74, 222, 128, 0.2)' : 'rgba(251, 146, 60, 0.2)';
+                }
+
+                // Update Charts (rolling 60 points = 60 seconds)
+                const MAX_POINTS = 60;
+                if (latencyData.labels.length >= MAX_POINTS) {
+                    latencyData.labels.shift();
+                    latencyData.datasets[0].data.shift();
+                    trafficData.labels.shift();
+                    trafficData.datasets[0].data.shift();
+                }
+
+                // Chỉ push điểm khi có request mới
+                const deltaTraffic = prevTraffic !== null ? Math.max(0, data.traffic - prevTraffic) : 0;
+                const hasNewData = prevTraffic === null || deltaTraffic > 0;
+                prevTraffic = data.traffic;
+                prevP95 = data.latency_p95;
+
+                if (hasNewData) {
+                    latencyData.labels.push(now);
+                    latencyData.datasets[0].data.push(data.latency_p95);
+                    trafficData.labels.push(now);
+                    trafficData.datasets[0].data.push(deltaTraffic);
+                }
 
                 chartLatency.update('none');
                 chartTraffic.update('none');
@@ -508,7 +558,7 @@
             }
         }
 
-        setInterval(updateDashboard, 5000);
+        setInterval(updateDashboard, 1000); 
         updateDashboard();
     </script>
 </body>
