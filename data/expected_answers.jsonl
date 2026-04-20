@@ -1,3 +1,24 @@
-{"question":"What is your refund policy?","must_include":["7 days","proof of purchase"]}
-{"question":"Explain why metrics traces and logs work together","must_include":["metrics","traces","logs"]}
-{"question":"What should not appear in app logs?","must_include":["PII","sensitive"]}
+{"question":"My child is in grade 3. What is the curriculum for this term?","must_include":["curriculum","subjects","grade 3","courses"]}
+{"question":"How much is the tuition fee? Can I pay via bank transfer?","must_include":["tuition","payment","bank transfer","fee"]}
+{"question":"Please summarize the after-school activities and clubs","must_include":["activities","clubs","after-school","extracurricular"]}
+{"question":"My child has a fever. Do I need to keep them home?","must_include":["fever","health","absence","policy","medical"]}
+{"question":"Where can I find my child's grades and ranking?","must_include":["grades","ranking","scores","academic performance"]}
+{"question":"Please summarize the enrollment process and admission requirements","must_include":["enrollment","admission","requirements","application","process"]}
+{"question":"Are there supplementary courses or additional English classes?","must_include":["supplementary","courses","English","extra classes"]}
+{"question":"When is the class field trip? What should we prepare?","must_include":["field trip","field excursion","preparation","schedule"]}
+{"question":"My child needs to register for lunch. Can I see the menu?","must_include":["lunch","meal","menu","nutrition","registration"]}
+{"question":"Who is my child's homeroom teacher?","must_include":["teacher","homeroom","instructor","contact"]}
+{"question":"Does the school offer French and Chinese language programs?","must_include":["language","French","Chinese","program","courses"]}
+{"question":"What are the registration and financial fees?","must_include":["fees","registration","financial","charges","costs"]}
+{"question":"Please summarize the student conduct rules and discipline policies","must_include":["conduct","discipline","rules","behavior","policy"]}
+{"question":"Where can I buy school uniforms and textbooks?","must_include":["uniforms","textbooks","supplies","purchase","vendor"]}
+{"question":"What is the class schedule? What time is pickup?","must_include":["schedule","timetable","pickup","hours","timing"]}
+{"question":"Does the school offer transportation services?","must_include":["transportation","bus","pickup service","rates","shuttle"]}
+{"question":"My child forgot their student account password. How can I reset it?","must_include":["password","reset","account","authentication","credentials"]}
+{"question":"When does the final exam period start?","must_include":["exam","final exam","schedule","test","structure"]}
+{"question":"Please list the learning software and apps the school uses","must_include":["software","apps","applications","tools","learning platform"]}
+{"question":"Is there a summer program this year?","must_include":["summer program","summer camp","summer course","registration"]}
+{"question":"What is the school's policy on medical absences?","must_include":["medical","absence","health","policy","doctor"]}
+{"question":"What payment methods are available?","must_include":["payment","methods","transfer","credit","discount"]}
+{"question":"How can I schedule a parent-teacher meeting?","must_include":["meeting","appointment","schedule","teacher","contact"]}
+{"question":"What is the school's nutrition and dietary policy?","must_include":["nutrition","diet","dietary","accommodations","lunch policy"]}

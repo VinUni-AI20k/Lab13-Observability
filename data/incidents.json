@@ -1,5 +1,10 @@
 {
-  "rag_slow": "Retrieval latency spike. Students should find slow RAG span in trace.",
-  "tool_fail": "Vector store or tool error. Students should identify error_type from logs.",
-  "cost_spike": "Token usage spike. Students should explain higher output token cost."
+  "system_slow": "Grade portal reports slow response times. Parents cannot view student results. Check database query latency and caching strategy for performance degradation.",
+  "grade_sync_fail": "Student grades fail to synchronize from management system to parent portal. Investigate sync service errors in logs and database replication.",
+  "payment_timeout": "Tuition payment gateway times out. Parents cannot submit payments. Check payment processor integration and timeout thresholds.",
+  "email_not_sent": "Grade notifications and schedule change alerts fail to reach parents. Check email service logs, SMTP connection, and notification queue.",
+  "data_leak": "Student personal data (name, DOB, email) appears unscraped in logs. PII scrubbing filter is not functioning correctly or was bypassed.",
+  "high_api_calls": "API rate limits exceeded during peak hours. Parents receive 429 Too Many Requests errors. Check rate limiting configuration and traffic patterns.",
+  "database_connection_pool": "Database connection pool exhaustion during high user load. Queries timeout and services degrade. Monitor connection pool size and query execution time.",
+  "cache_miss_spike": "Unexpected drop in cache hit ratio causes latency spike. Database queries increase 10x. Check cache invalidation logic and TTL settings."
 }

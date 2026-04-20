@@ -1,10 +1,26 @@
-{"user_id":"u01","session_id":"s01","feature":"qa","message":"What is your refund policy? My email is student@vinuni.edu.vn"}
-{"user_id":"u02","session_id":"s02","feature":"qa","message":"Explain why metrics traces and logs work together"}
-{"user_id":"u03","session_id":"s03","feature":"summary","message":"Summarize the monitoring policy for production logging"}
-{"user_id":"u04","session_id":"s04","feature":"qa","message":"Can I get help with policy and monitoring?"}
-{"user_id":"u05","session_id":"s05","feature":"qa","message":"Here is my phone 0987654321, what should be logged?"}
-{"user_id":"u06","session_id":"s06","feature":"summary","message":"Give me a short summary of the observability workflow"}
-{"user_id":"u07","session_id":"s07","feature":"qa","message":"What should not appear in app logs?"}
-{"user_id":"u08","session_id":"s08","feature":"qa","message":"How do I debug tail latency?"}
-{"user_id":"u09","session_id":"s09","feature":"qa","message":"What is the policy for PII and credit card 4111 1111 1111 1111?"}
-{"user_id":"u10","session_id":"s10","feature":"qa","message":"How should alerts be designed?"}
+{"user_id":"parent_001","session_id":"sess_001","feature":"qa","timestamp":"2026-04-15T08:00:00Z","message":"My child is in grade 3. I want to know about the curriculum for this term. My email is parent001@vinschool.edu.vn"}
+{"user_id":"parent_001","session_id":"sess_002","feature":"qa","timestamp":"2026-04-16T14:30:00Z","message":"Follow-up: What subjects are being taught in grade 3? Can you send me the detailed schedule?"}
+{"user_id":"parent_001","session_id":"sess_003","feature":"qa","timestamp":"2026-04-17T10:15:00Z","message":"My child's latest grades - where can I check the ranking and class standing?"}
+{"user_id":"parent_002","session_id":"sess_004","feature":"qa","timestamp":"2026-04-15T09:00:00Z","message":"How much is the tuition fee this month? Can I pay via bank transfer?"}
+{"user_id":"parent_002","session_id":"sess_005","feature":"qa","timestamp":"2026-04-17T15:45:00Z","message":"What are the available payment methods? Are there discounts for early payment?"}
+{"user_id":"parent_003","session_id":"sess_006","feature":"summary","timestamp":"2026-04-15T11:20:00Z","message":"Please summarize the after-school activities and clubs available at the school"}
+{"user_id":"parent_004","session_id":"sess_007","feature":"qa","timestamp":"2026-04-15T12:00:00Z","message":"My child has a fever. Do I need to keep them home? What is the absence policy?"}
+{"user_id":"parent_005","session_id":"sess_008","feature":"qa","timestamp":"2026-04-15T13:45:00Z","message":"Where can I find my child's grades and class ranking? My phone is 0987654321"}
+{"user_id":"parent_005","session_id":"sess_009","feature":"qa","timestamp":"2026-04-16T16:20:00Z","message":"My child needs to register for lunch at school. Can I see the weekly menu? Credit card 4111111111111111"}
+{"user_id":"parent_005","session_id":"sess_010","feature":"summary","timestamp":"2026-04-18T09:00:00Z","message":"What is the nutrition policy and dietary accommodations available?"}
+{"user_id":"parent_006","session_id":"sess_011","feature":"summary","timestamp":"2026-04-15T14:30:00Z","message":"Please summarize the enrollment process and requirements for admission"}
+{"user_id":"parent_007","session_id":"sess_012","feature":"qa","timestamp":"2026-04-15T15:15:00Z","message":"Are there supplementary courses or additional English classes? How much do they cost?"}
+{"user_id":"parent_008","session_id":"sess_013","feature":"qa","timestamp":"2026-04-15T16:00:00Z","message":"When is the class field trip? What do we need to prepare?"}
+{"user_id":"parent_009","session_id":"sess_014","feature":"qa","timestamp":"2026-04-15T16:45:00Z","message":"Does the school offer French and Chinese language programs?"}
+{"user_id":"parent_010","session_id":"sess_015","feature":"qa","timestamp":"2026-04-15T17:30:00Z","message":"Who is my child's homeroom teacher? I want to discuss academic progress"}
+{"user_id":"parent_010","session_id":"sess_016","feature":"qa","timestamp":"2026-04-17T11:00:00Z","message":"How can I schedule a parent-teacher meeting? What are the best times?"}
+{"user_id":"parent_011","session_id":"sess_017","feature":"qa","timestamp":"2026-04-16T08:00:00Z","message":"What are the registration and financial fees for the school?"}
+{"user_id":"parent_012","session_id":"sess_018","feature":"summary","timestamp":"2026-04-16T09:30:00Z","message":"Please summarize the student conduct rules and discipline policies"}
+{"user_id":"parent_013","session_id":"sess_019","feature":"qa","timestamp":"2026-04-16T10:00:00Z","message":"Where can I buy school uniforms and textbooks?"}
+{"user_id":"parent_014","session_id":"sess_020","feature":"qa","timestamp":"2026-04-16T11:00:00Z","message":"What is the class schedule for grade 5A? What time is pickup?"}
+{"user_id":"parent_015","session_id":"sess_021","feature":"qa","timestamp":"2026-04-16T12:00:00Z","message":"Does the school offer transportation services? What are the rates?"}
+{"user_id":"parent_016","session_id":"sess_022","feature":"qa","timestamp":"2026-04-16T13:00:00Z","message":"My child forgot their student account password. How can I reset it?"}
+{"user_id":"parent_017","session_id":"sess_023","feature":"qa","timestamp":"2026-04-16T14:00:00Z","message":"When does the final exam period start? What is the exam structure?"}
+{"user_id":"parent_018","session_id":"sess_024","feature":"summary","timestamp":"2026-04-16T15:00:00Z","message":"Please list all the learning software and apps the school uses"}
+{"user_id":"parent_019","session_id":"sess_025","feature":"qa","timestamp":"2026-04-16T16:00:00Z","message":"Is there a summer program this year? When is registration open?"}
+{"user_id":"parent_020","session_id":"sess_026","feature":"qa","timestamp":"2026-04-17T08:00:00Z","message":"What is the school's policy on medical absences and health requirements?"}
