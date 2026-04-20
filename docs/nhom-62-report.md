@@ -64,10 +64,17 @@
 - [EVIDENCE_LINK]: 
 
 ### [MEMBER_C_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+### Trần Đình Minh Vương
+- [TASKS_COMPLETED]: |
+  1. Bật `scrub_event` trong structlog pipeline (`app/logging_config.py`), đảm bảo mọi log record đi qua PII redaction trước khi ghi ra file.
+  2. Bổ sung pattern PII còn thiếu trong `app/pii.py`: `passport` (hộ chiếu dạng B1234567, AB1234567) và `address_vn` (từ khóa địa chỉ Việt Nam: đường, phường, xã, quận, thôn, ấp, hẻm, ngõ…).
+  3. Fix thứ tự pattern `PII_PATTERNS` để tránh `phone_vn` nhận nhầm CCCD 12 chữ số (commit `eb88b78`).
+  4. Kiểm tra `data/logs.jsonl` — log đã sạch, không còn lộ email, phone, CCCD, credit card; các giá trị nhạy cảm được thay bằng `[REDACTED_...]`.
+  5. Chạy `python scripts/validate_logs.py` — phần PII scrubbing PASS (0 leak phát hiện).
+- [EVIDENCE_LINK]: [PR #7](https://github.com/dokhiem2k4/Lab13-Observability/pull/7)
 
 ### [MEMBER_D_NAME]
+### Đỗ Minh Khiêm
 - [TASKS_COMPLETED]: |
   1. Tích hợp Langfuse tracing cho endpoint `/chat` ([app/tracing.py](../app/tracing.py), [app/agent.py](../app/agent.py)): tạo span cho request chính, RAG retrieval và LLM generation; xác thực trace hiển thị đầy đủ trên Langfuse UI.
   2. Xây dựng metrics pipeline ([app/metrics.py](../app/metrics.py)): đếm traffic, tính latency P50/P95/P99, tổng hợp cost/tokens, error_breakdown, quality_avg; expose qua `GET /metrics`.
