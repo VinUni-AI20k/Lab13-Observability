@@ -38,7 +38,7 @@ class LabAgent:
         langfuse_context.update_current_trace(
             user_id=hash_user_id(user_id),
             session_id=session_id,
-            tags=["lab", feature, self.model],
+            tags=["shopsage-api", feature, self.model],
         )
         langfuse_context.update_current_observation(
             metadata={"doc_count": len(docs), "query_preview": summarize_text(message)},
@@ -69,12 +69,30 @@ class LabAgent:
 
     def _heuristic_quality(self, question: str, answer: str, docs: list[str]) -> float:
         score = 0.5
-        if docs:
-            score += 0.2
+        q = (question or "").casefold().strip()
+        a = (answer or "").casefold()
+
+        docs_matched = bool(docs) and not (
+            len(docs) == 1 and isinstance(docs[0], str) and docs[0].startswith("No domain document matched")
+        )
+        if docs_matched:
+            score += 0.25
+        else:
+            score -= 0.05
+
         if len(answer) > 40:
             score += 0.1
-        if question.lower().split()[0:1] and any(token in answer.lower() for token in question.lower().split()[:3]):
-            score += 0.1
+
+        q_tokens = q.split()
+        if q_tokens:
+            top_tokens = q_tokens[:3]
+            if any(token and token in a for token in top_tokens):
+                score += 0.1
+
+        if answer.startswith("Thank you for contacting ShopSage VN support"):
+            score -= 0.1
+
         if "[REDACTED" in answer:
             score -= 0.2
+
         return round(max(0.0, min(1.0, score)), 2)
