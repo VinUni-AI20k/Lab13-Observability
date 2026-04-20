@@ -28,13 +28,8 @@
 - TRACE_WATERFALL_EXPLANATION: Span `rag_retrieval` cho thấy thời gian tìm kiếm ở vector DB (thường rất nhanh), sau đó là span `llm_generate` chiếm đến hơn 80% tổng thời lượng trace, cho thấy nút thắt cổ chai (bottleneck) chính của hệ thống nằm ở việc chờ phản hồi từ LLM.
 
 ### 3.2 Dashboard & SLOs
-- DASHBOARD_6_PANELS_SCREENSHOT: ![Ảnh Dashboard 6 panels trên Langfuse/Grafana](thay_duong_dan_anh_vao_day.png)
-- SLO_TABLE:
-| SLI | Target | Window | Current Value |
-|---|---:|---|---:|
-| Latency P95 | < 3000ms | 28d | **[Điền ms tại đây]** |
-| Error Rate | < 2% | 28d | **[Điền % tại đây]** |
-| Cost Budget | < $2.5/day | 1d | **[Điền $ tại đây]** |
+DASHBOARD_6_PANELS_SCREENSHOT: Ảnh Dashboard 6 panels
+SLO_TABLE: | SLI | Target | Window | Current Value | |---|---:|---|---:| | Latency P95 | < 3000ms | 28d | 1556.4ms | | Error Rate | < 2% | 28d | 0.00% | | Cost Budget | < $2.5/day | 1d | $0.0615 |
 
 ### 3.3 Alerts & Runbook
 - ALERT_RULES_SCREENSHOT: ![Ảnh cấu hình cảnh báo Alert rules](thay_duong_dan_anh_vao_day.png)
@@ -70,6 +65,6 @@
 - EVIDENCE_LINK: [link PR](https://github.com/bangils37/Lab13-Observability/tree/245e36c5a5e03da780e1c280af53338864c4b2d7)
 
 ### Bùi Trọng Anh - 2A202600010
-- TASKS_COMPLETED: Executed load testing scripts and managed incident injection to test alerts.
+- TASKS_COMPLETED: Executed load testing with multiple concurrency levels, generated traffic for traces and metrics, built the 6-panel dashboard from exported metrics, prepared dashboard evidence for the report, and supported incident injection and demo verification.
 - EVIDENCE_LINK: [Điền link PR/commit của Trọng Anh vào đây]
 
