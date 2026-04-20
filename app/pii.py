@@ -9,8 +9,25 @@ PII_PATTERNS: dict[str, str] = {
     "cccd": r"\b\d{12}\b",
     "credit_card": r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b",
     # TODO: Add more patterns (e.g., Passport, Vietnamese address keywords)
+    "passport": r"\b[A-Z][0-9]{7}\b",
+    "address_vn": r"""(?ix)
+    \b(
+        số\s?\d+ |                # số nhà
+        đường|phố|ngõ|ngách|hẻm|kiệt|
+        quận|q\.?|huyện|h\.?|
+        thành\s?phố|tp\.?|
+        tỉnh|
+        xã|x\.?|
+        phường|p\.?|
+        thị\s?trấn|
+        khu\s?phố|
+        tổ\s?\d+|
+        chung\s?cư|cc\.?|
+        block|lô|
+        ấp|thôn|bản
+    )\b
+    """,
 }
-
 
 def scrub_text(text: str) -> str:
     safe = text
