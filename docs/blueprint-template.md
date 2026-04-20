@@ -3,11 +3,11 @@
 > **Instruction**: Fill in all sections below. This report is designed to be parsed by an automated grading assistant. Ensure all tags (e.g., `[GROUP_NAME]`) are preserved.
 
 ## 1. Team Metadata
-- [GROUP_NAME]: 
-- [REPO_URL]: 
+- X3: 
+- [https://github.com/BanBannBannn/Day13-C401-X3.git]: 
 - [MEMBERS]:
   - Member A: [Name] | Role: Logging & PII
-  - Member B: [Name] | Role: Tracing & Enrichment
+  - Member B: Trần Văn Gia Bân | Role: Tracing & Enrichment
   - Member C: [Name] | Role: SLO & Alerts
   - Member D: [Name] | Role: Load Test & Dashboard
   - Member E: [Name] | Role: Demo & Report
@@ -59,9 +59,9 @@
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: (Link to specific commit or PR)
 
-### [MEMBER_B_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+### [Trần Văn Gia Bân]
+- [TASKS_COMPLETED]: fix tracing.py
+- [EVIDENCE_LINK]: https://github.com/BanBannBannn/Day13-C401-X3/tree/811405621b1c34ccca31645f37385d4e1bfa4e49
 
 ### [MEMBER_C_NAME]
 - [TASKS_COMPLETED]: 
