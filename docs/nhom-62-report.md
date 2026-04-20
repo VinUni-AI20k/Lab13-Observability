@@ -28,6 +28,9 @@
 - [EVIDENCE_PII_REDACTION_SCREENSHOT]: [PII Redaction in Logs](./EVIDENCE_PII_REDACTION_SCREENSHOT.png)
 - [EVIDENCE_TRACE_WATERFALL_SCREENSHOT]: [Path to image]
 - [TRACE_WATERFALL_EXPLANATION]: (Briefly explain one interesting span in your trace)
+#### Enrichment & Trace Waterfall
+- [Kết quả validate log của enrichment pass]: [Log Enrichment Pass](./LOG_ENRICHMENT_PASS.jpg)
+- [Log có ngữ cảnh để truy vết user]: [Log Context](./LOG_CONTEXT.jpg)
 
 ### 3.2 Dashboard & SLOs
 - [DASHBOARD_6_PANELS_SCREENSHOT]: [Path to image]
