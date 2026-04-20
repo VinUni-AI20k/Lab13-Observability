@@ -6,11 +6,11 @@
 - [GROUP_NAME]: 
 - [REPO_URL]: 
 - [MEMBERS]:
-  - Member A: [Name] | Role: Logging & PII
-  - Member B: [Name] | Role: Tracing & Enrichment
-  - Member C: [Name] | Role: SLO & Alerts
-  - Member D: [Name] | Role: Load Test & Dashboard
-  - Member E: [Name] | Role: Demo & Report
+  - Member A: Sang | Role: Correlation ID
+  - Member B: Van | Role: Log Enrichment
+  - Member C: Vuong | Role: Logging & PII
+  - Member D: Khiem | Role: Tracing, Metrics, and Incident Validation
+  - Member E: Dung | Role: Dashboard, SLO/Alerts, Demo & Report
 
 ---
 
@@ -55,23 +55,23 @@
 
 ## 5. Individual Contributions & Evidence
 
-### [MEMBER_A_NAME]
+### Sang
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: (Link to specific commit or PR)
 
-### [MEMBER_B_NAME]
+### Van
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: 
 
-### [MEMBER_C_NAME]
+### Vuong
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: 
 
-### [MEMBER_D_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+### Khiem
+- [TASKS_COMPLETED]: Verified Langfuse tracing, generated request traffic with `python scripts/load_test.py --concurrency 5`, validated `/metrics` output, triggered and observed at least one incident scenario such as `rag_slow`, and captured trace and incident evidence for the report.
+- [EVIDENCE_LINK]: (Link to Khiem commit/PR, Langfuse trace screenshot, metrics screenshot, and incident proof)
 
-### [MEMBER_E_NAME]
+### Dung
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: 
 
