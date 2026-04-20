@@ -22,9 +22,9 @@
 ## 3. Technical Evidence (Group)
 
 ### 3.1 Logging & Tracing
-- EVIDENCE_CORRELATION_ID_SCREENSHOT: ![Ảnh log có correlation_id](thay_duong_dan_anh_vao_day.png)
-- EVIDENCE_PII_REDACTION_SCREENSHOT: ![Ảnh log đã che PII](thay_duong_dan_anh_vao_day.png)
-- EVIDENCE_TRACE_WATERFALL_SCREENSHOT: ![Ảnh Langfuse trace waterfall](thay_duong_dan_anh_vao_day.png)
+- EVIDENCE_CORRELATION_ID_SCREENSHOT: ![Ảnh log có correlation_id](screenshots\tracing & enrichment\log_1.png)
+- EVIDENCE_PII_REDACTION_SCREENSHOT: ![Ảnh log đã che PII](screenshots\tracing & enrichment\log_2.png)
+- EVIDENCE_TRACE_WATERFALL_SCREENSHOT: ![Ảnh Langfuse trace waterfall](screenshots\tracing & enrichment\trace_waterfall_1.png)
 - TRACE_WATERFALL_EXPLANATION: Span `rag_retrieval` cho thấy thời gian tìm kiếm ở vector DB (thường rất nhanh), sau đó là span `llm_generate` chiếm đến hơn 80% tổng thời lượng trace, cho thấy nút thắt cổ chai (bottleneck) chính của hệ thống nằm ở việc chờ phản hồi từ LLM.
 
 ### 3.2 Dashboard & SLOs
@@ -63,7 +63,7 @@
 
 ### Nguyễn Thị Thanh Huyền - 2A202600211
 - TASKS_COMPLETED: Added log enrichment in `main.py` and validated traces in Langfuse.
-- EVIDENCE_LINK: [Điền link PR/commit của Thanh Huyền vào đây]
+- EVIDENCE_LINK: [9dfa603c601b1911b66ad6b929eb105d3cbbf980]
 
 ### Nguyễn Quốc Nam - 2A202600201
 - TASKS_COMPLETED: Implemented Correlation ID Middleware and added regex patterns for PII scrubbing.
