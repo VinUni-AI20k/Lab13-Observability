@@ -1,3 +1,4 @@
+# Author: Thai Tuan Khang - 2A202600289n# Role: Tracing, Testing & Report
 from __future__ import annotations
 
 import os
@@ -51,3 +52,4 @@ except Exception:  # pragma: no cover
 
 def tracing_enabled() -> bool:
     return bool(os.getenv("LANGFUSE_PUBLIC_KEY") and os.getenv("LANGFUSE_SECRET_KEY"))
+
