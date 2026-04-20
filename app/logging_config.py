@@ -42,8 +42,13 @@ def configure_logging() -> None:
             merge_contextvars,
             structlog.processors.add_log_level,
             structlog.processors.TimeStamper(fmt="iso", utc=True, key="ts"),
+<<<<<<< HEAD
             # TODO: Register your PII scrubbing processor here
             # scrub_event,
+=======
+            # PII scrubbing processor – redacts emails, phones, credit cards, etc.
+            scrub_event,
+>>>>>>> ba19a49 (feat(pii): implement PII scrubbing 6 regex patterns - Vu Hoang Minh (2A202600440))
             structlog.processors.StackInfoRenderer(),
             structlog.processors.format_exc_info,
             JsonlFileProcessor(),

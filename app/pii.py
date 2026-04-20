@@ -5,10 +5,18 @@ import re
 
 PII_PATTERNS: dict[str, str] = {
     "email": r"[\w\.-]+@[\w\.-]+\.\w+",
+<<<<<<< HEAD
     "phone_vn": r"(?:\+84|0)[ \.-]?\d{3}[ \.-]?\d{3}[ \.-]?\d{3,4}", # Matches 090 123 4567, 090.123.4567, etc.
     "cccd": r"\b\d{12}\b",
     "credit_card": r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b",
     # TODO: Add more patterns (e.g., Passport, Vietnamese address keywords)
+=======
+    "credit_card": r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b",
+    "cccd": r"\b\d{12}\b",
+    "phone_vn": r"(?:\+84|0)[ \.-]?\d{3}[ \.-]?\d{3}[ \.-]?\d{3,4}",
+    "passport": r"\b[A-Z]\d{7,8}\b",
+    "vn_address": r"(?:số\s+\d+|đường\s+\S+|phường\s+\S+|quận\s+\S+|huyện\s+\S+|tỉnh\s+\S+|thành phố\s+\S+)",
+>>>>>>> ba19a49 (feat(pii): implement PII scrubbing 6 regex patterns - Vu Hoang Minh (2A202600440))
 }
 
 
