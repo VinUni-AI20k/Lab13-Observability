@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Day 13 Local Dashboard</title>
+  <style>
+    :root {
+      --bg: #f4f6f2;
+      --surface: #ffffff;
+      --text: #1d2a25;
+      --muted: #5d6f67;
+      --line: #d9e2dc;
+      --ok: #1f7a5d;
+      --warn: #b66a10;
+      --danger: #c13f2a;
+      --accent: #136f63;
+      --accent-soft: #d9f0ec;
+      --font: "IBM Plex Sans", "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(1200px 500px at 5% -20%, #e7efe3 0%, transparent 60%),
+        radial-gradient(1000px 450px at 95% -20%, #e2eceb 0%, transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+    }
+
+    .wrap {
+      width: min(1200px, 94vw);
+      margin: 24px auto 40px;
+    }
+
+    .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(1.2rem, 2.3vw, 1.9rem);
+      letter-spacing: 0.01em;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .meta {
+      text-align: right;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 6px 18px rgba(16, 34, 26, 0.05);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    .value {
+      margin: 0;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .hint {
+      margin: 2px 0 8px;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    svg.spark {
+      width: 100%;
+      height: 128px;
+      display: block;
+      border: 1px solid #ecf0ec;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #fbfdfb 0%, #f5faf8 100%);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      border: 1px solid;
+    }
+
+    .pill.ok { color: var(--ok); border-color: #9fd0bf; background: #eef9f5; }
+    .pill.warn { color: var(--warn); border-color: #f0ce9d; background: #fff8ed; }
+    .pill.danger { color: var(--danger); border-color: #efb2a8; background: #fff2f0; }
+
+    .error-list {
+      margin: 8px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 4px;
+      font-size: 0.87rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 920px) {
+      .grid { grid-template-columns: 1fr; }
+      .head { flex-direction: column; }
+      .meta { text-align: left; }
+    }
+
+    .log-panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      margin-top: 14px;
+      box-shadow: 0 6px 18px rgba(16, 34, 26, 0.05);
+    }
+
+    .log-panel h2 {
+      margin: 0 0 10px;
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    .log-panel .log-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .log-panel .log-controls label {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .log-panel .log-controls select,
+    .log-panel .log-controls input {
+      font-size: 0.85rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 4px 8px;
+      color: var(--text);
+      background: #f9faf9;
+    }
+
+    .log-stream {
+      max-height: 340px;
+      overflow-y: auto;
+      font-family: "IBM Plex Mono", "Fira Mono", monospace;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      display: grid;
+      gap: 2px;
+    }
+
+    .log-row {
+      display: grid;
+      grid-template-columns: 170px 52px 90px 1fr;
+      gap: 6px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      align-items: start;
+    }
+
+    .log-row:hover { background: #f0f5f2; }
+
+    .log-row.level-error { background: #fff5f4; }
+    .log-row.level-warning { background: #fffbf0; }
+    .log-row.level-critical { background: #ffe9e6; }
+
+    .log-ts { color: var(--muted); white-space: nowrap; }
+    .log-level { font-weight: 700; text-transform: uppercase; font-size: 0.72rem; }
+    .log-level.info { color: var(--ok); }
+    .log-level.warning { color: var(--warn); }
+    .log-level.error, .log-level.critical { color: var(--danger); }
+    .log-service { color: #6b8b83; }
+    .log-event { color: var(--text); word-break: break-word; }
+    .log-empty { color: var(--muted); font-size: 0.85rem; padding: 12px 0; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="head">
+      <div>
+        <h1 class="title">Day 13 Observability Dashboard</h1>
+        <p class="subtitle">Default range: 1h | Auto refresh: 15s | Main layer: 6 panels</p>
+      </div>
+      <div class="meta">
+        <div id="lastUpdated">Last updated: --</div>
+        <div>Source: <code>/metrics</code></div>
+      </div>
+    </header>
+
+    <section class="grid">
+      <article class="panel" id="panel-latency">
+        <div class="panel-header">
+          <h2>1) Latency P50/P95/P99 (ms)</h2>
+          <p class="value" id="latencyValue">P95: 0 ms</p>
+        </div>
+        <div class="hint">SLO line: P95 &lt; 1000 ms</div>
+        <div id="latencyStatus"></div>
+        <svg class="spark" id="latencyChart" viewBox="0 0 520 128" preserveAspectRatio="none"></svg>
+      </article>
+
+      <article class="panel" id="panel-traffic">
+        <div class="panel-header">
+          <h2>2) Traffic (QPS and request count)</h2>
+          <p class="value" id="trafficValue">0 req | 0.00 qps</p>
+        </div>
+        <div class="hint">Unit: requests and queries/sec</div>
+        <svg class="spark" id="trafficChart" viewBox="0 0 520 128" preserveAspectRatio="none"></svg>
+      </article>
+
+      <article class="panel" id="panel-error">
+        <div class="panel-header">
+          <h2>3) Error rate with breakdown (%)</h2>
+          <p class="value" id="errorValue">0.00%</p>
+        </div>
+        <div class="hint">SLO line: error rate &lt; 1%</div>
+        <div id="errorStatus"></div>
+        <svg class="spark" id="errorChart" viewBox="0 0 520 128" preserveAspectRatio="none"></svg>
+        <ul class="error-list" id="errorBreakdown"></ul>
+      </article>
+
+      <article class="panel" id="panel-cost">
+        <div class="panel-header">
+          <h2>4) Cost over time (USD)</h2>
+          <p class="value" id="costValue">$0.0000 total</p>
+        </div>
+        <div class="hint">SLO line (daily budget guide): &lt; $5.00/day</div>
+        <svg class="spark" id="costChart" viewBox="0 0 520 128" preserveAspectRatio="none"></svg>
+      </article>
+
+      <article class="panel" id="panel-tokens">
+        <div class="panel-header">
+          <h2>5) Tokens In/Out</h2>
+          <p class="value" id="tokenValue">in: 0 | out: 0</p>
+        </div>
+        <div class="hint">Leading indicator for cost spikes</div>
+        <svg class="spark" id="tokenChart" viewBox="0 0 520 128" preserveAspectRatio="none"></svg>
+      </article>
+
+      <article class="panel" id="panel-quality">
+        <div class="panel-header">
+          <h2>6) Quality proxy (average)</h2>
+          <p class="value" id="qualityValue">0.00</p>
+        </div>
+        <div class="hint">SLO line: quality avg &gt;= 0.70</div>
+        <div id="qualityStatus"></div>
+        <svg class="spark" id="qualityChart" viewBox="0 0 520 128" preserveAspectRatio="none"></svg>
+      </article>
+    </section>
+
+    <section class="log-panel" id="panel-logs">
+      <h2>Live Logs — <code>data/logs.jsonl</code></h2>
+      <div class="log-controls">
+        <label>Level:</label>
+        <select id="logLevelFilter">
+          <option value="">All</option>
+          <option value="info">info</option>
+          <option value="warning">warning</option>
+          <option value="error">error</option>
+          <option value="critical">critical</option>
+        </select>
+        <label>Search:</label>
+        <input id="logSearch" type="text" placeholder="event / service / correlation_id" style="width:220px" />
+        <label>Rows:</label>
+        <select id="logRowCount">
+          <option value="30">30</option>
+          <option value="50" selected>50</option>
+          <option value="100">100</option>
+          <option value="200">200</option>
+        </select>
+      </div>
+      <div class="log-stream" id="logStream"><p class="log-empty">Loading logs...</p></div>
+    </section>
+  </main>
+
+  <script>
+    const REFRESH_MS = 15000;
+    const WINDOW_MS = 60 * 60 * 1000;
+    const MAX_POINTS = Math.floor(WINDOW_MS / REFRESH_MS) + 5;
+
+    const history = [];
+
+    function formatNum(value, digits = 2) {
+      return Number(value || 0).toFixed(digits);
+    }
+
+    function pill(type, text) {
+      return `<span class="pill ${type}">${text}</span>`;
+    }
+
+    function linePoints(values, width, height, minV, maxV) {
+      if (!values.length) return "";
+      const safeMin = Number.isFinite(minV) ? minV : Math.min(...values);
+      const safeMax = Number.isFinite(maxV) ? maxV : Math.max(...values);
+      const range = Math.max(1e-9, safeMax - safeMin);
+      return values.map((v, i) => {
+        const x = (i / Math.max(1, values.length - 1)) * width;
+        const y = height - ((v - safeMin) / range) * height;
+        return `${x.toFixed(2)},${y.toFixed(2)}`;
+      }).join(" ");
+    }
+
+    function drawSpark(svgId, values, options = {}) {
+      const svg = document.getElementById(svgId);
+      const width = 520;
+      const height = 128;
+      const padTop = 8;
+      const padBottom = 8;
+      const chartHeight = height - padTop - padBottom;
+      const minValue = options.min ?? Math.min(...values, 0);
+      const maxValue = options.max ?? Math.max(...values, 1);
+      const pts = linePoints(values, width, chartHeight, minValue, maxValue)
+        .split(" ")
+        .filter(Boolean)
+        .map((p) => {
+          const [x, y] = p.split(",");
+          return `${x},${(Number(y) + padTop).toFixed(2)}`;
+        }).join(" ");
+
+      let thresholdLine = "";
+      if (typeof options.threshold === "number") {
+        const range = Math.max(1e-9, maxValue - minValue);
+        const y = chartHeight - ((options.threshold - minValue) / range) * chartHeight + padTop;
+        const color = options.thresholdColor || "#b66a10";
+        thresholdLine = `<line x1="0" y1="${y.toFixed(2)}" x2="${width}" y2="${y.toFixed(2)}" stroke="${color}" stroke-dasharray="6 4" stroke-width="1.5" />`;
+      }
+
+      const area = pts
+        ? `M0,${height - padBottom} L ${pts} L ${width},${height - padBottom} Z`
+        : "";
+
+      svg.innerHTML = `
+        <rect x="0" y="0" width="${width}" height="${height}" fill="transparent"></rect>
+        ${thresholdLine}
+        ${area ? `<path d="${area}" fill="#d9f0ec" opacity="0.55"></path>` : ""}
+        ${pts ? `<polyline points="${pts}" fill="none" stroke="#136f63" stroke-width="2"></polyline>` : ""}
+      `;
+    }
+
+    function updatePanels(snapshot, now) {
+      const traffic = snapshot.traffic || 0;
+      const errors = Object.values(snapshot.error_breakdown || {}).reduce((a, b) => a + b, 0);
+      const errorRate = traffic > 0 ? (errors / traffic) * 100 : 0;
+
+      const last = history.length >= 2 ? history[history.length - 2] : null;
+      let qps = 0;
+      if (last) {
+        const reqDelta = Math.max(0, traffic - (last.snapshot.traffic || 0));
+        const seconds = Math.max(1, (now - last.time) / 1000);
+        qps = reqDelta / seconds;
+      }
+
+      document.getElementById("lastUpdated").textContent =
+        `Last updated: ${new Date(now).toLocaleTimeString()}`;
+
+      document.getElementById("latencyValue").textContent =
+        `P95: ${formatNum(snapshot.latency_p95, 0)} ms`;
+      document.getElementById("latencyStatus").innerHTML =
+        snapshot.latency_p95 <= 1000
+          ? pill("ok", "Within SLO")
+          : snapshot.latency_p95 <= 1500
+            ? pill("warn", "Near threshold")
+            : pill("danger", "SLO breached");
+
+      document.getElementById("trafficValue").textContent =
+        `${traffic} req | ${formatNum(qps, 2)} qps`;
+
+      document.getElementById("errorValue").textContent = `${formatNum(errorRate, 2)}%`;
+      document.getElementById("errorStatus").innerHTML =
+        errorRate < 1 ? pill("ok", "Below 1% target") : pill("danger", "Above 1% target");
+
+      document.getElementById("costValue").textContent =
+        `$${formatNum(snapshot.total_cost_usd, 4)} total | avg $${formatNum(snapshot.avg_cost_usd, 4)}/req`;
+
+      document.getElementById("tokenValue").textContent =
+        `in: ${snapshot.tokens_in_total || 0} | out: ${snapshot.tokens_out_total || 0}`;
+
+      document.getElementById("qualityValue").textContent = formatNum(snapshot.quality_avg, 2);
+      document.getElementById("qualityStatus").innerHTML =
+        snapshot.quality_avg >= 0.7 ? pill("ok", "Meets target") : pill("warn", "Below 0.70 target");
+
+      const breakdown = snapshot.error_breakdown || {};
+      const items = Object.keys(breakdown).length
+        ? Object.entries(breakdown).map(([k, v]) => `<li>${k}: ${v}</li>`).join("")
+        : "<li>No errors yet</li>";
+      document.getElementById("errorBreakdown").innerHTML = items;
+
+      const lastPoints = history.slice(-MAX_POINTS);
+      const p95Vals = lastPoints.map((h) => Number(h.snapshot.latency_p95 || 0));
+      drawSpark("latencyChart", p95Vals, {
+        min: 0,
+        max: Math.max(1500, ...p95Vals, 1),
+        threshold: 1000,
+        thresholdColor: "#b66a10",
+      });
+
+      const qpsVals = lastPoints.map((h, idx) => {
+        if (idx === 0) return 0;
+        const prev = lastPoints[idx - 1];
+        const reqDelta = Math.max(0, (h.snapshot.traffic || 0) - (prev.snapshot.traffic || 0));
+        const seconds = Math.max(1, (h.time - prev.time) / 1000);
+        return reqDelta / seconds;
+      });
+      drawSpark("trafficChart", qpsVals, {
+        min: 0,
+        max: Math.max(1, ...qpsVals, 1),
+      });
+
+      const errVals = lastPoints.map((h) => {
+        const t = h.snapshot.traffic || 0;
+        const e = Object.values(h.snapshot.error_breakdown || {}).reduce((a, b) => a + b, 0);
+        return t > 0 ? (e / t) * 100 : 0;
+      });
+      drawSpark("errorChart", errVals, {
+        min: 0,
+        max: Math.max(2, ...errVals, 1),
+        threshold: 1,
+        thresholdColor: "#c13f2a",
+      });
+
+      const costVals = lastPoints.map((h) => Number(h.snapshot.total_cost_usd || 0));
+      drawSpark("costChart", costVals, {
+        min: 0,
+        max: Math.max(5, ...costVals, 0.1),
+        threshold: 5,
+        thresholdColor: "#b66a10",
+      });
+
+      const tokenVals = lastPoints.map((h) => Number(h.snapshot.tokens_out_total || 0));
+      drawSpark("tokenChart", tokenVals, {
+        min: 0,
+        max: Math.max(200, ...tokenVals, 1),
+      });
+
+      const qualityVals = lastPoints.map((h) => Number(h.snapshot.quality_avg || 0));
+      drawSpark("qualityChart", qualityVals, {
+        min: 0,
+        max: 1,
+        threshold: 0.7,
+        thresholdColor: "#b66a10",
+      });
+    }
+
+    async function poll() {
+      try {
+        const response = await fetch('/metrics', { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const snapshot = await response.json();
+        const now = Date.now();
+
+        history.push({ time: now, snapshot });
+        const cutoff = now - WINDOW_MS;
+        while (history.length > 1 && history[0].time < cutoff) {
+          history.shift();
+        }
+
+        updatePanels(snapshot, now);
+      } catch (err) {
+        document.getElementById('lastUpdated').textContent =
+          `Last updated: failed (${String(err)})`;
+      }
+    }
+
+    poll();
+    setInterval(poll, REFRESH_MS);
+
+    // ---------- Logs panel ----------
+    function fmtTs(ts) {
+      if (!ts) return '-';
+      try { return new Date(ts).toLocaleTimeString(); } catch { return ts; }
+    }
+
+    function renderLogs(records) {
+      const levelFilter = document.getElementById('logLevelFilter').value.toLowerCase();
+      const search = document.getElementById('logSearch').value.toLowerCase();
+      const stream = document.getElementById('logStream');
+
+      const filtered = records.filter((r) => {
+        if (levelFilter && (r.level || '').toLowerCase() !== levelFilter) return false;
+        if (search) {
+          const haystack = JSON.stringify(r).toLowerCase();
+          if (!haystack.includes(search)) return false;
+        }
+        return true;
+      });
+
+      if (!filtered.length) {
+        stream.innerHTML = '<p class="log-empty">No log entries match the filter.</p>';
+        return;
+      }
+
+      stream.innerHTML = filtered.map((r) => {
+        const level = (r.level || 'info').toLowerCase();
+        const ts = fmtTs(r.ts);
+        const service = r.service || '-';
+        const event = r.event || '';
+        const extra = [];
+        if (r.correlation_id && r.correlation_id !== 'MISSING') extra.push(`cid=${r.correlation_id.slice(0,8)}`);
+        if (r.latency_ms != null) extra.push(`${r.latency_ms}ms`);
+        if (r.error_type) extra.push(`err=${r.error_type}`);
+        const extraStr = extra.length ? ` <span style="color:var(--muted)">${extra.join(' ')}</span>` : '';
+        return `<div class="log-row level-${level}">
+          <span class="log-ts">${ts}</span>
+          <span class="log-level ${level}">${level}</span>
+          <span class="log-service">${service}</span>
+          <span class="log-event">${event}${extraStr}</span>
+        </div>`;
+      }).join('');
+    }
+
+    async function pollLogs() {
+      const n = document.getElementById('logRowCount').value || 50;
+      try {
+        const res = await fetch(`/logs?n=${n}`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const records = await res.json();
+        renderLogs(records);
+      } catch (err) {
+        document.getElementById('logStream').innerHTML =
+          `<p class="log-empty">Failed to load logs: ${String(err)}</p>`;
+      }
+    }
+
+    document.getElementById('logLevelFilter').addEventListener('change', pollLogs);
+    document.getElementById('logSearch').addEventListener('input', pollLogs);
+    document.getElementById('logRowCount').addEventListener('change', pollLogs);
+
+    pollLogs();
+    setInterval(pollLogs, REFRESH_MS);
+  </script>
+</body>
+</html>

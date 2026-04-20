@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import json
 import os
+from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Query
+from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
 from structlog.contextvars import bind_contextvars
 
@@ -20,6 +23,7 @@ log = get_logger()
 app = FastAPI(title="Day 13 Observability Lab")
 app.add_middleware(CorrelationIdMiddleware)
 agent = LabAgent()
+STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 
 @app.on_event("startup")
@@ -40,6 +44,26 @@ async def health() -> dict:
 @app.get("/metrics")
 async def metrics() -> dict:
     return snapshot()
+
+
+@app.get("/dashboard")
+async def dashboard() -> FileResponse:
+    return FileResponse(STATIC_DIR / "dashboard.html")
+
+
+@app.get("/logs")
+async def logs_endpoint(n: int = Query(default=50, ge=1, le=500)) -> list:
+    log_path = Path("data/logs.jsonl")
+    if not log_path.exists():
+        return []
+    lines = [ln for ln in log_path.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    records = []
+    for line in lines[-n:]:
+        try:
+            records.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+    return list(reversed(records))
 
 
 @app.post("/chat", response_model=ChatResponse)
