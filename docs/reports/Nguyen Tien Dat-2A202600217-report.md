@@ -1,4 +1,4 @@
-# BÁO CÁO CÁ NHÂN — MEMBER A
+# BÁO CÁO CÁ NHÂN
 
 **Họ tên**: Nguyễn Tiến Đạt - 2A202600217  
 **Vai trò**: Logging + PII Scrubbing  
@@ -9,7 +9,7 @@
 
 ## 1. Tóm tắt công việc đảm nhận
 
-Member A chịu trách nhiệm toàn bộ tầng **logging pipeline** và **PII protection**. Đây là nền tảng của toàn bộ hệ thống observability: nếu log sai format hoặc lộ PII, mọi phần còn lại (tracing, dashboard, alert) đều không có giá trị.
+Tôi chịu trách nhiệm toàn bộ tầng **logging pipeline** và **PII protection**. Đây là nền tảng của toàn bộ hệ thống observability: nếu log sai format hoặc lộ PII, mọi phần còn lại (tracing, dashboard, alert) đều không có giá trị.
 
 ---
 
