@@ -11,6 +11,10 @@ CORPUS = {
 }
 
 
+from .tracing import observe
+
+
+@observe(name="retrieval")
 def retrieve(message: str) -> list[str]:
     if STATE["tool_fail"]:
         raise RuntimeError("Vector store timeout")
