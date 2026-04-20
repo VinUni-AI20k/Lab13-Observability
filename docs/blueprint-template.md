@@ -3,14 +3,15 @@
 > **Instruction**: Fill in all sections below. This report is designed to be parsed by an automated grading assistant. Ensure all tags (e.g., `[GROUP_NAME]`) are preserved.
 
 ## 1. Team Metadata
-- [GROUP_NAME]: 
-- [REPO_URL]: 
+- [GROUP_NAME]: A1-C401
+- [REPO_URL]: https://github.com/TBNRGarret/Lab13-A1-C401.git
 - [MEMBERS]:
   - Member A: [Name] | Role: Logging & PII
   - Member B: [Name] | Role: Tracing & Enrichment
-  - Member C: [Name] | Role: SLO & Alerts
-  - Member D: [Name] | Role: Load Test & Dashboard
-  - Member E: [Name] | Role: Demo & Report
+  - Member C: Vũ Lê Hoàng | Role: SLO & Alerts
+  - Member D: [Name] | Role: Load Test + Incident Injection
+  - Member E: [Name] | Role: Dashboard + Evidence
+  - Member F: [Name] | Role: Blueprint + Demo lead
 
 ---
 
@@ -34,9 +35,10 @@
 - [SLO_TABLE]:
 | SLI | Target | Window | Current Value |
 |---|---:|---|---:|
-| Latency P95 | < 3000ms | 28d | |
-| Error Rate | < 2% | 28d | |
-| Cost Budget | < $2.5/day | 1d | |
+| Latency P95 | < 1000ms | 28d | 151ms |
+| Error Rate | < 1% | 28d | 0% |
+| Cost Budget | < $5.00/day | 1d | ~$2.10/day baseline |
+| Quality Score Avg | > 0.70 | 28d | 0.88 |
 
 ### 3.3 Alerts & Runbook
 - [ALERT_RULES_SCREENSHOT]: [Path to image]
@@ -63,9 +65,9 @@
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: 
 
-### [MEMBER_C_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+### [Vũ Lê Hoàng - SLO & Alerts]
+- [TASKS_COMPLETED]: Add SLO and Alerts, add blueprint report
+- [EVIDENCE_LINK]: https://github.com/TBNRGarret/Lab13-A1-C401/commit/0bc2380cf7d704bed079b067e18e7f7263c8e3bb
 
 ### [MEMBER_D_NAME]
 - [TASKS_COMPLETED]: 
