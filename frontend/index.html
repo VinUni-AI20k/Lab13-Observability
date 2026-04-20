@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Day 13 · Observability Lab</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="layout">
+
+    <!-- ── Sidebar ── -->
+    <nav class="sidebar">
+      <div class="sidebar-brand">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>
+        </svg>
+        <span>Obs Lab</span>
+      </div>
+
+      <ul class="nav-list">
+        <li class="nav-item active" data-tab="chat" onclick="switchTab('chat')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          Chat
+        </li>
+        <li class="nav-item" data-tab="dashboard" onclick="switchTab('dashboard')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          Dashboard
+        </li>
+        <li class="nav-item" data-tab="logs" onclick="switchTab('logs')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14,2 14,8 20,8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          Logs
+        </li>
+        <li class="nav-item" data-tab="incidents" onclick="switchTab('incidents')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          Incidents
+        </li>
+      </ul>
+
+      <div class="sidebar-status">
+        <span class="status-dot" id="health-dot"></span>
+        <span id="health-text">Checking…</span>
+      </div>
+    </nav>
+
+    <!-- ── Main ── -->
+    <main class="main">
+
+      <!-- Chat Tab -->
+      <section class="tab-panel active" id="tab-chat">
+        <div class="panel-header">
+          <h1>Chat</h1>
+          <div class="row-gap">
+            <label class="label-inline">Feature</label>
+            <select id="chat-feature">
+              <option value="qa">QA</option>
+              <option value="summary">Summary</option>
+            </select>
+            <button class="btn btn-ghost" onclick="clearChat()">Clear</button>
+          </div>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-welcome">
+            <p>Ask the lab agent anything — try <em>"What is your refund policy?"</em></p>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <textarea id="chat-input" placeholder="Type your message… (Enter to send, Shift+Enter for newline)" rows="3"
+            onkeydown="handleChatKey(event)"></textarea>
+          <button class="btn btn-primary" id="send-btn" onclick="sendMessage()">
+            Send
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Dashboard Tab -->
+      <section class="tab-panel" id="tab-dashboard">
+        <div class="panel-header">
+          <h1>Dashboard</h1>
+          <button class="btn btn-ghost" onclick="refreshDashboard()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23,4 23,10 17,10"/>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
+
+        <div class="metric-cards">
+          <div class="metric-card">
+            <div class="metric-label">Requests</div>
+            <div class="metric-value" id="m-traffic">—</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">P95 Latency</div>
+            <div class="metric-value" id="m-p95">—</div>
+            <div class="metric-sub">ms</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Quality Avg</div>
+            <div class="metric-value" id="m-quality">—</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Total Cost</div>
+            <div class="metric-value" id="m-cost">—</div>
+            <div class="metric-sub">USD</div>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h3>Latency Percentiles (ms)</h3>
+            <canvas id="chart-latency"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Token Usage</h3>
+            <canvas id="chart-tokens"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Error Breakdown</h3>
+            <canvas id="chart-errors"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>SLO Status</h3>
+            <div id="slo-list" class="slo-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Logs Tab -->
+      <section class="tab-panel" id="tab-logs">
+        <div class="panel-header">
+          <h1>Logs</h1>
+          <div class="row-gap">
+            <input type="text" id="log-search" placeholder="Search…" oninput="filterLogs()" />
+            <select id="log-level-filter" onchange="filterLogs()">
+              <option value="">All levels</option>
+              <option value="info">info</option>
+              <option value="warning">warning</option>
+              <option value="error">error</option>
+            </select>
+            <button class="btn btn-ghost" onclick="refreshLogs()">Refresh</button>
+          </div>
+        </div>
+
+        <div class="log-table-wrap">
+          <table class="log-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Level</th>
+                <th>Service</th>
+                <th>Event</th>
+                <th>Correlation ID</th>
+                <th>Latency</th>
+              </tr>
+            </thead>
+            <tbody id="log-tbody"></tbody>
+          </table>
+          <div class="log-empty" id="log-empty">No logs yet — send a chat message first.</div>
+        </div>
+
+        <div class="log-detail" id="log-detail" style="display:none">
+          <div class="log-detail-header">
+            <span>Log Record</span>
+            <button class="btn btn-ghost btn-sm" onclick="closeLogDetail()">✕</button>
+          </div>
+          <pre id="log-detail-content"></pre>
+        </div>
+      </section>
+
+      <!-- Incidents Tab -->
+      <section class="tab-panel" id="tab-incidents">
+        <div class="panel-header">
+          <h1>Incidents</h1>
+          <button class="btn btn-ghost" onclick="loadIncidents()">Refresh</button>
+        </div>
+
+        <div class="incidents-grid">
+          <div class="incident-card" id="inc-rag_slow">
+            <div class="incident-header">
+              <code class="incident-name">rag_slow</code>
+              <span class="incident-badge off" id="badge-rag_slow">OFF</span>
+            </div>
+            <p class="incident-desc">Injects a 2.5 s delay into RAG retrieval — exercises P95 latency alert thresholds and runbook escalation paths.</p>
+            <div class="incident-actions">
+              <button class="btn btn-success btn-sm" onclick="toggleIncident('rag_slow','enable')">Enable</button>
+              <button class="btn btn-danger btn-sm" onclick="toggleIncident('rag_slow','disable')">Disable</button>
+            </div>
+          </div>
+
+          <div class="incident-card" id="inc-tool_fail">
+            <div class="incident-header">
+              <code class="incident-name">tool_fail</code>
+              <span class="incident-badge off" id="badge-tool_fail">OFF</span>
+            </div>
+            <p class="incident-desc">Throws a RuntimeError from the RAG tool — drives error_rate metric above SLO threshold and tests error handling.</p>
+            <div class="incident-actions">
+              <button class="btn btn-success btn-sm" onclick="toggleIncident('tool_fail','enable')">Enable</button>
+              <button class="btn btn-danger btn-sm" onclick="toggleIncident('tool_fail','disable')">Disable</button>
+            </div>
+          </div>
+
+          <div class="incident-card" id="inc-cost_spike">
+            <div class="incident-header">
+              <code class="incident-name">cost_spike</code>
+              <span class="incident-badge off" id="badge-cost_spike">OFF</span>
+            </div>
+            <p class="incident-desc">Forces 4× output token generation — triggers the cost-budget alert and demonstrates token-level observability.</p>
+            <div class="incident-actions">
+              <button class="btn btn-success btn-sm" onclick="toggleIncident('cost_spike','enable')">Enable</button>
+              <button class="btn btn-danger btn-sm" onclick="toggleIncident('cost_spike','disable')">Disable</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
