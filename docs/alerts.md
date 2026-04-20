@@ -21,3 +21,14 @@
 - **Mitigation:**
   - Chuyển sang sử dụng Model dự phòng (Model fallback).
   - Tạm thời tắt các công cụ (tools) đang gây lỗi.
+
+## 3. Load Test Results (Simulation Evidence)
+- **Traffic:** 20 requests
+- **Latency P50:** 150 ms
+- **Latency P95:** 151 ms
+- **Latency P99:** 151 ms
+- **Average Cost:** 0.002 USD
+- **Total Cost:** 0.0399 USD
+- **Tokens (In/Out):** 680 / 2523
+- **Quality Average:** 0.88
+

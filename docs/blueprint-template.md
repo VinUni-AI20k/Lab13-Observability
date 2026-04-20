@@ -36,9 +36,9 @@
 - [SLO_TABLE]:
 | SLI | Target | Window | Current Value |
 |---|---:|---|---:|
-| Latency P95 | < 2500ms | 28d | 2651ms |
+| Latency P95 | < 2500ms | 28d | 151ms |
 | Error Rate | < 1% | 28d | 0% |
-| Cost Budget | < $2.0/day | 1d | $0.0428 |
+| Cost Budget | < $2.0/day | 1d | $0.0399 |
 
 ### 3.3 Alerts & Runbook
 - [ALERT_RULES_SCREENSHOT]: ![Alert Rules](/docs/images/C_alert_rules.png)
@@ -66,7 +66,7 @@
 
 ### Ha Huu An
 - [TASKS_COMPLETED]: Thiết lập SLO trong config/slo.yaml, cấu hình Alert Rules trong config/alert_rules.yaml, và hoàn thiện Runbook trong docs/alerts.md. Phân tích và xử lý sự cố rag_slow.
-- [EVIDENCE_LINK]: [config/slo.yaml](file:///d:/VinAction/Nhom11-402-Day13/config/slo.yaml), [config/alert_rules.yaml](file:///d:/VinAction/Nhom11-402-Day13/config/alert_rules.yaml)
+- [EVIDENCE_LINK]: (https://github.com/tonhii/Nhom11-402-Day13/commit/93bf87704a5165b966584b8c70119398e9f83b59 )
 ### [MEMBER_D_NAME]
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: 
