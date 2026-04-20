@@ -53,10 +53,11 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
         payload={"message_preview": summarize_text(body.message)},
     )
     try:
+        current_req_id = request.state.correlation_id
         result = agent.run(
             user_id=body.user_id,
             feature=body.feature,
-            session_id=body.session_id,
+            session_id=current_req_id,
             message=body.message,
         )
         log.info(
