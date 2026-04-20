@@ -73,8 +73,8 @@
 - [EVIDENCE_LINK]: Modified `app/tracing.py`, `app/agent.py`, `app/mock_rag.py`, `app/mock_llm.py`, and `app/main.py`.
 
 ### [MEMBER_C_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+- [TASKS_COMPLETED]: Xác định các chỉ số SLI và thiết lập mục tiêu SLO cho hệ thống (Latency, Error Rate, Cost); Thiết lập các quy tắc cảnh báo (Alert Rules) dựa trên ngưỡng SLO; Xây dựng tài liệu hướng dẫn xử lý sự cố (Runbooks) chi tiết trong `docs/alerts.md`; Liên kết các cảnh báo từ Dashboard tới Runbook.
+- [EVIDENCE_LINK]: docs/alerts.md và cấu hình phần [SLO_TABLE] trong báo cáo này.
 
 ### [MEMBER_D_NAME]
 - [TASKS_COMPLETED]: Thực hiện load test (cơ bản và song song), giả lập các sự cố hiệu năng và hệ thống (rag_slow, tool_fail), xác nhận phục hồi hệ thống và cung cấp dữ liệu log cho việc xây dựng dashboard.

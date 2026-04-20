@@ -20,16 +20,18 @@ class FakeResponse:
     model: str
 
 
-from .tracing import observe, safe_update_current_observation
+from .tracing import langfuse_context, observe
 
 
 class FakeLLM:
     def __init__(self, model: str = "claude-sonnet-4-5") -> None:
         self.model = model
 
-    @observe(as_type="generation", name="llm-generation")
     def generate(self, prompt: str) -> FakeResponse:
-        safe_update_current_observation(model=self.model, input=prompt)
+        langfuse_context.update_current_observation(
+            model=self.model,
+            input=prompt,
+        )
         time.sleep(0.15)
         input_tokens = max(20, len(prompt) // 4)
         output_tokens = random.randint(80, 180)
@@ -40,5 +42,8 @@ class FakeLLM:
             "Use retrieved context and keep responses concise."
         )
         response = FakeResponse(text=answer, usage=FakeUsage(input_tokens, output_tokens), model=self.model)
-        safe_update_current_observation(output=response.text, usage_details={"input": input_tokens, "output": output_tokens})
+        langfuse_context.update_current_observation(
+            output=response.text,
+            usage_details={"input": input_tokens, "output": output_tokens},
+        )
         return response
