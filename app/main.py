@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import os
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
+
+load_dotenv()
 from fastapi.responses import JSONResponse
 from structlog.contextvars import bind_contextvars
 
@@ -72,6 +75,7 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             tokens_in=result.tokens_in,
             tokens_out=result.tokens_out,
             cost_usd=result.cost_usd,
+            quality_score=result.quality_score,
             payload={"answer_preview": summarize_text(result.answer)},
         )
         return ChatResponse(
