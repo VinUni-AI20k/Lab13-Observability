@@ -9,8 +9,9 @@
   - Member A: [Name] | Role: Logging & PII
   - Member B: [Name] | Role: Tracing & Enrichment
   - Member C: [Name] | Role: SLO & Alerts
-  - Member D: [Name] | Role: Load Test & Dashboard
-  - Member E: [Name] | Role: Demo & Report
+  - Member D: [Name] | Role: Load Test & Incident Injection
+  - Member E: [Name] | Role: Dashboard & Evidence
+  - Member F: [Name] | Role: Blueprint & Demo Lead
 
 ---
 
@@ -72,6 +73,10 @@
 - [EVIDENCE_LINK]: 
 
 ### [MEMBER_E_NAME]
+- [TASKS_COMPLETED]: 
+- [EVIDENCE_LINK]: 
+
+### [MEMBER_F_NAME]
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: 
 
