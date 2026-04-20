@@ -3,8 +3,13 @@ from __future__ import annotations
 import os
 from typing import Any
 
+from dotenv import load_dotenv
+load_dotenv()
+
 try:
-    from langfuse.decorators import observe, langfuse_context
+    from langfuse import observe, get_client
+    langfuse_context = get_client()
+    
 except Exception:  # pragma: no cover
     def observe(*args: Any, **kwargs: Any):
         def decorator(func):
@@ -18,6 +23,9 @@ except Exception:  # pragma: no cover
         def update_current_observation(self, **kwargs: Any) -> None:
             return None
 
+        def flush(self) -> None:
+            return None
+        
     langfuse_context = _DummyContext()
 
 
