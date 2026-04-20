@@ -5,6 +5,13 @@ from typing import Any
 
 try:
     from langfuse.decorators import observe, langfuse_context
+    from langfuse import Langfuse
+
+    def get_langfuse_client() -> Langfuse | None:
+        if tracing_enabled():
+            return Langfuse()
+        return None
+
 except Exception:  # pragma: no cover
     def observe(*args: Any, **kwargs: Any):
         def decorator(func):
@@ -23,3 +30,4 @@ except Exception:  # pragma: no cover
 
 def tracing_enabled() -> bool:
     return bool(os.getenv("LANGFUSE_PUBLIC_KEY") and os.getenv("LANGFUSE_SECRET_KEY"))
+

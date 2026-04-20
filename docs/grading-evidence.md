@@ -5,7 +5,7 @@
 ## 📈 Trạng thái tổng quát
 | Thành viên | Vai trò | Trạng thái | Ghi chú |
 |---|---|---|---|
-| **A** | Logging & PII | ✅ Done | Validated score 100/100 |
+| **A** | Logging & PII | 🟦 Pending | |
 | **B** | Tracing & Tags | 🟦 Pending | |
 | **C** | SLO & Alerts | ✅ Done | Alert Rules & Runbook completed (P95: 151ms) |
 | **D** | Load Test & Incident | ✅ Done | 3 scenarios: rag_slow, tool_fail, cost_spike |
