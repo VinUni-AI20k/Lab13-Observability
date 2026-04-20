@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+# verified: supports rag_slow, tool_fail, cost_spike scenarios via --scenario flag
 import argparse
 
 import httpx
