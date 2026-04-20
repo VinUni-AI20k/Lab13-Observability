@@ -1,6 +1,6 @@
-# Day 13 Observability Lab Report
+# Day 13 Observability Lab Report - Nguyen Duy Hieu
 
-> **Instruction**: Fill in all sections below. This report is designed to be parsed by an automated grading assistant. Ensure all tags (e.g., `[GROUP_NAME]`) are preserved.
+> Individual split report generated from `docs/blueprint-template.md` for Nguyễn Duy Hiếu.
 
 ## 1. Team Metadata
 - [GROUP_NAME]: Huy-Kha-Hieu-Kien
@@ -52,22 +52,10 @@
 
 ---
 
-## 5. Individual Contributions & Evidence
+## 5. Individual Contribution & Evidence
 
-### [MEMBER_A_NAME] Trần Đặng Quang Huy
-- [TASKS_COMPLETED]: Completed the logging pipeline, correlation ID propagation, PII scrubbing, dashboard route integration, and final document consolidation.
-- [EVIDENCE_LINK]: Local branch `huy` in this workspace; final member-specific PR link was not available at documentation time.
-
-### [MEMBER_B_NAME] Phạm Đan Kha
-- [TASKS_COMPLETED]: Prepared the tracing walkthrough, verified Langfuse metadata fields, and supported the trace-waterfall evidence for the live demo.
-- [EVIDENCE_LINK]: Member-specific commit or PR link should be attached after the team push; no separate link was present in the local repository history.
-
-### [MEMBER_C_NAME] Nguyễn Duy Hiếu
+### Nguyễn Duy Hiếu
 - [TASKS_COMPLETED]: Validated SLO targets, alert thresholds, runbook mapping, and the incident-response explanation from metrics to traces to logs.
-- [EVIDENCE_LINK]: Member-specific commit or PR link should be attached after the team push; no separate link was present in the local repository history.
-
-### [MEMBER_D_NAME] Vũ Đức Kiên
-- [TASKS_COMPLETED]: Ran load tests, prepared the dashboard view, captured evidence requirements, and supported incident rehearsal for `rag_slow`.
 - [EVIDENCE_LINK]: Member-specific commit or PR link should be attached after the team push; no separate link was present in the local repository history.
 
 ---

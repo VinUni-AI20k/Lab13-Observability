@@ -6,8 +6,12 @@ from dataclasses import dataclass
 from . import metrics
 from .mock_llm import FakeLLM
 from .mock_rag import retrieve
+from .logging_config import get_logger
 from .pii import hash_user_id, summarize_text
 from .tracing import langfuse_context, observe
+
+
+log = get_logger()
 
 
 @dataclass
@@ -36,14 +40,39 @@ class LabAgent:
         cost_usd = self._estimate_cost(response.usage.input_tokens, response.usage.output_tokens)
 
         langfuse_context.update_current_trace(
+            name=f"chat-{feature}",
             user_id=hash_user_id(user_id),
             session_id=session_id,
+            input={
+                "feature": feature,
+                "message_preview": summarize_text(message),
+                "doc_count": len(docs),
+            },
+            output={
+                "answer_preview": summarize_text(response.text),
+                "latency_ms": latency_ms,
+                "cost_usd": cost_usd,
+                "quality_score": quality_score,
+            },
+            metadata={
+                "doc_count": len(docs),
+                "query_preview": summarize_text(message),
+                "usage_details": {
+                    "input_tokens": response.usage.input_tokens,
+                    "output_tokens": response.usage.output_tokens,
+                },
+            },
             tags=["lab", feature, self.model],
         )
-        langfuse_context.update_current_observation(
-            metadata={"doc_count": len(docs), "query_preview": summarize_text(message)},
-            usage_details={"input": response.usage.input_tokens, "output": response.usage.output_tokens},
-        )
+
+        trace_id = langfuse_context.get_current_trace_id()
+        if trace_id:
+            log.info(
+                "trace_created",
+                service="api",
+                trace_id=trace_id,
+                trace_url=langfuse_context.get_trace_url(trace_id=trace_id),
+            )
 
         metrics.record_request(
             latency_ms=latency_ms,

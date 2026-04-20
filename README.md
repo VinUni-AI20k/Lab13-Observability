@@ -35,6 +35,10 @@ cp .env.example .env
 uvicorn app.main:app --reload
 ```
 
+Langfuse is enabled automatically when `LANGFUSE_PUBLIC_KEY` and
+`LANGFUSE_SECRET_KEY` are present in your environment. The app now loads `.env`
+at startup, so copying `.env.example` is enough for local development.
+
 ## Tooling
 
 ```bash
@@ -47,6 +51,11 @@ python scripts/inject_incident.py --scenario rag_slow
 # Check your implementation progress
 python scripts/validate_logs.py
 ```
+
+## Windows one-click launcher
+
+If you want a simple double-click entrypoint on Windows, use `run-dashboard.bat`.
+It starts the FastAPI app on a free local port and opens `/dashboard` in your browser automatically.
 
 ## Repo map
 
