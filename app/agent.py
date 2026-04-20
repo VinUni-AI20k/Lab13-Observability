@@ -38,10 +38,20 @@ class LabAgent:
         langfuse_context.update_current_trace(
             user_id=hash_user_id(user_id),
             session_id=session_id,
-            tags=["lab", feature, self.model],
+            tags=[
+                "lab",
+                "danang-travel-planner",
+                f"feature:{feature}",
+                f"model:{self.model}",
+            ],
         )
         langfuse_context.update_current_observation(
-            metadata={"doc_count": len(docs), "query_preview": summarize_text(message)},
+            metadata={
+                "doc_count": len(docs),
+                "query_preview": summarize_text(message),
+                "domain": "danang-travel",
+                "city": "da-nang",
+            },
             usage_details={"input": response.usage.input_tokens, "output": response.usage.output_tokens},
         )
 
