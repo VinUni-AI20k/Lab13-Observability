@@ -5,15 +5,42 @@ alerts:
     type: symptom-based
     owner: team-oncall
     runbook: docs/alerts.md#1-high-latency-p95
+    rationale: >
+      SLO target is 3000ms P95. Alert threshold at 5000ms gives a buffer before SLO breach
+      becomes critical. 30m window avoids flapping on transient spikes.
+    slo_link: slo.yaml#latency_p95_ms
+
   - name: high_error_rate
     severity: P1
     condition: error_rate_pct > 5 for 5m
     type: symptom-based
     owner: team-oncall
     runbook: docs/alerts.md#2-high-error-rate
+    rationale: >
+      SLO target is <2% error rate. Alert at 5% (2.5x budget) gives signal to triage fast.
+      5m window catches rapid error spikes without delay.
+    slo_link: slo.yaml#error_rate_pct
+
   - name: cost_budget_spike
     severity: P2
     condition: hourly_cost_usd > 2x_baseline for 15m
     type: symptom-based
     owner: finops-owner
     runbook: docs/alerts.md#3-cost-budget-spike
+    rationale: >
+      Daily cost SLO is $2.50. Alerting when hourly rate exceeds 2x the rolling baseline
+      (calculated over prior 1h) catches runaway prompt loops before daily budget is breached.
+      15m window filters one-off spikes.
+    slo_link: slo.yaml#daily_cost_usd
+
+  - name: quality_score_degradation
+    severity: P3
+    condition: quality_score_avg < 0.6 for 15m
+    type: symptom-based
+    owner: team-oncall
+    runbook: docs/alerts.md#4-quality-score-degradation
+    rationale: >
+      Quality SLO target is 0.75. Alert at 0.6 (20% below target) indicates systematic
+      degradation — e.g., RAG returning empty docs, LLM output truncated, or PII redaction
+      stripping answer content. 15m window prevents noise from individual bad queries.
+    slo_link: slo.yaml#quality_score_avg
