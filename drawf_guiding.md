@@ -211,7 +211,7 @@ START
   │     └─► Tính: P95 latency, error rate, cost
   │
   ├─► 📈 Person D: Dashboard (6 panels)
-  │     └─► Run: export logs.jsonl → import vào tool visualize
+  │     └─► Run: export logs.jsonl →To
   │
   ├─► ⚠️  Person E: Alerts + Runbooks
   │     └─► Config alert_rules.yaml
