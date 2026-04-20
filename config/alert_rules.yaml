@@ -28,13 +28,13 @@ alerts:
   # ---------------------------------------------------------------------------
   - name: high_latency_p95
     severity: P2
-    condition: "latency_p95_ms > 5000 for 30m"
+    condition: "latency_p95_ms > 2000 for 30m"
     type: symptom-based
     owner: team-oncall
     runbook: "docs/alerts.md#1-high-latency-p95"
     slo_link: latency_p95_ms
     description: >
-      P95 latency vượt ngưỡng 5 giây trong 30 phút liên tục.
+      P95 latency vượt ngưỡng 2 giây trong 30 phút liên tục.
       Ảnh hưởng: 5% user chờ quá lâu, trải nghiệm xấu.
 
   # ---------------------------------------------------------------------------

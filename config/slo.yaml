@@ -30,7 +30,7 @@ slis:
   # ---------------------------------------------------------------------------
   latency_p95_ms:
     description: "95th percentile response latency"
-    objective: 3000        # Request phải < 3000ms (3 giây)
+    objective: 2000        # Request phải < 2000ms (2 giây)
     target: 99.5           # Đạt 99.5% thời gian trong 28 ngày
     error_budget_minutes: 201.6  # = 28 * 24 * 60 * 0.005 = 201.6 phút được vi phạm
     unit: milliseconds
