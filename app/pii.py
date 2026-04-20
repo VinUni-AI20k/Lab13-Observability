@@ -87,9 +87,9 @@ _RULES: list[_PIIRule] = [
     _PIIRule(
         re.compile(
             r"(?i)"
-            r"(?:\bSố\s+\d+[^,.\n]{0,50})"                          # Số 12 Lê Lợi...
-            r"|(?:\b(?:Ngõ|Ngách|Hẻm|Đường|Phố|Phường|Quận|Huyện"
-            r"|Thành\s+phố|Tỉnh|Xã|Thị\s+trấn)\s+[^,.\n]{3,60})",  # Đường Lê Lợi...
+            r"(?:\bSố\s+\d+[^,.\n]{0,50})"
+            r"|(?:\b(?:Ngõ|Ngách|Hẻm|Xóm|Thôn|Ấp|Đường|Phố|Phường|Xã|Quận|Huyện"
+            r"|Thành\s+phố|Tỉnh|Thị\s+xã|Thị\s+trấn)\s+[^,.\n]{1,60})",
             re.UNICODE,
         ),
         "ADDRESS_VN",
