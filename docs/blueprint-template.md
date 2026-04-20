@@ -8,7 +8,7 @@
 - [MEMBERS]:
   - Member A: [Name] | Role: Logging & PII
   - Member B: [Name] | Role: Tracing & Enrichment
-  - Member C: [Name] | Role: SLO & Alerts
+  - Member C: [Dương Chí Thành] | Role: SLO & Alerts
   - Member D: [Name] | Role: Load Test & Dashboard
   - Member E: [Name] | Role: Demo & Report
 
@@ -64,7 +64,7 @@
 - [EVIDENCE_LINK]: 
 
 ### [MEMBER_C_NAME]
-- [TASKS_COMPLETED]: 
+- [TASKS_COMPLETED]: Defined service SLOs for latency, error rate, cost, and quality. Implemented and documented alert rules with severities, thresholds, owners, and runbook links. Supported dashboard thresholds and incident-debug workflow.
 - [EVIDENCE_LINK]: 
 
 ### [MEMBER_D_NAME]

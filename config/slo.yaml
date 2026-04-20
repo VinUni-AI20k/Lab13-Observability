@@ -4,13 +4,23 @@ slis:
   latency_p95_ms:
     objective: 3000
     target: 99.5
-    note: Replace with your group's target
+    note: P95 response time should stay under 3s for normal user experience
   error_rate_pct:
     objective: 2
     target: 99.0
+    note: Keep failed responses below 2 percent
   daily_cost_usd:
     objective: 2.5
     target: 100.0
+    note: Daily serving cost should remain within the agreed lab budget
   quality_score_avg:
     objective: 0.75
     target: 95.0
+    note: Average answer quality proxy should stay at or above 0.75
+#Lý do chọn các ngưỡng này:
+#•
+#latency_p95_ms < 3000: đúng với mẫu trong report, hợp lý cho app agent có RAG/LLM.
+#•
+#error_rate_pct < 2: đủ chặt để phản ánh chất lượng dịch vụ, nhưng không quá lý tưởng.
+#•
+#daily_cost_usd < 2.5: khớp template report
