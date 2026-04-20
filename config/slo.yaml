@@ -1,16 +1,40 @@
 service: day13-observability-lab
-window: 28d
-slis:
-  latency_p95_ms:
-    objective: 3000
-    target: 99.5
-    note: Replace with your group's target
-  error_rate_pct:
-    objective: 2
-    target: 99.0
-  daily_cost_usd:
-    objective: 2.5
-    target: 100.0
-  quality_score_avg:
-    objective: 0.75
-    target: 95.0
+version: "1.0"
+owner: team-oncall
+
+slos:
+  - name: latency_p95
+    description: "95th percentile latency must stay below threshold"
+    sli: latency_p95_ms
+    target: 0.95
+    window: 28d
+    threshold_ms: 3000
+    error_budget: 0.05
+    burn_rate_alert: 14.4  # 1h window → budget consumed in ~1.7 days
+
+  - name: error_rate
+    description: "Error rate must stay below 2%"
+    sli: error_rate_pct
+    target: 0.98
+    window: 28d
+    threshold: 0.02
+    error_budget: 0.02
+    burn_rate_alert: 14.4
+
+  - name: cost_budget
+    description: "Daily LLM cost must not exceed budget"
+    sli: daily_cost_usd
+    target: 1.0
+    window: 1d
+    budget_usd: 2.5
+    error_budget: 0.0
+    burn_rate_alert: 1.5  # alert when spending 1.5x normal rate
+
+  - name: quality_score
+    description: "Average response quality score above threshold"
+    sli: quality_score_avg
+    target: 0.95
+    window: 28d
+    threshold: 0.75
+    error_budget: 0.05
+    burn_rate_alert: 14.4

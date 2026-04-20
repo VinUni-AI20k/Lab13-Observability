@@ -1,19 +1,56 @@
-alerts:
-  - name: high_latency_p95
-    severity: P2
-    condition: latency_p95_ms > 5000 for 30m
+alert_rules:
+  - name: latency_p95_breach
+    description: "P95 latency exceeds SLO target of 3000ms"
+    metric: latency_p95_ms
+    operator: ">"
+    threshold: 3000
+    for: 5m
+    severity: high
     type: symptom-based
     owner: team-oncall
-    runbook: docs/alerts.md#1-high-latency-p95
-  - name: high_error_rate
-    severity: P1
-    condition: error_rate_pct > 5 for 5m
+    runbook: "docs/alerts.md#1-high-latency-p95"
+    labels:
+      slo: latency_p95
+      category: performance
+
+  - name: error_rate_high
+    description: "Error rate exceeds SLO target of 2%"
+    metric: error_rate_pct
+    operator: ">"
+    threshold: 2.0
+    for: 5m
+    severity: critical
     type: symptom-based
     owner: team-oncall
-    runbook: docs/alerts.md#2-high-error-rate
-  - name: cost_budget_spike
-    severity: P2
-    condition: hourly_cost_usd > 2x_baseline for 15m
+    runbook: "docs/alerts.md#2-high-error-rate"
+    labels:
+      slo: error_rate
+      category: reliability
+
+  - name: cost_overrun
+    description: "Daily LLM cost exceeds $2.5 budget"
+    metric: daily_cost_usd
+    operator: ">"
+    threshold: 2.5
+    for: 15m
+    severity: high
     type: symptom-based
     owner: finops-owner
-    runbook: docs/alerts.md#3-cost-budget-spike
+    runbook: "docs/alerts.md#3-cost-budget-spike"
+    labels:
+      slo: cost_budget
+      category: cost
+
+  - name: quality_score_low
+    description: "Average quality score drops below 0.75 threshold"
+    metric: quality_score_avg
+    operator: "<"
+    threshold: 0.75
+    for: 10m
+    severity: warning
+    type: symptom-based
+    owner: team-oncall
+    runbook: "docs/alerts.md#4-low-quality-score"
+    labels:
+      slo: quality_score
+      category: quality
