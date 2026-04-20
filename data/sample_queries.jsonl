@@ -8,3 +8,20 @@
 {"user_id":"u08","session_id":"s08","feature":"qa","message":"How do I debug tail latency?"}
 {"user_id":"u09","session_id":"s09","feature":"qa","message":"What is the policy for PII and credit card 4111 1111 1111 1111?"}
 {"user_id":"u10","session_id":"s10","feature":"qa","message":"How should alerts be designed?"}
+{"user_id":"u11","session_id":"s11","feature":"chamsoc_nganhang","message":"Tôi muốn khóa khẩn cấp thẻ credit mang số 4111 2222 3333 4444. Số passport mặt trước của tôi là B12345"}
+{"user_id":"u12","session_id":"s12","feature":"chamsoc_nganhang","message":"Mở lại thẻ tín dụng bị khóa. CMND cũ của tôi là B1234567 còn thẻ là 4111 1111 2222 3333."}
+{"user_id":"u_banking_001","session_id":"s_morning_peak_001","feature":"credit_inquiry","message":"Tôi muốn vay 100 triệu đồng để mua nhà, lãi suất bao nhiêu? Email tôi là nguyen.van.a@gmail.com"}
+{"user_id":"u_banking_002","session_id":"s_morning_peak_002","feature":"card_info","message":"Thẻ tín dụng của tôi có hạn mức bao nhiêu? Số thẻ là 4111 5555 6666 7777"}
+{"user_id":"u_banking_003","session_id":"s_morning_peak_003","feature":"account_balance","message":"Số dư tài khoản 0123456789 của tôi là bao nhiêu? CCCD: 001234567890"}
+{"user_id":"u_banking_004","session_id":"s_morning_peak_004","feature":"loan_status","message":"Khoản vay của tôi còn bao nhiêu tiền? Số điện thoại 0987654321"}
+{"user_id":"u_banking_005","session_id":"s_morning_peak_005","feature":"payment_schedule","message":"Lịch trả nợ của tôi là khi nào? Tài khoản 9876543210"}
+{"user_id":"u_banking_006","session_id":"s_afternoon_001","feature":"credit_inquiry","message":"Điều kiện vay mua xe là gì? Tôi có thu nhập 20 triệu/tháng"}
+{"user_id":"u_banking_007","session_id":"s_afternoon_002","feature":"card_info","message":"Làm thế nào để nâng hạn mức thẻ tín dụng?"}
+{"user_id":"u_banking_008","session_id":"s_afternoon_003","feature":"account_balance","message":"Kiểm tra số dư tài khoản tiết kiệm"}
+{"user_id":"u_banking_009","session_id":"s_afternoon_004","feature":"loan_status","message":"Tôi muốn trả nợ trước hạn, có phí không?"}
+{"user_id":"u_banking_010","session_id":"s_afternoon_005","feature":"payment_schedule","message":"Thay đổi ngày trả nợ hàng tháng được không?"}
+{"user_id":"u_banking_011","session_id":"s_evening_peak_001","feature":"credit_inquiry","message":"Vay tín chấp 50 triệu cần giấy tờ gì?"}
+{"user_id":"u_banking_012","session_id":"s_evening_peak_002","feature":"card_info","message":"Thẻ tín dụng bị khóa, làm sao mở lại?"}
+{"user_id":"u_banking_013","session_id":"s_evening_peak_003","feature":"account_balance","message":"Tại sao số dư tài khoản bị trừ 500k?"}
+{"user_id":"u_banking_014","session_id":"s_evening_peak_004","feature":"loan_status","message":"Kiểm tra lịch sử giao dịch khoản vay"}
+{"user_id":"u_banking_015","session_id":"s_evening_peak_005","feature":"payment_schedule","message":"Quên trả nợ 1 tháng, phạt bao nhiêu?"}

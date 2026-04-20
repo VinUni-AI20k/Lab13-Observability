@@ -1,9 +1,14 @@
 from __future__ import annotations
 
-import os
+from dotenv import load_dotenv
+load_dotenv()
 
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+import json
+import os
+from pathlib import Path
+
+from fastapi import FastAPI, HTTPException, Request, Query
+from fastapi.responses import FileResponse, JSONResponse
 from structlog.contextvars import bind_contextvars
 
 from .agent import LabAgent
@@ -20,6 +25,14 @@ log = get_logger()
 app = FastAPI(title="Day 13 Observability Lab")
 app.add_middleware(CorrelationIdMiddleware)
 agent = LabAgent()
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+
+
+@app.on_event("shutdown")
+async def shutdown() -> None:
+    if tracing_enabled():
+        from langfuse import get_client
+        get_client().flush()
 
 
 @app.on_event("startup")
@@ -42,11 +55,35 @@ async def metrics() -> dict:
     return snapshot()
 
 
+@app.get("/dashboard")
+async def dashboard() -> FileResponse:
+    return FileResponse(STATIC_DIR / "dashboard.html")
+
+
+@app.get("/logs")
+async def logs_endpoint(n: int = Query(default=50, ge=1, le=500)) -> list:
+    log_path = Path("data/logs.jsonl")
+    if not log_path.exists():
+        return []
+    lines = [ln for ln in log_path.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    records = []
+    for line in lines[-n:]:
+        try:
+            records.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+    return list(reversed(records))
+
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
-    # TODO: Enrich logs with request context (user_id_hash, session_id, feature, model, env)
-    # bind_contextvars(...)
-    
+    bind_contextvars(
+        user_id_hash=hash_user_id(body.user_id),
+        session_id=body.session_id,
+        feature=body.feature,
+        model="gpt-4",
+        env=os.getenv("APP_ENV", "dev"),
+    )
     log.info(
         "request_received",
         service="api",
@@ -77,7 +114,7 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             cost_usd=result.cost_usd,
             quality_score=result.quality_score,
         )
-    except Exception as exc:  # pragma: no cover
+    except Exception as exc:
         error_type = type(exc).__name__
         record_error(error_type)
         log.error(
@@ -87,6 +124,12 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             payload={"detail": str(exc), "message_preview": summarize_text(body.message)},
         )
         raise HTTPException(status_code=500, detail=error_type) from exc
+
+
+@app.get("/incidents/status")
+async def incidents_status() -> dict:
+    """Get current status of all incidents"""
+    return status()
 
 
 @app.post("/incidents/{name}/enable")
