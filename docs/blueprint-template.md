@@ -6,11 +6,11 @@
 - [GROUP_NAME]: A20-Observability-Lab
 - [REPO_URL]: https://github.com/trinhketien/2A202600500_TrinhKeTien_Lab13-Observability.git
 - [MEMBERS]:
-  - Member A: Trịnh Kế Tiên | Role: Correlation ID & Middleware
-  - Member B: [Thành viên 2] | Role: PII Scrubbing & Privacy
-  - Member C: [Thành viên 3] | Role: Dashboard & Metrics
-  - Member D: [Thành viên 4] | Role: Alerts, SLO & Runbooks
-  - Member E: [Thành viên 5] | Role: Tracing, Testing & Report
+  - Member A: Trịnh Kế Tiến (2A202600500) | Role: Correlation ID & Middleware
+  - Member B: Vũ Hoàng Minh (2A202600440) | Role: PII Scrubbing & Privacy
+  - Member C: Phạm Văn Thành (2A202600272) | Role: Dashboard & Metrics
+  - Member D: Nguyễn Thành Luân (2A202600204) | Role: Alerts, SLO & Runbooks
+  - Member E: Thái Tuấn Khang (2A202600289) | Role: Tracing, Testing & Report
 
 ---
 
@@ -94,7 +94,7 @@
 
 ---
 
-### 5.1 Trịnh Kế Tiên — Correlation ID & Middleware
+### 5.1 Trịnh Kế Tiến (2A202600500) — Correlation ID & Middleware
 
 **Phần việc đảm nhận:**
 - Thiết kế và implement `CorrelationIdMiddleware` trong `app/middleware.py`
@@ -126,7 +126,7 @@
 
 ---
 
-### 5.2 [Thành viên 2] — PII Scrubbing & Privacy
+### 5.2 Vũ Hoàng Minh (2A202600440) — PII Scrubbing & Privacy
 
 **Phần việc đảm nhận:**
 - Mở rộng PII regex patterns trong `app/pii.py`
@@ -157,7 +157,7 @@
 
 ---
 
-### 5.3 [Thành viên 3] — Dashboard & Metrics Visualization
+### 5.3 Phạm Văn Thành (2A202600272) — Dashboard & Metrics Visualization
 
 **Phần việc đảm nhận:**
 - Thiết kế và xây dựng `dashboard.html` — real-time monitoring dashboard
@@ -188,7 +188,7 @@
 
 ---
 
-### 5.4 [Thành viên 4] — Alerts, SLO & Runbooks
+### 5.4 Nguyễn Thành Luân (2A202600204) — Alerts, SLO & Runbooks
 
 **Phần việc đảm nhận:**
 - Thiết kế 5 alert rules trong `config/alert_rules.yaml`
@@ -226,7 +226,7 @@
 
 ---
 
-### 5.5 [Thành viên 5] — Tracing, Testing & Integration
+### 5.5 Thái Tuấn Khang (2A202600289) — Tracing, Testing & Integration
 
 **Phần việc đảm nhận:**
 - Fix Langfuse v3.2.1 tracing adapter trong `app/tracing.py`
