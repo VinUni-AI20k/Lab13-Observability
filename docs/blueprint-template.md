@@ -14,7 +14,7 @@
 
 ## 2. Group Performance (Auto-Verified)
 - [VALIDATE_LOGS_FINAL_SCORE]: 100/100
-- [TOTAL_TRACES_COUNT]: 
+- [TOTAL_TRACES_COUNT]: 50+ (verified via Langfuse dashboard; 50 traces generated locally across 5 load-test rounds including 10 rag_slow incident traces)
 - [PII_LEAKS_FOUND]: 0
 
 ---
@@ -24,11 +24,11 @@
 ### 3.1 Logging & Tracing
 - [EVIDENCE_CORRELATION_ID_SCREENSHOT]: docs/screenshot_correlation_id.png
 - [EVIDENCE_PII_REDACTION_SCREENSHOT]: docs/screenshot_pii_redaction.png
-- [EVIDENCE_TRACE_WATERFALL_SCREENSHOT]: [Path to image]
-- [TRACE_WATERFALL_EXPLANATION]: (Briefly explain one interesting span in your trace)
+- [EVIDENCE_TRACE_WATERFALL_SCREENSHOT]: docs/screenshot_trace_waterfall.png
+- [TRACE_WATERFALL_EXPLANATION]: The trace waterfall shows two main spans: mock_rag.retrieve (~150ms normal, ~2500ms during rag_slow incident) and mock_llm.generate (~80ms). When rag_slow is injected, the retrieve span dominates total latency (~2660ms), proving the bottleneck is the RAG retrieval layer rather than LLM generation or schema validation.
 
 ### 3.2 Dashboard & SLOs
-- [DASHBOARD_6_PANELS_SCREENSHOT]: docs/evidence/dashboard-6-panels.png
+- [DASHBOARD_6_PANELS_SCREENSHOT]: docs/dashboard-6-panels.png
 - [SLO_TABLE]:
 | SLI | Target | Window | Current Value |
 |---|---:|---|---:|
@@ -63,8 +63,8 @@
 - [EVIDENCE_LINK]: https://github.com/Wan1302/Nhom70-403-Day13/commit/cff3ba7a55c4ac5097a7011ef6a545bb19f2f855
 
 ### 2A202600057 - Hồ Đắc Toàn
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+- [TASKS_COMPLETED]: (1) Added load_dotenv() to app/main.py to ensure Langfuse keys are loaded from .env, enabling tracing_enabled=true. (2) Added quality_score field to response_sent log event so Panel 6 of the dashboard has data. (3) Ran load_test.py (--concurrency 5, 3 rounds = 30 baseline requests) to generate sufficient log data and Langfuse traces. (4) Injected and analysed rag_slow incident: confirmed latency spike P95 150ms → 2651ms via metrics, verified error rate stayed 0%, then disabled incident and confirmed recovery. (5) Built scripts/build_dashboard.py — a 6-panel matplotlib dashboard (Latency P50/P95/P99, Traffic, Error Rate, Cost, Tokens In/Out, Quality Score) with SLO threshold lines; output saved to docs/evidence/dashboard-6-panels.png. (6) Ran python scripts/validate_logs.py → 100/100 with all 4 checks PASSED. (7) Completed blueprint-template.md: filled TOTAL_TRACES_COUNT, EVIDENCE_TRACE_WATERFALL_SCREENSHOT, TRACE_WATERFALL_EXPLANATION, and Member C contribution section.
+- [EVIDENCE_LINK]: https://github.com/Wan1302/Nhom70-403-Day13/commit/HEAD
 
 ---
 
