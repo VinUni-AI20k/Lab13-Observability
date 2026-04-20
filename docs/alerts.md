@@ -38,3 +38,16 @@
   - shorten prompts
   - route easy requests to cheaper model
   - apply prompt cache
+
+## 4. RAG slow
+- Severity: P2
+- Trigger: `rag_retrieval_latency_ms > 2000 for 5m`
+- Impact: retrieval bottleneck causing user-facing latency
+- First checks:
+  1. Open slow traces in Langfuse, filter by retrieval span
+  2. Check if `rag_slow` incident toggle is enabled
+  3. Review vector DB or search index health
+- Mitigation:
+  - Add timeout wrapper to RAG calls
+  - Switch to faster retrieval method
+  - Cache frequent queries

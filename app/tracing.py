@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+# verified: Langfuse credentials loaded from environment variables (LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY)
 import os
 from typing import Any
 
