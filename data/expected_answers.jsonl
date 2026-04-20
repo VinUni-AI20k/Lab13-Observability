@@ -1,3 +1,10 @@
-{"question":"What is your refund policy?","must_include":["7 days","proof of purchase"]}
-{"question":"Explain why metrics traces and logs work together","must_include":["metrics","traces","logs"]}
-{"question":"What should not appear in app logs?","must_include":["PII","sensitive"]}
+{"question":"What is your refund policy for opened products?","must_include":["7 days","proof of purchase","refund"]}
+{"question":"How many days do I have to request a refund?","must_include":["7 days","refund"]}
+{"question":"How long does shipping take in the city center?","must_include":["1-2 days","shipping"]}
+{"question":"What is the shipping fee for outer districts?","must_include":["shipping fee","outer district"]}
+{"question":"How long is the warranty period for electronics?","must_include":["12 months","warranty"]}
+{"question":"Which cases are not covered by warranty?","must_include":["physical damage","liquid damage","not covered"]}
+{"question":"Do you support COD and bank transfer?","must_include":["COD","bank transfer","payment"]}
+{"question":"Can I get a VAT invoice for my order?","must_include":["VAT invoice","order"]}
+{"question":"How do I check order status with order id ORD-1007?","must_include":["order id","status","tracking"]}
+{"question":"Can I change delivery address after placing order?","must_include":["before shipping","support","address"]}

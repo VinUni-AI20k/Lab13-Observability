@@ -1,5 +1,5 @@
 {
-  "rag_slow": "Retrieval latency spike. Students should find slow RAG span in trace.",
-  "tool_fail": "Vector store or tool error. Students should identify error_type from logs.",
-  "cost_spike": "Token usage spike. Students should explain higher output token cost."
+  "rag_slow": "Knowledge lookup is slow, causing refund and shipping answers to be delayed. Track p95 latency and inspect retrieval spans.",
+  "tool_fail": "Knowledge tool is unavailable. API should log error_type and return a controlled fallback answer.",
+  "cost_spike": "Response generation uses too many output tokens during long policy summaries. Monitor token_out and cost_usd growth."
 }

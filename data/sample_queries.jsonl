@@ -1,10 +1,20 @@
-{"user_id":"u01","session_id":"s01","feature":"qa","message":"What is your refund policy? My email is student@vinuni.edu.vn"}
-{"user_id":"u02","session_id":"s02","feature":"qa","message":"Explain why metrics traces and logs work together"}
-{"user_id":"u03","session_id":"s03","feature":"summary","message":"Summarize the monitoring policy for production logging"}
-{"user_id":"u04","session_id":"s04","feature":"qa","message":"Can I get help with policy and monitoring?"}
-{"user_id":"u05","session_id":"s05","feature":"qa","message":"Here is my phone 0987654321, what should be logged?"}
-{"user_id":"u06","session_id":"s06","feature":"summary","message":"Give me a short summary of the observability workflow"}
-{"user_id":"u07","session_id":"s07","feature":"qa","message":"What should not appear in app logs?"}
-{"user_id":"u08","session_id":"s08","feature":"qa","message":"How do I debug tail latency?"}
-{"user_id":"u09","session_id":"s09","feature":"qa","message":"What is the policy for PII and credit card 4111 1111 1111 1111?"}
-{"user_id":"u10","session_id":"s10","feature":"qa","message":"How should alerts be designed?"}
+{"user_id":"u01","session_id":"s01","feature":"qa","message":"What is your refund policy for opened products?"}
+{"user_id":"u02","session_id":"s02","feature":"qa","message":"How many days do I have to request a refund?"}
+{"user_id":"u03","session_id":"s03","feature":"summary","message":"Summarize your refund process in 2 points."}
+{"user_id":"u04","session_id":"s04","feature":"qa","message":"Do I need proof of purchase to get a refund?"}
+{"user_id":"u05","session_id":"s05","feature":"qa","message":"How long does shipping take in the city center?"}
+{"user_id":"u06","session_id":"s06","feature":"qa","message":"What is the shipping fee for outer districts?"}
+{"user_id":"u07","session_id":"s07","feature":"summary","message":"Give me a short shipping policy summary."}
+{"user_id":"u08","session_id":"s08","feature":"qa","message":"What happens if delivery fails on first attempt?"}
+{"user_id":"u09","session_id":"s09","feature":"qa","message":"How long is the warranty period for electronics?"}
+{"user_id":"u10","session_id":"s10","feature":"qa","message":"Which cases are not covered by warranty?"}
+{"user_id":"u11","session_id":"s11","feature":"summary","message":"Summarize your warranty claim process."}
+{"user_id":"u12","session_id":"s12","feature":"qa","message":"Do you support COD and bank transfer?"}
+{"user_id":"u13","session_id":"s13","feature":"qa","message":"Can I get a VAT invoice for my order?"}
+{"user_id":"u14","session_id":"s14","feature":"qa","message":"How do I check order status with order id ORD-1007?"}
+{"user_id":"u15","session_id":"s15","feature":"qa","message":"Can I change delivery address after placing order?"}
+{"user_id":"u16","session_id":"s16","feature":"qa","message":"My email is buyer01@example.com, where can I track shipment?"}
+{"user_id":"u17","session_id":"s17","feature":"qa","message":"Call me at 090 123 4567. Can I return a damaged item?"}
+{"user_id":"u18","session_id":"s18","feature":"qa","message":"I paid with card 4111 1111 1111 1111. How long for refund?"}
+{"user_id":"u19","session_id":"s19","feature":"qa","message":"Need update for order quickly pls"}
+{"user_id":"u20","session_id":"s20","feature":"qa","message":"?"}
