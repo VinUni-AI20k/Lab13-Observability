@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python test_pii.py)",
+      "Bash(python scripts/load_test.py)",
+      "Bash(python scripts/validate_logs.py)",
+      "Bash(python test_logging.py)",
+      "Bash(taskkill /F /IM python.exe)",
+      "Bash(rm -f data/logs.jsonl)",
+      "Bash(uvicorn app.main:app --host 127.0.0.1 --port 8000)",
+      "Bash(curl -X POST http://127.0.0.1:8000/chat -H \"Content-Type: application/json\" -d '{\"user_id\":\"u01\",\"session_id\":\"s01\",\"feature\":\"qa\",\"message\":\"test\"}')",
+      "Bash(uvicorn app.main:app --host 127.0.0.1 --port 8001)",
+      "Bash(curl -X POST http://127.0.0.1:8001/chat -H \"Content-Type: application/json\" -d '{\"user_id\":\"u01\",\"session_id\":\"s01\",\"feature\":\"qa\",\"message\":\"test\"}')",
+      "Bash(netstat -ano)",
+      "Bash(taskkill /F /PID 1900)"
+    ]
+  }
+}
