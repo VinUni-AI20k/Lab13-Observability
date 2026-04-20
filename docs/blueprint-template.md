@@ -6,11 +6,10 @@
 - [GROUP_NAME]: [INSERT_GROUP_NAME]
 - [REPO_URL]: [INSERT_REPO_URL]
 - [MEMBERS]:
-  - Member A: [NAME] | Role: [ROLE]
-  - Member B: [NAME] | Role: [ROLE]
-  - Member C: [NAME] | Role: [ROLE]
-  - Member D: [NAME] | Role: [ROLE]
-  - Member E: [NAME] | Role: [ROLE]
+  - Member A: [Name] | Role: Logging & PII
+  - Member B: [Name] | Role: Tracing & Enrichment
+  - Member C: [Name] | Role: SLO & Alerts
+  - Member D: [Name] | Role: Load Test & Dashboard
 
 ---
 
