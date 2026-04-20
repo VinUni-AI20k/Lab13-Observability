@@ -53,6 +53,12 @@ class LabAgent:
             quality_score=quality_score,
         )
 
+        # Force flush for debugging
+        try:
+            langfuse_context.flush()
+        except Exception:
+            pass
+
         return AgentResult(
             answer=response.text,
             latency_ms=latency_ms,
