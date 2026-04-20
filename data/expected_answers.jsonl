@@ -1,3 +1,8 @@
 {"question":"What is your refund policy?","must_include":["7 days","proof of purchase"]}
 {"question":"Explain why metrics traces and logs work together","must_include":["metrics","traces","logs"]}
 {"question":"What should not appear in app logs?","must_include":["PII","sensitive"]}
+{"question":"I lost my passport B1234567, what PII should I not share in logs?","must_include":["PII","passport","scrub"]}
+{"question":"My CCCD is 001099012345 and I live on 123 đường Nguyễn Huệ","must_include":["redact","CCCD","address"]}
+{"question":"How to handle sensitive data from address 10 phường Tân Phú","must_include":["scrub","address","PII"]}
+{"question":"My contact: C12345678 passport, phone +84912345678","must_include":["redact","sensitive","PII"]}
+{"question":"Summarize PII redaction for CCCD 123456789012 and address","must_include":["scrub","CCCD","address","sensitive"]}

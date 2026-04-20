@@ -8,3 +8,8 @@
 {"user_id":"u08","session_id":"s08","feature":"qa","message":"How do I debug tail latency?"}
 {"user_id":"u09","session_id":"s09","feature":"qa","message":"What is the policy for PII and credit card 4111 1111 1111 1111?"}
 {"user_id":"u10","session_id":"s10","feature":"qa","message":"How should alerts be designed?"}
+{"user_id":"u11","session_id":"s11","feature":"qa","message":"I lost my passport B1234567, what PII should I not share in logs?"}
+{"user_id":"u12","session_id":"s12","feature":"qa","message":"My CCCD is 001099012345 and I live on 123 đường Nguyễn Huệ, phường Bến Nghé, quận 1. What data should be scrubbed?"}
+{"user_id":"u13","session_id":"s13","feature":"qa","message":"How to handle sensitive data from address 10 phường Tân Phú, quận 7 in production logs?"}
+{"user_id":"u14","session_id":"s14","feature":"qa","message":"My contact: C12345678 passport, phone +84912345678, email user@test.com. Should these appear in logs?"}
+{"user_id":"u15","session_id":"s15","feature":"summary","message":"Summarize PII redaction for CCCD 123456789012 and address 456 đường Lê Văn Sỹ, huyện Bình Chánh"}
