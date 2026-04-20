@@ -1,40 +1,23 @@
-# Alert Rules and Runbooks
+# Alert Rules and Runbooks (By Ha Huu An)
 
 ## 1. High latency P95
-- Severity: P2
-- Trigger: `latency_p95_ms > 5000 for 30m`
-- Impact: tail latency breaches SLO
-- First checks:
-  1. Open top slow traces in the last 1h
-  2. Compare RAG span vs LLM span
-  3. Check if incident toggle `rag_slow` is enabled
-- Mitigation:
-  - truncate long queries
-  - fallback retrieval source
-  - lower prompt size
+- **Severity:** P2
+- **Trigger:** `latency_p95_ms > 3500 for 5m`
+- **Impact:** Người dùng phản hồi hệ thống bị "treo" hoặc trả lời cực chậm.
+- **First checks:**
+  1. Kiểm tra Langfuse Tracing để xem bước nào chậm (RAG hay LLM).
+  2. Kiểm tra log xem có query nào quá dài không (Long context).
+- **Mitigation:** 
+  - Kích hoạt fallback retrieval nếu RAG chậm.
+  - Cắt bớt độ dài prompt gửi đi.
 
 ## 2. High error rate
-- Severity: P1
-- Trigger: `error_rate_pct > 5 for 5m`
-- Impact: users receive failed responses
-- First checks:
-  1. Group logs by `error_type`
-  2. Inspect failed traces
-  3. Determine whether failures are LLM, tool, or schema related
-- Mitigation:
-  - rollback latest change
-  - disable failing tool
-  - retry with fallback model
-
-## 3. Cost budget spike
-- Severity: P2
-- Trigger: `hourly_cost_usd > 2x_baseline for 15m`
-- Impact: burn rate exceeds budget
-- First checks:
-  1. Split traces by feature and model
-  2. Compare tokens_in/tokens_out
-  3. Check if `cost_spike` incident was enabled
-- Mitigation:
-  - shorten prompts
-  - route easy requests to cheaper model
-  - apply prompt cache
+- **Severity:** P1
+- **Trigger:** `error_rate_pct > 2 for 2m`
+- **Impact:** Người dùng không nhận được câu trả lời (Lỗi 500).
+- **First checks:**
+  1. Kiểm tra log tìm `error_type` (ví dụ: `RateLimitError` hay `SchemaValidationError`).
+  2. Xác định xem lỗi do API LLM hay do code backend.
+- **Mitigation:**
+  - Chuyển sang sử dụng Model dự phòng (Model fallback).
+  - Tạm thời tắt các công cụ (tools) đang gây lỗi.
