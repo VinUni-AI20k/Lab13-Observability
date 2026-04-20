@@ -1,19 +1,110 @@
 alerts:
+  # Latency-based alerts
   - name: high_latency_p95
     severity: P2
-    condition: latency_p95_ms > 5000 for 30m
+    condition: latency_p95_ms > 3000 for 5m
     type: symptom-based
     owner: team-oncall
     runbook: docs/alerts.md#1-high-latency-p95
+    description: "P95 latency exceeds SLO threshold of 3000ms"
+    
+  - name: extreme_latency_p99
+    severity: P1
+    condition: latency_p99_ms > 10000 for 2m
+    type: symptom-based
+    owner: team-oncall
+    runbook: docs/alerts.md#1-extreme-latency-p99
+    description: "P99 latency is critically high (>10s)"
+
+  # Error rate alerts
   - name: high_error_rate
     severity: P1
-    condition: error_rate_pct > 5 for 5m
+    condition: error_rate_pct > 2 for 3m
     type: symptom-based
     owner: team-oncall
     runbook: docs/alerts.md#2-high-error-rate
+    description: "Error rate exceeds SLO threshold of 2%"
+    
+  - name: critical_error_rate
+    severity: P0
+    condition: error_rate_pct > 10 for 1m
+    type: symptom-based
+    owner: team-oncall
+    runbook: docs/alerts.md#2-critical-error-rate
+    description: "Critical error rate spike detected"
+
+  # Cost-based alerts
   - name: cost_budget_spike
     severity: P2
-    condition: hourly_cost_usd > 2x_baseline for 15m
+    condition: hourly_cost_usd > 1.0 for 15m
     type: symptom-based
     owner: finops-owner
     runbook: docs/alerts.md#3-cost-budget-spike
+    description: "Hourly cost exceeds expected baseline"
+    
+  - name: daily_cost_budget_exceeded
+    severity: P1
+    condition: daily_cost_usd > 2.5 for 1h
+    type: symptom-based
+    owner: finops-owner
+    runbook: docs/alerts.md#3-daily-cost-budget-exceeded
+    description: "Daily cost budget of $2.50 exceeded"
+
+  # Quality alerts
+  - name: low_quality_score
+    severity: P2
+    condition: quality_score_avg < 0.75 for 10m
+    type: symptom-based
+    owner: team-oncall
+    runbook: docs/alerts.md#4-low-quality-score
+    description: "Average quality score below SLO threshold of 0.75"
+    
+  - name: critical_quality_degradation
+    severity: P1
+    condition: quality_score_avg < 0.5 for 5m
+    type: symptom-based
+    owner: team-oncall
+    runbook: docs/alerts.md#4-critical-quality-degradation
+    description: "Critical quality degradation detected"
+
+  # Traffic alerts
+  - name: no_traffic
+    severity: P2
+    condition: requests_per_minute == 0 for 5m
+    type: symptom-based
+    owner: team-oncall
+    runbook: docs/alerts.md#5-no-traffic
+    description: "No requests received - potential service outage"
+    
+  - name: traffic_spike
+    severity: P2
+    condition: requests_per_minute > 100 for 5m
+    type: symptom-based
+    owner: team-oncall
+    runbook: docs/alerts.md#5-traffic-spike
+    description: "Unusual traffic spike detected"
+
+# Alert routing and escalation
+routing:
+  default_channel: "#alerts-oncall"
+  escalation:
+    P0: ["#alerts-critical", "pager-duty"]
+    P1: ["#alerts-high", "slack-oncall"]
+    P2: ["#alerts-medium"]
+  
+# Testing scenarios
+test_scenarios:
+  - name: "latency_spike"
+    description: "Simulate high latency to test P95 alerts"
+    trigger: "inject_incident.py --scenario rag_slow"
+    expected_alerts: ["high_latency_p95"]
+    
+  - name: "error_injection"
+    description: "Simulate errors to test error rate alerts"
+    trigger: "inject_incident.py --scenario tool_fail"
+    expected_alerts: ["high_error_rate"]
+    
+  - name: "cost_spike"
+    description: "Simulate cost spike to test budget alerts"
+    trigger: "inject_incident.py --scenario cost_spike"
+    expected_alerts: ["cost_budget_spike"]
