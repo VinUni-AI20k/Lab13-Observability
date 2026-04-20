@@ -17,15 +17,27 @@ alerts:
     type: symptom-based
     owner: finops-owner
     runbook: docs/alerts.md#3-cost-budget-spike
-  - name: quality_drop
+  - name: policy_grounding_drop
     severity: P3
     condition: quality_score_avg < 0.85 for 15m
     type: symptom-based
     owner: member-c-slo
-    runbook: docs/alerts.md#4-quality-drop
+    runbook: docs/alerts.md#4-policy-grounding-drop
+  - name: knowledge_miss_for_policy_questions
+    severity: P2
+    condition: repeated fallback answers or missing policy context for 10m
+    type: quality
+    owner: member-c-slo
+    runbook: docs/alerts.md#5-knowledge-miss-for-policy-questions
+  - name: pii_or_student_data_risk
+    severity: P1
+    condition: raw student identifiers appear in logs or responses
+    type: compliance
+    owner: member-c-slo
+    runbook: docs/alerts.md#6-pii-or-student-data-risk
   - name: traffic_gap
     severity: P3
     condition: traffic < 10 requests in 5m during demo window
     type: heartbeat
     owner: member-c-slo
-    runbook: docs/alerts.md#5-traffic-gap
+    runbook: docs/alerts.md#7-traffic-gap

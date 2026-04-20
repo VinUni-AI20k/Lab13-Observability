@@ -15,6 +15,8 @@ Recommended operating assumptions for this repo:
 - `rag_slow` adds about 2.5s in retrieval and should push P95 above 1.2s almost immediately.
 - `tool_fail` creates 500 responses from the retrieval layer and should show up as `RuntimeError`.
 - `cost_spike` multiplies output tokens by 4 and should be visible in both cost and tokens-out charts.
+- For a school-policy assistant, the biggest product risk is not only downtime but also answering school rules incorrectly or without grounding in the right document.
+- Sensitive data risk matters because user prompts may contain student email, phone number, student ID, payment info, or disciplinary details.
 
 ## 1. High latency P95
 - Severity: P2
@@ -79,27 +81,70 @@ Recommended operating assumptions for this repo:
   - cost panel before/after incident
   - tokens in/out panel showing output-token jump
 
-## 4. Quality drop
+## 4. Policy grounding drop
 - Severity: P3
 - Trigger: `quality_score_avg < 0.85 for 15m`
-- Impact: the system may still be up, but answers are becoming less grounded or less useful.
+- Impact: the system may still be up, but answers about school regulations, announcements, or policies are becoming less grounded and less trustworthy.
 - Main signal:
   `quality_avg` trends downward while latency and error rate may still look healthy.
 - First checks:
-  1. Sample a few recent responses and compare them with the input question.
-  2. Check whether retrieval returned any relevant document.
-  3. Review logs for messages containing redaction markers or fallback answers.
+  1. Sample a few recent responses and compare them with the original policy question.
+  2. Check whether retrieval returned a relevant school-policy document.
+  3. Review traces or logs for fallback-style answers that are generic and not policy-specific.
+  4. Confirm whether the answer mixes up different categories such as tuition, discipline, attendance, or announcements.
 - Likely root cause in this lab:
   retrieval misses, weak answer generation, or repeated fallback responses.
 - Mitigation:
-  - Improve retrieval keywords or corpus coverage.
-  - Tighten prompt instructions for concise grounded answers.
+  - Improve retrieval keywords and coverage for school regulations, notices, and policy documents.
+  - Tighten prompt instructions so answers stay concise and grounded in available documents.
   - Add better quality heuristics if the signal is too noisy.
 - Evidence to capture:
   - quality panel with threshold line
-  - one response example showing degraded quality
+  - one response example showing a generic or weakly grounded policy answer
 
-## 5. Traffic gap
+## 5. Knowledge miss for policy questions
+- Severity: P2
+- Trigger: `repeated fallback answers or missing policy context for 10m`
+- Impact: the assistant keeps responding, but cannot reliably answer questions about school rules, which is a product-level incident for this use case.
+- Main signal:
+  repeated generic answers, low retrieval relevance, or traces showing missing useful context even though policy questions are being asked.
+- First checks:
+  1. Sample recent questions about regulations, notices, scholarship rules, tuition, attendance, or exam policy.
+  2. Check whether retrieval returned any school-specific document or only fallback text.
+  3. Identify whether the miss happens only for one topic area or across multiple policy categories.
+  4. Confirm whether the underlying corpus lacks the needed document or the retrieval keywords are too weak.
+- Likely root cause in this lab:
+  the retrieval corpus does not contain the needed school-policy document, or the query does not match the available keywords.
+- Mitigation:
+  - Add missing policy or announcement documents into the knowledge base.
+  - Improve document chunk titles and retrieval keywords for school terminology.
+  - Add a safe fallback that explicitly says the bot could not find the relevant rule instead of guessing.
+- Evidence to capture:
+  - one trace showing weak or missing retrieval context
+  - one user-facing answer that should have been policy-grounded but was generic
+
+## 6. PII or student data risk
+- Severity: P1
+- Trigger: `raw student identifiers appear in logs or responses`
+- Impact: potential leakage of sensitive student data such as email, phone number, student ID, payment information, or disciplinary information.
+- Main signal:
+  logs or responses contain raw personal data instead of hashed or redacted values.
+- First checks:
+  1. Search logs for raw email addresses, phone numbers, student IDs, or payment-like strings.
+  2. Verify that `user_id` is hashed and message previews are redacted.
+  3. Inspect whether a response echoed sensitive user input back to the user.
+  4. Confirm whether the issue is only in logs, only in responses, or both.
+- Likely root cause in this lab:
+  incomplete PII redaction, raw input being logged, or prompt/response summarization leaking user data.
+- Mitigation:
+  - Stop logging the unsafe field immediately or redact it before persistence.
+  - Review `app/pii.py` and `app/logging_config.py` for missing masking rules.
+  - Re-test with prompts containing school email, phone number, and payment-like strings.
+- Evidence to capture:
+  - one safe redacted log line
+  - if an issue occurs, one sanitized screenshot proving the leak was detected and fixed
+
+## 7. Traffic gap
 - Severity: P3
 - Trigger: `traffic < 10 requests in 5m during demo window`
 - Impact: dashboards may look empty, making it hard to validate SLOs, alerts, and traces live.
@@ -122,4 +167,5 @@ Recommended operating assumptions for this repo:
 2. Enable `rag_slow`, run `python scripts/load_test.py --concurrency 5`, and show P95 rising.
 3. Disable `rag_slow`, enable `tool_fail`, and show error-rate plus `error_breakdown`.
 4. Disable `tool_fail`, enable `cost_spike`, and show cost/tokens-out increasing.
-5. Reset incidents and capture a recovery screenshot for the report.
+5. Show one grounded policy answer and one redacted log example to prove correctness and data safety.
+6. Reset incidents and capture a recovery screenshot for the report.
