@@ -4,24 +4,22 @@ import hashlib
 import re
 from typing import Any
 
-PII_PATTERNS: dict[str, str] = {
-    "email": r"[\w\.-]+@[\w\.-]+\.\w+",
-    "phone_vn": r"(?:\+84|0)[ \.-]?(?:\d[ \.-]?){8,10}",  # Matches +84 90 123 4567, 090.123.4567, etc.
-    "cccd": r"\b\d{12}\b",
-    "credit_card": r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b",
-    # Common passport formats (incl. VN): B1234567, AB1234567, etc.
-    "passport": r"\b[A-Z]{1,2}\d{6,8}\b",
-    # Vietnamese address-ish phrases (keywords + short trailing segment)
-    "address_vn": r"(?i)\b(?:(?:địa[ \t]*chỉ)|so|s[oố]|ngo|ngõ|hem|hẻm|duong|d[uư][oờ]ng|pho|phố|"
-    r"phuong|ph[uư][oờ]ng|xa|xã|quan|q\.|huyen|huyện|tinh|tỉnh|"
-    r"thi[ \t]*tran|thị[ \t]*trấn|thanh[ \t]*pho|thành[ \t]*phố|tp\.|"
-    r"thon|thôn|ap|ấp|khu[ \t]*pho|khu[ \t]*phố)\b[\s:#\-]*[^,\n]{3,80}",
-}
+PII_PATTERNS: list[tuple[str, str]] = [
+    ("credit_card", r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b"),
+    ("cccd", r"\b\d{12}\b"),
+    ("email", r"[\w\.-]+@[\w\.-]+\.\w+"),
+    ("phone_vn", r"(?<!\d)(?:\+84|0)[ \.-]?\d(?:[ \.-]?\d){8,9}(?:[ \.-]?\d){0,0}(?!\d)"),
+    ("passport", r"\b[A-Z]{1,2}\d{6,8}\b"),
+    ("address_vn", r"(?i)\b(?:(?:địa[ \t]*chỉ)|so|s[oố]|ngo|ngõ|hem|hẻm|duong|d[uư][oờ]ng|pho|phố|"
+     r"phuong|ph[uư][oờ]ng|xa|xã|quan|q\.|huyen|huyện|tinh|tỉnh|"
+     r"thi[ \t]*tran|thị[ \t]*trấn|thanh[ \t]*pho|thành[ \t]*phố|tp\.|"
+     r"thon|thôn|ap|ấp|khu[ \t]*pho|khu[ \t]*phố)\b[\s:#\-]*[^,\n]{3,80}"),
+]
 
 
 def scrub_text(text: str) -> str:
     safe = text
-    for name, pattern in PII_PATTERNS.items():
+    for name, pattern in PII_PATTERNS:
         safe = re.sub(pattern, f"[REDACTED_{name.upper()}]", safe)
     return safe
 
