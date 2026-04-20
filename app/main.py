@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -34,6 +37,17 @@ async def startup() -> None:
     )
 
 
+@app.on_event("shutdown")
+async def shutdown() -> None:
+    if tracing_enabled():
+        try:
+            from langfuse.decorators import langfuse_context
+            langfuse_context.flush()
+            log.info("langfuse_flushed", service="api")
+        except Exception:
+            pass
+
+
 @app.get("/health")
 async def health() -> dict:
     return {"ok": True, "tracing_enabled": tracing_enabled(), "incidents": status()}
@@ -46,12 +60,13 @@ async def metrics() -> dict:
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
+    # Enrich logs with request context (user_id_hash, session_id, feature, model, env)
     bind_contextvars(
         user_id_hash=hash_user_id(body.user_id),
         session_id=body.session_id,
         feature=body.feature,
-        model=agent.model,
-        env=os.getenv("APP_ENV", "dev"),
+        model="gpt-4-turbo",
+        env=os.getenv("APP_ENV", "dev")
     )
     
     log.info(

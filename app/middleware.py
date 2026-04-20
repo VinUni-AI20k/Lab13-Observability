@@ -17,6 +17,7 @@ class CorrelationIdMiddleware(BaseHTTPMiddleware):
         header_request_id = request.headers.get("x-request-id", "").strip()
         correlation_id = header_request_id or f"req-{uuid.uuid4().hex[:8]}"
         
+        # Bind the correlation_id to structlog contextvars
         bind_contextvars(correlation_id=correlation_id)
         
         request.state.correlation_id = correlation_id

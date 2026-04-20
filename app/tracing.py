@@ -28,6 +28,7 @@ try:
     langfuse_context = _LangfuseContextAdapter()
     _LANGFUSE_IMPORT_OK = True
 except Exception:  # pragma: no cover
+    SDK_LOADED = False
     def observe(*args: Any, **kwargs: Any):
         def decorator(func):
             return func
