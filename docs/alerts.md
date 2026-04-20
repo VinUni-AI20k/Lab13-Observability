@@ -1,121 +1,110 @@
 # Alert Rules and Runbooks
-> **Note**: These runbooks are tailored to our specific architecture: 
-> FastAPI → Agent Pipeline (RAG retrieve + LLM generate) → Metrics
 
-## 1. High latency P95 (> 4000ms for 10min)
-**Why this matters:** P95 latency approaching SLO (3000ms). Gives 33% buffer before SLO breach.
+Architecture: FastAPI chat endpoint - agent pipeline (retrieve + generate) - metrics collection
 
-**Root cause check (in order):**
-1. Check if `rag_slow` incident is enabled:
-   ```bash
+## Alert 1: High Latency P95 (> 4000ms for 10 minutes)
+
+SLO target: 3000ms. Alert at 4000ms provides 33% buffer.
+
+Diagnosis:
+1. Check if rag_slow incident enabled:
    curl http://localhost:8000/health | grep rag_slow
-   # If "rag_slow": true → This is the problem!
-   ```
 
-2. If not, analyze traces to find bottleneck:
-   ```bash
-   # Open Langfuse → Last 1 hour → Filter by duration > 4000ms
-   # Look at the span breakdown:
-   - If retrieve() ~ 5ms + generate() ~ 26000ms → **LLM is slow**
-   - If retrieve() ~ 5000ms + generate() ~ 1000ms → **RAG is slow**
-   ```
+2. Check Langfuse traces for bottleneck:
+   - Retrieve time + Generate time = total latency
+   - If retrieve ~5ms, generate ~4000ms: LLM is slow
+   - If retrieve ~4000ms, generate ~100ms: RAG is slow
 
-3. Check logs for errors:
-   ```bash
-   grep "error_type\|request_failed" data/logs.jsonl | tail -20
-   ```
+3. Check error logs:
+   grep "error\|failed" data/logs.jsonl
 
-**Mitigation actions:**
-- **If RAG slow:** Disable RAG temporarily, or cache common queries
-- **If LLM slow:** Use faster LLM model, reduce prompt size (lower doc_count)
-- **If test incident:** Disable with `curl -X POST http://localhost:8000/incidents/rag_slow/disable`
+Action:
+- Disable incident if enabled
+- If LLM slow: reduce context size or use faster model
+- If RAG slow: optimize retrieval or cache results
 
 ---
 
-## 2. High error rate (> 5% for 5min) - **P1 CRITICAL**
-**Why this matters:** Users can't get responses. Service is down.
+## Alert 2: High Error Rate (> 5% for 5 minutes) - CRITICAL
 
-**Root cause check:**
-1. See which error type is happening:
-   ```bash
-   # Check metrics endpoint
+SLO target: 2% error rate.
+
+Diagnosis:
+1. Check error types:
    curl http://localhost:8000/metrics | grep error_breakdown
-   # Example: {"RuntimeError": 10, "ValueError": 2}
-   ```
 
-2. Check if `tool_fail` incident is enabled:
-   ```bash
+2. Check if tool_fail incident enabled:
    curl http://localhost:8000/health | grep tool_fail
-   # If "tool_fail": true → Disable it: 
-   # curl -X POST http://localhost:8000/incidents/tool_fail/disable
-   ```
 
-3. Inspect logs for error details:
-   ```bash
-   grep "error_type.*RuntimeError\|request_failed" data/logs.jsonl | tail -5
-   # Shows what went wrong in agent.run()
-   ```
+3. Check which operation failed:
+   grep "error_type\|traceback" data/logs.jsonl | tail -10
 
-4. Check traces for failed spans:
-   ```bash
-   # Langfuse → Filter failed traces (red status)
-   # Look for: mock_llm.generate() or retrieve() exceptions
-   ```
+4. Check Langfuse for failed traces
 
-**Mitigation actions:**
-- **If RuntimeError:** Check mock_llm.generate() - may need to fix prompt format
-- **If tool_fail incident enabled:** Disable immediately with incident API
-- **If persistent:** Restart app, check dependencies (mock LLM, mock RAG)
+Action:
+- Disable tool_fail incident immediately
+- If RuntimeError in mock_llm: check prompt format
+- If persistent: restart service and verify dependencies
 
 ---
 
-## 3. Cost spike (hourly_cost > 2x baseline for 15min) - **P2**
-**Why this matters:** Unexpected expense spike could exhaust monthly budget.
+## Alert 3: Cost Spike (> 2x baseline for 15 minutes)
 
-**Root cause check:**
-1. Compare tokens to baseline:
-   ```bash
-   # Check metrics
-   curl http://localhost:8000/metrics | grep -E "tokens_in|tokens_out|avg_cost"
-   # If tokens_out >> normal → User sent longer message
-   ```
+SLO target: daily cost $2.5.
 
-2. Check if `cost_spike` incident is enabled:
-   ```bash
+Diagnosis:
+1. Check current token usage:
+   curl http://localhost:8000/metrics | grep tokens
+
+2. Check if cost_spike incident enabled:
    curl http://localhost:8000/health | grep cost_spike
-   # If "cost_spike": true → This simulates higher token output
-   ```
 
-3. Analyze which feature is expensive:
-   ```bash
-   # Langfuse → Filter by tags (feature=search vs feature=qa)
-   # Compare tokens_in/tokens_out by feature
-   ```
+3. Analyze by feature in Langfuse traces
 
-4. Check request payload size:
-   ```bash
-   grep "message_preview" data/logs.jsonl | tail -10
-   # Long messages = more context = higher cost
-   ```
+4. Check request sizes:
+   grep "message" data/logs.jsonl | tail -10
 
-**Mitigation actions:**
-- **If cost_spike incident:** Disable with `curl -X POST http://localhost:8000/incidents/cost_spike/disable`
-- **If users sending long queries:** Implement query truncation (max 500 chars)
-- **If feature too expensive:** Route simple queries to cheaper model
-- **General:** Monitor daily cost budget, set hourly alert threshold
+Action:
+- Disable cost_spike incident if enabled
+- Implement request size limits if users sending long queries
+- Route expensive queries to cheaper model if needed
 
 ---
 
-## Summary: Alert → Debug Flow
+## Alert 4: Low Quality Score (< 0.75 for 15 minutes)
 
-| Alert | 1st Check | 2nd Check | Action |
-|-------|-----------|-----------|--------|
-| **High Latency** | `curl /health` for rag_slow | Langfuse trace breakdown | Disable incident OR optimize LLM |
-| **High Error Rate** | Check error_breakdown metrics | Inspect logs + failed traces | Disable tool_fail OR restart app |
-| **Cost Spike** | Check cost_spike incident | Compare tokens by feature | Disable incident OR truncate queries |
+SLO target: quality score 0.75.
 
-**Key metric endpoints:**
-- Health: `GET /health` → see incidents enabled
-- Metrics: `GET /metrics` → see latency_p95, error_breakdown, avg_cost
-- Logs: `data/logs.jsonl` → see detailed request flow
-- Traces: Langfuse UI → see span breakdown
+Diagnosis:
+1. Check current quality metrics:
+   curl http://localhost:8000/metrics | grep quality
+
+2. Review quality calculation in agent.py:
+   Base 0.5 + 0.2 (docs retrieved) + 0.1 (answer length) + 0.1 (keywords) - 0.2 (PII issues)
+
+3. Check traces by feature
+
+4. Check logs for PII redactions:
+   grep "pii_redacted" data/logs.jsonl
+
+Action:
+- If no docs retrieved: check RAG retrieval
+- If answers too short: adjust LLM prompt
+- If PII being redacted: review patterns in pii.py
+
+---
+
+## Configuration Mapping
+
+SLO targets (config/slo.yaml) to alert thresholds (config/alert_rules.yaml):
+
+1. Latency P95: SLO 3000ms, alert 4000ms (33% buffer)
+2. Error rate: SLO 2%, alert 5% (150% buffer)
+3. Daily cost: SLO $2.5, alert 2x baseline
+4. Quality: SLO 0.75, alert below 0.75
+
+Debug endpoints:
+- GET /health: shows enabled incidents
+- GET /metrics: shows current metric values
+- data/logs.jsonl: structured request logs
+- Langfuse UI: trace visualization and analysis
