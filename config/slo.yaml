@@ -2,15 +2,22 @@ service: day13-observability-lab
 window: 28d
 slis:
   latency_p95_ms:
-    objective: 3000
-    target: 99.5
-    note: Replace with your group's target
-  error_rate_pct:
-    objective: 2
+    objective: 800
     target: 99.0
-  daily_cost_usd:
-    objective: 2.5
-    target: 100.0
-  quality_score_avg:
-    objective: 0.75
+    note: Baseline chat requests are typically sub-300ms; this leaves headroom for light variance while still catching rag_slow quickly.
+  error_rate_pct:
+    objective: 1
+    target: 99.0
+    note: Normal lab traffic should have near-zero failures. Any sustained 500s likely indicate tool_fail or a regression.
+  traffic_requests_per_5m:
+    objective: 10
     target: 95.0
+    note: During demo/load test we expect at least one 10-request burst in a 5 minute window so dashboards and alerts have usable signal.
+  daily_cost_usd:
+    objective: 0.05
+    target: 100.0
+    note: FakeLLM costs are tiny in this lab; crossing this budget suggests repeated load tests or the cost_spike incident.
+  quality_score_avg:
+    objective: 0.85
+    target: 95.0
+    note: The current heuristic usually lands around 0.8-0.9 when retrieval succeeds, so drops below 0.85 are worth reviewing.
