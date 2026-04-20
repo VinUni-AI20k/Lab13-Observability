@@ -50,38 +50,54 @@
         </li>
       </ul>
 
-      <div class="sidebar-status">
-        <span class="status-dot" id="health-dot"></span>
-        <span id="health-text">Checking…</span>
+      <div class="sidebar-meta">
+        <div class="sidebar-status">
+          <span class="status-dot" id="health-dot"></span>
+          <span id="health-text">Checking…</span>
+        </div>
+        <div class="sidebar-model" id="model-badge"></div>
       </div>
     </nav>
 
     <!-- ── Main ── -->
     <main class="main">
 
-      <!-- Chat Tab -->
+      <!-- ══ Chat Tab ══ -->
       <section class="tab-panel active" id="tab-chat">
         <div class="panel-header">
-          <h1>Chat</h1>
+          <h1>Chat
+            <span class="panel-subtitle" id="chat-subtitle">IP Tech Support</span>
+            <span class="mode-badge" id="mode-badge"></span>
+          </h1>
           <div class="row-gap">
+            <label class="label-inline">Persona</label>
+            <select id="chat-persona" onchange="onPersonaChange()">
+              <option value="default">Default (VI)</option>
+              <option value="brief">Brief</option>
+              <option value="verbose">Verbose</option>
+              <option value="english">English</option>
+            </select>
             <label class="label-inline">Feature</label>
             <select id="chat-feature">
               <option value="qa">QA</option>
               <option value="summary">Summary</option>
             </select>
-            <button class="btn btn-ghost" onclick="clearChat()">Clear</button>
+            <button class="btn btn-ghost" onclick="clearChat()" title="Clear chat + reset AI memory">Clear</button>
           </div>
         </div>
         <div class="chat-messages" id="chat-messages">
           <div class="chat-welcome">
-            <p>Ask the lab agent anything — try <em>"What is your refund policy?"</em></p>
+            <p>Xin chào! Tôi là <strong>AI Tech Support</strong> của cửa hàng thiết bị IP.</p>
+            <p>Thử hỏi: <em>"Camera của tôi mất kết nối WiFi"</em> hoặc <em>"Giá NVR 16 kênh là bao nhiêu?"</em></p>
           </div>
         </div>
         <div class="chat-input-area">
-          <textarea id="chat-input" placeholder="Type your message… (Enter to send, Shift+Enter for newline)" rows="3"
+          <textarea id="chat-input"
+            placeholder="Nhập câu hỏi… (Enter gửi, Shift+Enter xuống dòng)"
+            rows="3"
             onkeydown="handleChatKey(event)"></textarea>
           <button class="btn btn-primary" id="send-btn" onclick="sendMessage()">
-            Send
+            Gửi
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/>
             </svg>
@@ -89,17 +105,25 @@
         </div>
       </section>
 
-      <!-- Dashboard Tab -->
+      <!-- ══ Dashboard Tab ══ -->
       <section class="tab-panel" id="tab-dashboard">
         <div class="panel-header">
           <h1>Dashboard</h1>
-          <button class="btn btn-ghost" onclick="refreshDashboard()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="23,4 23,10 17,10"/>
-              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-            </svg>
-            Refresh
-          </button>
+          <div class="row-gap">
+            <button class="btn btn-ghost" onclick="seedDemoData()" id="seed-btn" title="Inject 20 sample conversations into logs">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+              </svg>
+              Seed Data
+            </button>
+            <button class="btn btn-ghost" onclick="refreshDashboard()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23,4 23,10 17,10"/>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+              </svg>
+              Refresh
+            </button>
+          </div>
         </div>
 
         <div class="metric-cards">
@@ -133,8 +157,8 @@
             <canvas id="chart-tokens"></canvas>
           </div>
           <div class="chart-card">
-            <h3>Error Breakdown</h3>
-            <canvas id="chart-errors"></canvas>
+            <h3>Issue Type Distribution</h3>
+            <canvas id="chart-issues"></canvas>
           </div>
           <div class="chart-card">
             <h3>SLO Status</h3>
@@ -143,10 +167,12 @@
         </div>
       </section>
 
-      <!-- Logs Tab -->
+      <!-- ══ Logs Tab ══ -->
       <section class="tab-panel" id="tab-logs">
         <div class="panel-header">
-          <h1>Logs</h1>
+          <h1>Logs
+            <span class="panel-subtitle" id="log-schema-note"></span>
+          </h1>
           <div class="row-gap">
             <input type="text" id="log-search" placeholder="Search…" oninput="filterLogs()" />
             <select id="log-level-filter" onchange="filterLogs()">
@@ -155,22 +181,19 @@
               <option value="warning">warning</option>
               <option value="error">error</option>
             </select>
+            <select id="log-issue-filter" onchange="filterLogs()">
+              <option value="">All types</option>
+              <option value="BUG">BUG</option>
+              <option value="FEATURE_REQUEST">FEATURE</option>
+              <option value="QUESTION">QUESTION</option>
+            </select>
             <button class="btn btn-ghost" onclick="refreshLogs()">Refresh</button>
           </div>
         </div>
 
         <div class="log-table-wrap">
-          <table class="log-table">
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Level</th>
-                <th>Service</th>
-                <th>Event</th>
-                <th>Correlation ID</th>
-                <th>Latency</th>
-              </tr>
-            </thead>
+          <table class="log-table" id="log-table">
+            <thead id="log-thead"></thead>
             <tbody id="log-tbody"></tbody>
           </table>
           <div class="log-empty" id="log-empty">No logs yet — send a chat message first.</div>
@@ -178,14 +201,14 @@
 
         <div class="log-detail" id="log-detail" style="display:none">
           <div class="log-detail-header">
-            <span>Log Record</span>
+            <span>Log Record (full JSON)</span>
             <button class="btn btn-ghost btn-sm" onclick="closeLogDetail()">✕</button>
           </div>
           <pre id="log-detail-content"></pre>
         </div>
       </section>
 
-      <!-- Incidents Tab -->
+      <!-- ══ Incidents Tab ══ -->
       <section class="tab-panel" id="tab-incidents">
         <div class="panel-header">
           <h1>Incidents</h1>
@@ -198,7 +221,7 @@
               <code class="incident-name">rag_slow</code>
               <span class="incident-badge off" id="badge-rag_slow">OFF</span>
             </div>
-            <p class="incident-desc">Injects a 2.5 s delay into RAG retrieval — exercises P95 latency alert thresholds and runbook escalation paths.</p>
+            <p class="incident-desc">Injects 2.5 s delay into RAG retrieval — exercises P95 latency alert threshold and runbook escalation.</p>
             <div class="incident-actions">
               <button class="btn btn-success btn-sm" onclick="toggleIncident('rag_slow','enable')">Enable</button>
               <button class="btn btn-danger btn-sm" onclick="toggleIncident('rag_slow','disable')">Disable</button>
@@ -210,7 +233,7 @@
               <code class="incident-name">tool_fail</code>
               <span class="incident-badge off" id="badge-tool_fail">OFF</span>
             </div>
-            <p class="incident-desc">Throws a RuntimeError from the RAG tool — drives error_rate metric above SLO threshold and tests error handling.</p>
+            <p class="incident-desc">Throws RuntimeError from RAG tool — drives error_rate above SLO threshold and tests error handling.</p>
             <div class="incident-actions">
               <button class="btn btn-success btn-sm" onclick="toggleIncident('tool_fail','enable')">Enable</button>
               <button class="btn btn-danger btn-sm" onclick="toggleIncident('tool_fail','disable')">Disable</button>
@@ -222,7 +245,7 @@
               <code class="incident-name">cost_spike</code>
               <span class="incident-badge off" id="badge-cost_spike">OFF</span>
             </div>
-            <p class="incident-desc">Forces 4× output token generation — triggers the cost-budget alert and demonstrates token-level observability.</p>
+            <p class="incident-desc">Forces 4× output tokens — triggers cost-budget alert and demonstrates token-level observability.</p>
             <div class="incident-actions">
               <button class="btn btn-success btn-sm" onclick="toggleIncident('cost_spike','enable')">Enable</button>
               <button class="btn btn-danger btn-sm" onclick="toggleIncident('cost_spike','disable')">Disable</button>
@@ -234,6 +257,7 @@
     </main>
   </div>
 
+  <div id="toast" class="toast" style="display:none"></div>
   <script src="/static/app.js"></script>
 </body>
 </html>

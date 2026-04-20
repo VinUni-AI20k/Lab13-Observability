@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import json
 import os
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from structlog.contextvars import bind_contextvars
 
 from .agent import LabAgent
@@ -31,7 +35,11 @@ async def startup() -> None:
         "app_started",
         service=os.getenv("APP_NAME", "day13-observability-lab"),
         env=os.getenv("APP_ENV", "dev"),
-        payload={"tracing_enabled": tracing_enabled()},
+        payload={
+            "tracing_enabled": tracing_enabled(),
+            "openai_enabled": agent.llm.enabled,
+            "model": agent.model,
+        },
     )
 
 
@@ -42,7 +50,22 @@ async def index() -> FileResponse:
 
 @app.get("/health")
 async def health() -> dict:
-    return {"ok": True, "tracing_enabled": tracing_enabled(), "incidents": status()}
+    return {
+        "ok": True,
+        "tracing_enabled": tracing_enabled(),
+        "openai_enabled": agent.llm.enabled,
+        "mode": agent.llm.mode,          # "live" | "demo"
+        "model": agent.model,
+        "incidents": status(),
+    }
+
+
+@app.post("/seed")
+async def seed_logs(n: int = 20, reset: bool = False) -> dict:
+    from .seed import seed
+    count = seed(n=n, reset=reset)
+    log.info("demo_data_seeded", service="control", payload={"count": count, "reset": reset})
+    return {"ok": True, "seeded": count}
 
 
 @app.get("/metrics")
@@ -67,13 +90,17 @@ async def get_logs(n: int = 200) -> list:
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
-    # TODO: Enrich logs with request context (user_id_hash, session_id, feature, model, env)
-    # bind_contextvars(...)
-    
+    bind_contextvars(
+        user_id_hash=hash_user_id(body.user_id),
+        session_id=body.session_id,
+        feature=body.feature,
+        model=os.getenv("MODEL_NAME", agent.model),
+        env=os.getenv("APP_ENV", "dev"),
+    )
     log.info(
         "request_received",
         service="api",
-        payload={"message_preview": summarize_text(body.message)},
+        payload={"message_preview": summarize_text(body.message), "persona": body.persona},
     )
     try:
         result = agent.run(
@@ -81,6 +108,7 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             feature=body.feature,
             session_id=body.session_id,
             message=body.message,
+            persona=body.persona,
         )
         log.info(
             "response_sent",
@@ -89,6 +117,8 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             tokens_in=result.tokens_in,
             tokens_out=result.tokens_out,
             cost_usd=result.cost_usd,
+            issue_type=result.issue_type,
+            model_used=result.model_used,
             payload={"answer_preview": summarize_text(result.answer)},
         )
         return ChatResponse(
@@ -99,6 +129,8 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             tokens_out=result.tokens_out,
             cost_usd=result.cost_usd,
             quality_score=result.quality_score,
+            issue_type=result.issue_type,
+            model_used=result.model_used,
         )
     except Exception as exc:  # pragma: no cover
         error_type = type(exc).__name__
@@ -110,6 +142,13 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             payload={"detail": str(exc), "message_preview": summarize_text(body.message)},
         )
         raise HTTPException(status_code=500, detail=error_type) from exc
+
+
+@app.delete("/session/{session_id}")
+async def clear_session(session_id: str) -> JSONResponse:
+    agent.clear_session(session_id)
+    log.info("session_cleared", service="api", session_id=session_id)
+    return JSONResponse({"ok": True, "session_id": session_id})
 
 
 @app.post("/incidents/{name}/enable")

@@ -78,14 +78,26 @@ body {
 .nav-item:hover  { background: var(--card-bg); color: var(--text-1); }
 .nav-item.active { background: rgba(124,58,237,.15); color: #a78bfa; }
 
+.sidebar-meta {
+  border-top: 1px solid var(--card-border);
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 .sidebar-status {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px 0;
-  border-top: 1px solid var(--card-border);
+  padding: 4px 12px;
   font-size: 12px;
   color: var(--text-2);
+}
+.sidebar-model {
+  font-size: 11px;
+  color: var(--text-3);
+  padding: 0 12px 4px;
+  font-family: "Consolas", monospace;
 }
 
 .status-dot {
@@ -117,7 +129,8 @@ body {
   border-bottom: 1px solid var(--card-border);
   flex-shrink: 0;
 }
-.panel-header h1 { font-size: 18px; font-weight: 600; }
+.panel-header h1 { font-size: 18px; font-weight: 600; display: flex; align-items: baseline; gap: 10px; }
+.panel-subtitle { font-size: 13px; font-weight: 400; color: var(--text-2); }
 
 /* ── Utility ── */
 .row-gap { display: flex; align-items: center; gap: 8px; }
@@ -228,14 +241,44 @@ select:focus, input[type="text"]:focus { border-color: var(--accent); }
 
 .message-loading .message-bubble {
   display: flex;
-  gap: 5px;
-  align-items: center;
-  padding: 14px 18px;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
 }
+.thinking-label { font-size: 12px; color: var(--text-2); font-style: italic; }
+.dots-row { display: flex; gap: 5px; align-items: center; }
 .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-2); animation: blink 1.2s ease-in-out infinite; }
 .dot:nth-child(2) { animation-delay: .2s; }
 .dot:nth-child(3) { animation-delay: .4s; }
 @keyframes blink { 0%,80%,100% { opacity:.25; transform:scale(.8); } 40% { opacity:1; transform:scale(1); } }
+
+/* ── Issue-type badges ── */
+.issue-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-bottom: 4px;
+}
+.issue-bug      { background: rgba(248,81,73,.18);  color: #f85149; border: 1px solid rgba(248,81,73,.35); }
+.issue-feature  { background: rgba(124,58,237,.18); color: #a78bfa; border: 1px solid rgba(124,58,237,.35); }
+.issue-question { background: rgba(88,166,255,.18); color: #58a6ff; border: 1px solid rgba(88,166,255,.35); }
+.issue-unknown  { display: none; }
+
+/* small badge for log table */
+.issue-badge-sm {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.issue-badge-sm.issue-bug      { background: rgba(248,81,73,.18);  color: #f85149; }
+.issue-badge-sm.issue-feature  { background: rgba(124,58,237,.18); color: #a78bfa; }
+.issue-badge-sm.issue-question { background: rgba(88,166,255,.18); color: #58a6ff; }
+.issue-badge-sm.issue-unknown  { color: var(--text-3); background: none; }
 
 .chat-input-area {
   display: flex;
@@ -450,6 +493,38 @@ select:focus, input[type="text"]:focus { border-color: var(--accent); }
 
 .incident-desc    { font-size: 13px; color: var(--text-2); line-height: 1.55; }
 .incident-actions { display: flex; gap: 8px; }
+
+/* ── Mode badge ── */
+.mode-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 20px;
+  letter-spacing: .03em;
+  cursor: default;
+}
+.mode-live    { background: rgba(63,185,80,.15);  color: var(--success); border: 1px solid rgba(63,185,80,.35); }
+.mode-demo    { background: rgba(210,153,34,.15); color: var(--warning); border: 1px solid rgba(210,153,34,.35); }
+.mode-offline { background: rgba(72,79,88,.2);    color: var(--text-3);  border: 1px solid var(--card-border); }
+
+/* ── Toast notification ── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 9999;
+  animation: slide-up 0.2s ease;
+  max-width: 360px;
+}
+.toast-ok    { background: #1a3a1f; color: var(--success); border: 1px solid rgba(63,185,80,.4); }
+.toast-error { background: #3a1a1a; color: var(--error);   border: 1px solid rgba(248,81,73,.4); }
+@keyframes slide-up { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar        { width: 5px; }
