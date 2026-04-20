@@ -143,6 +143,25 @@
       color: var(--accent);
     }
 
+    .value-updated {
+      animation: valuePulse 520ms ease-out;
+    }
+
+    @keyframes valuePulse {
+      0% {
+        transform: translateY(0);
+        text-shadow: 0 0 0 rgba(19, 111, 99, 0);
+      }
+      35% {
+        transform: translateY(-1px);
+        text-shadow: 0 0 14px rgba(19, 111, 99, 0.3);
+      }
+      100% {
+        transform: translateY(0);
+        text-shadow: 0 0 0 rgba(19, 111, 99, 0);
+      }
+    }
+
     .hint {
       margin: 2px 0 8px;
       color: var(--muted);
@@ -156,6 +175,68 @@
       border: 1px solid #ecf0ec;
       border-radius: 10px;
       background: linear-gradient(180deg, #fbfdfb 0%, #f5faf8 100%);
+    }
+
+    .spark .grid-line {
+      stroke: rgba(27, 58, 45, 0.12);
+      stroke-width: 1;
+    }
+
+    .spark .chart-area {
+      opacity: 0.58;
+    }
+
+    .spark .chart-line {
+      fill: none;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .spark.animate .chart-area {
+      animation: areaFade 420ms ease-out;
+    }
+
+    .spark.animate .chart-line {
+      animation: lineSweep 520ms ease-out;
+    }
+
+    .spark.animate .chart-last {
+      animation: pointPop 520ms ease-out;
+    }
+
+    @keyframes areaFade {
+      from { opacity: 0.18; }
+      to { opacity: 0.58; }
+    }
+
+    @keyframes lineSweep {
+      from {
+        opacity: 0.45;
+        transform: translateX(5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes pointPop {
+      0% { transform: scale(0.72); opacity: 0.55; }
+      60% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .spark .chart-last {
+      stroke: #ffffff;
+      stroke-width: 2;
+      r: 4;
+    }
+
+    .spark .threshold-label {
+      font-size: 9px;
+      font-weight: 700;
+      opacity: 0.9;
     }
 
     .pill {
@@ -446,6 +527,18 @@
 
     const history = [];
 
+    function setAnimatedText(elementId, newText) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      if (el.textContent !== newText) {
+        el.textContent = newText;
+        el.classList.remove("value-updated");
+        // Force reflow so animation restarts for every new update.
+        void el.offsetWidth;
+        el.classList.add("value-updated");
+      }
+    }
+
     function formatNum(value, digits = 2) {
       return Number(value || 0).toFixed(digits);
     }
@@ -454,16 +547,32 @@
       return `<span class="pill ${type}">${text}</span>`;
     }
 
-    function linePoints(values, width, height, minV, maxV) {
-      if (!values.length) return "";
+    function toPoints(values, width, chartHeight, minV, maxV, padTop) {
+      if (!values.length) return [];
       const safeMin = Number.isFinite(minV) ? minV : Math.min(...values);
       const safeMax = Number.isFinite(maxV) ? maxV : Math.max(...values);
       const range = Math.max(1e-9, safeMax - safeMin);
       return values.map((v, i) => {
         const x = (i / Math.max(1, values.length - 1)) * width;
-        const y = height - ((v - safeMin) / range) * height;
-        return `${x.toFixed(2)},${y.toFixed(2)}`;
-      }).join(" ");
+        const y = chartHeight - ((v - safeMin) / range) * chartHeight + padTop;
+        return { x, y };
+      });
+    }
+
+    function smoothPath(points) {
+      if (!points.length) return "";
+      if (points.length === 1) return `M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`;
+      let d = `M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`;
+      for (let i = 1; i < points.length; i++) {
+        const prev = points[i - 1];
+        const curr = points[i];
+        const mx = (prev.x + curr.x) / 2;
+        const my = (prev.y + curr.y) / 2;
+        d += ` Q ${prev.x.toFixed(2)} ${prev.y.toFixed(2)}, ${mx.toFixed(2)} ${my.toFixed(2)}`;
+      }
+      const last = points[points.length - 1];
+      d += ` T ${last.x.toFixed(2)} ${last.y.toFixed(2)}`;
+      return d;
     }
 
     function drawSpark(svgId, values, options = {}) {
@@ -473,40 +582,65 @@
       const padTop = 8;
       const padBottom = 8;
       const chartHeight = height - padTop - padBottom;
+      const lineColor = options.lineColor || "#136f63";
+      const fillTop = options.fillTop || lineColor;
+      const fillBottom = options.fillBottom || "#ffffff";
       const minValue = options.min ?? Math.min(...values, 0);
       const maxValue = options.max ?? Math.max(...values, 1);
-      const pts = linePoints(values, width, chartHeight, minValue, maxValue)
-        .split(" ")
-        .filter(Boolean)
-        .map((p) => {
-          const [x, y] = p.split(",");
-          return `${x},${(Number(y) + padTop).toFixed(2)}`;
-        }).join(" ");
+      const points = toPoints(values, width, chartHeight, minValue, maxValue, padTop);
+      const polyPts = points.map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" ");
+      const linePath = smoothPath(points);
+      const first = points[0];
+      const last = points[points.length - 1];
+      const areaPath = points.length
+        ? `M ${first.x.toFixed(2)} ${height - padBottom} L ${polyPts} L ${last.x.toFixed(2)} ${height - padBottom} Z`
+        : "";
 
       let thresholdLine = "";
+      const range = Math.max(1e-9, maxValue - minValue);
       if (typeof options.threshold === "number") {
-        const range = Math.max(1e-9, maxValue - minValue);
         const y = chartHeight - ((options.threshold - minValue) / range) * chartHeight + padTop;
         const color = options.thresholdColor || "#1f7a5d";
         thresholdLine += `<line x1="0" y1="${y.toFixed(2)}" x2="${width}" y2="${y.toFixed(2)}" stroke="${color}" stroke-dasharray="6 4" stroke-width="1.5" />`;
+        thresholdLine += `<text x="${(width - 4).toFixed(2)}" y="${Math.max(10, y - 3).toFixed(2)}" text-anchor="end" fill="${color}" class="threshold-label">SLO</text>`;
       }
       if (typeof options.threshold2 === "number") {
-        const range = Math.max(1e-9, maxValue - minValue);
         const y = chartHeight - ((options.threshold2 - minValue) / range) * chartHeight + padTop;
         const color = options.threshold2Color || "#c13f2a";
         thresholdLine += `<line x1="0" y1="${y.toFixed(2)}" x2="${width}" y2="${y.toFixed(2)}" stroke="${color}" stroke-dasharray="4 3" stroke-width="1.5" />`;
+        thresholdLine += `<text x="${(width - 4).toFixed(2)}" y="${Math.max(10, y - 3).toFixed(2)}" text-anchor="end" fill="${color}" class="threshold-label">ALERT</text>`;
       }
 
-      const area = pts
-        ? `M0,${height - padBottom} L ${pts} L ${width},${height - padBottom} Z`
+      const gridLines = [0.2, 0.4, 0.6, 0.8]
+        .map((r) => {
+          const y = padTop + chartHeight * r;
+          return `<line class="grid-line" x1="0" y1="${y.toFixed(2)}" x2="${width}" y2="${y.toFixed(2)}" />`;
+        })
+        .join("");
+
+      const gradientId = `${svgId}-grad`;
+      const marker = last
+        ? `<circle class="chart-last" cx="${last.x.toFixed(2)}" cy="${last.y.toFixed(2)}" fill="${lineColor}" />`
         : "";
 
       svg.innerHTML = `
+        <defs>
+          <linearGradient id="${gradientId}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="${fillTop}" stop-opacity="0.35"></stop>
+            <stop offset="100%" stop-color="${fillBottom}" stop-opacity="0.05"></stop>
+          </linearGradient>
+        </defs>
         <rect x="0" y="0" width="${width}" height="${height}" fill="transparent"></rect>
+        ${gridLines}
         ${thresholdLine}
-        ${area ? `<path d="${area}" fill="#d9f0ec" opacity="0.55"></path>` : ""}
-        ${pts ? `<polyline points="${pts}" fill="none" stroke="#136f63" stroke-width="2"></polyline>` : ""}
+        ${areaPath ? `<path class="chart-area" d="${areaPath}" fill="url(#${gradientId})"></path>` : ""}
+        ${linePath ? `<path class="chart-line" d="${linePath}" stroke="${lineColor}"></path>` : ""}
+        ${marker}
       `;
+
+      svg.classList.remove("animate");
+      void svg.offsetWidth;
+      svg.classList.add("animate");
     }
 
     function updatePanels(snapshot, now) {
@@ -525,8 +659,7 @@
       document.getElementById("lastUpdated").textContent =
         `Last updated: ${new Date(now).toLocaleTimeString()}`;
 
-      document.getElementById("latencyValue").textContent =
-        `P95: ${formatNum(snapshot.latency_p95, 0)} ms`;
+      setAnimatedText("latencyValue", `P95: ${formatNum(snapshot.latency_p95, 0)} ms`);
       document.getElementById("latencyStatus").innerHTML =
         snapshot.latency_p95 <= 1000
           ? pill("ok", "Within SLO <1000ms")
@@ -534,20 +667,20 @@
             ? pill("warn", "SLO breached, below alert")
             : pill("danger", "P2 alert zone >1500ms");
 
-      document.getElementById("trafficValue").textContent =
-        `${traffic} req | ${formatNum(qps, 2)} qps`;
+      setAnimatedText("trafficValue", `${traffic} req | ${formatNum(qps, 2)} qps`);
 
-      document.getElementById("errorValue").textContent = `${formatNum(errorRate, 2)}%`;
+      setAnimatedText("errorValue", `${formatNum(errorRate, 2)}%`);
       document.getElementById("errorStatus").innerHTML =
         errorRate < 1 ? pill("ok", "Within SLO <1%") : pill("danger", "P1 alert zone >1% error rate");
 
-      document.getElementById("costValue").textContent =
-        `$${formatNum(snapshot.total_cost_usd, 4)} total | avg $${formatNum(snapshot.avg_cost_usd, 4)}/req`;
+      setAnimatedText(
+        "costValue",
+        `$${formatNum(snapshot.total_cost_usd, 4)} total | avg $${formatNum(snapshot.avg_cost_usd, 4)}/req`
+      );
 
-      document.getElementById("tokenValue").textContent =
-        `in: ${snapshot.tokens_in_total || 0} | out: ${snapshot.tokens_out_total || 0}`;
+      setAnimatedText("tokenValue", `in: ${snapshot.tokens_in_total || 0} | out: ${snapshot.tokens_out_total || 0}`);
 
-      document.getElementById("qualityValue").textContent = formatNum(snapshot.quality_avg, 2);
+      setAnimatedText("qualityValue", formatNum(snapshot.quality_avg, 2));
       document.getElementById("qualityStatus").innerHTML =
         snapshot.quality_avg >= 0.7 ? pill("ok", "Meets SLO >=0.70") : pill("warn", "P2 alert zone <0.70");
 
@@ -566,6 +699,9 @@
         thresholdColor: "#1f7a5d",
         threshold2: 1500,
         threshold2Color: "#c13f2a",
+        lineColor: "#136f63",
+        fillTop: "#56b6a4",
+        fillBottom: "#dff5ef",
       });
 
       const qpsVals = lastPoints.map((h, idx) => {
@@ -578,6 +714,9 @@
       drawSpark("trafficChart", qpsVals, {
         min: 0,
         max: Math.max(1, ...qpsVals, 1),
+        lineColor: "#2766a8",
+        fillTop: "#79ace2",
+        fillBottom: "#e3effb",
       });
 
       const errVals = lastPoints.map((h) => {
@@ -590,6 +729,9 @@
         max: Math.max(2, ...errVals, 1),
         threshold: 1,
         thresholdColor: "#c13f2a",
+        lineColor: "#c13f2a",
+        fillTop: "#e79184",
+        fillBottom: "#fde9e5",
       });
 
       const costVals = lastPoints.map((h) => Number(h.snapshot.total_cost_usd || 0));
@@ -598,6 +740,9 @@
         max: Math.max(5, ...costVals, 0.1),
         threshold: 5,
         thresholdColor: "#1f7a5d",
+        lineColor: "#b66a10",
+        fillTop: "#e1ad6c",
+        fillBottom: "#fdf2e4",
       });
 
       const tokenVals = lastPoints.map((h) => Number(h.snapshot.tokens_out_total || 0));
@@ -606,6 +751,9 @@
         max: Math.max(50000, ...tokenVals, 1),
         threshold: 50000,
         thresholdColor: "#b66a10",
+        lineColor: "#8b5e1c",
+        fillTop: "#c79857",
+        fillBottom: "#fbf1e2",
       });
 
       const qualityVals = lastPoints.map((h) => Number(h.snapshot.quality_avg || 0));
@@ -614,6 +762,9 @@
         max: 1,
         threshold: 0.7,
         thresholdColor: "#1f7a5d",
+        lineColor: "#4d8b31",
+        fillTop: "#8bbb72",
+        fillBottom: "#ebf6e4",
       });
     }
 
