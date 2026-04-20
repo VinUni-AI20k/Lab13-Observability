@@ -20,3 +20,16 @@ def test_scrub_address() -> None:
     out = scrub_text("I live in Hà Nội today.")
     assert "Hà Nội" not in out
     assert "REDACTED_ADDRESS_VN" in out
+
+def test_scrub_deep_defense() -> None:
+    out = scrub_text("Bé Nguyễn Văn A nộp học phí 10.000.000 VND vào stk 123456789. Mã học sinh VINS-2023 truy cập từ 192.168.1.1")
+    assert "Nguyễn Văn A" not in out
+    assert "10.000.000" not in out
+    assert "123456789" not in out
+    assert "VINS-2023" not in out
+    assert "192.168.1.1" not in out
+    assert "REDACTED_STUDENT_NAME" in out
+    assert "REDACTED_CURRENCY_VN" in out
+    assert "REDACTED_BANK_ACCOUNT" in out
+    assert "REDACTED_STUDENT_ID" in out
+    assert "REDACTED_IP_ADDRESS" in out
