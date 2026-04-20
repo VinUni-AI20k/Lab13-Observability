@@ -6,7 +6,7 @@
 - [GROUP_NAME]: 62
 - [REPO_URL]: https://github.com/dokhiem2k4/Lab13-Observability
 - [MEMBERS]:
-  - Member A: [Phan Thanh SAng] | Role: Logging & PII
+  - Member A: [Phan Thanh Sang] | Role: Logging & PII
   - Member B: [Trần Tiến Dũng] | Role: Tracing & Enrichment
   - Member C: [Trần Đình Minh Vương] | Role: SLO & Alerts
   - Member D: [Đỗ Minh Khiêm] | Role: Load Test & Dashboard
@@ -57,7 +57,7 @@
 
 ### [MEMBER_A_NAME]
 - [TASKS_COMPLETED]: Phụ trách phần Logging, đảm bảo correlation_id được gắn vào logs và thực hiện redaction các thông tin nhạy cảm.
-- [EVIDENCE_LINK]: (Link to specific commit or PR)
+- [EVIDENCE_LINK]: [PR #1](https://github.com/dokhiem2k4/Lab13-Observability/pull/1)
 
 ### [MEMBER_B_NAME]
 - [TASKS_COMPLETED]: 
