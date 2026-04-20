@@ -3,7 +3,9 @@ from __future__ import annotations
 import os
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from dotenv import load_dotenv
 from structlog.contextvars import bind_contextvars
 
 from .agent import LabAgent
@@ -15,11 +17,23 @@ from .pii import hash_user_id, summarize_text
 from .schemas import ChatRequest, ChatResponse
 from .tracing import tracing_enabled
 
+load_dotenv()
+
 configure_logging()
 log = get_logger()
 app = FastAPI(title="Day 13 Observability Lab")
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 app.add_middleware(CorrelationIdMiddleware)
 agent = LabAgent()
+
+# Force Langfuse client initialization early so auth/env issues
+# show up during startup rather than being silent at first request.
+try:  # pragma: no cover
+    from langfuse import Langfuse
+
+    _langfuse_client = Langfuse()
+except Exception:  # pragma: no cover
+    _langfuse_client = None
 
 
 @app.on_event("startup")
@@ -44,9 +58,14 @@ async def metrics() -> dict:
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
-    # TODO: Enrich logs with request context (user_id_hash, session_id, feature, model, env)
-    # bind_contextvars(...)
-    
+    bind_contextvars(
+        user_id_hash=hash_user_id(body.user_id),
+        session_id=body.session_id,
+        feature=body.feature,
+        model=agent.model,
+        env=os.getenv("APP_ENV", "dev"),
+    )
+
     log.info(
         "request_received",
         service="api",
