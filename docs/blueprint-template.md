@@ -11,12 +11,12 @@
   - Member C: Vũ Lê Hoàng | Role: SLO & Alerts
   - Member D: [Name] | Role: Load Test + Incident Injection
   - Member E: [Name] | Role: Dashboard + Evidence
-  - Member F: [Name] | Role: Blueprint + Demo lead
+  - Member F: Phạm Tuấn Anh | Role: Blueprint + Demo lead
 
 ---
 
 ## 2. Group Performance (Auto-Verified)
-- [VALIDATE_LOGS_FINAL_SCORE]: /100
+- [VALIDATE_LOGS_FINAL_SCORE]: 80/100
 - [TOTAL_TRACES_COUNT]: 
 - [PII_LEAKS_FOUND]: 
 
@@ -77,7 +77,15 @@
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: 
 
+### Member F: Phạm Tuấn Anh - Blueprint & Demo Lead
+**[TASKS_COMPLETED]**:
+1. Tổ chức và chuẩn hóa file báo cáo `blueprint-template.md`, thu thập Evidence (Tracing ảnh, bảng tính SLO, Error rate) từ các thành viên để hoàn thiện tài liệu nộp lab.
+2. Viết toàn bộ Kịch bản Demo (Demo Script) bao gồm 3 phần: Chạy luồng chuẩn (Normal Flow) nhằm giới thiệu Regex che Credit Card, luồng sự cố (Incident Flow) giả lập lỗi Core Banking 500, và luồng Debugging tìm Root Cause qua Grafana/Langfuse.
+3. Đóng vai trò Demo Lead trong buổi thuyết trình, kết nối và dẫn dắt giải thích cách hệ thống Log + Trace + Metrics phối hợp để đạt mục tiêu Observability theo chuẩn PCI-DSS (đối với dữ liệu tài chính).
+- **[EVIDENCE_LINK]**: _(Sẽ dán link commit sau khi hoàn thành toàn bộ repo)_
+
 ---
+
 
 ## 6. Bonus Items (Optional)
 - [BONUS_COST_OPTIMIZATION]: (Description + Evidence)

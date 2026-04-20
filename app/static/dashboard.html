@@ -1,14 +1,17 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>System Observability | Pro Dashboard</title>
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
   <style>
     /* =========================================
        1. DESIGN SYSTEM & VARIABLES
@@ -17,31 +20,40 @@
       /* Backgrounds & Surfaces */
       --bg-body: #f8fafc;
       --bg-surface: #ffffff;
-      
+
       /* Typography Colors */
       --text-main: #0f172a;
       --text-muted: #64748b;
-      
+
       /* Borders & Shadows */
       --border-light: #e2e8f0;
       --border-hover: #cbd5e1;
       --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
       --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
       --shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
-      
+
       /* Semantic Palette (Tailwind Inspired) */
-      --color-emerald: #10b981;  /* Success / Latency / Quality */
-      --color-blue: #3b82f6;     /* Traffic / Info */
-      --color-rose: #f43f5e;     /* Error / Critical */
-      --color-amber: #f59e0b;    /* Cost / Warning */
-      --color-violet: #8b5cf6;   /* Tokens */
+      --color-emerald: #10b981;
+      /* Success / Latency / Quality */
+      --color-blue: #3b82f6;
+      /* Traffic / Info */
+      --color-rose: #f43f5e;
+      /* Error / Critical */
+      --color-amber: #f59e0b;
+      /* Cost / Warning */
+      --color-violet: #8b5cf6;
+      /* Tokens */
 
       /* Typography */
       --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
       --font-mono: 'JetBrains Mono', ui-monospace, monospace;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       background-color: var(--bg-body);
@@ -90,9 +102,17 @@
     }
 
     @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-      70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+      0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+      }
+
+      70% {
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
     }
 
     .subtitle {
@@ -149,15 +169,37 @@
     /* Top Accent Line */
     .panel::before {
       content: "";
-      position: absolute; top: 0; left: 0; right: 0;
-      height: 3px; background: var(--theme-color, #cbd5e1);
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--theme-color, #cbd5e1);
     }
-    #panel-latency { --theme-color: var(--color-emerald); }
-    #panel-traffic { --theme-color: var(--color-blue); }
-    #panel-error { --theme-color: var(--color-rose); }
-    #panel-cost { --theme-color: var(--color-amber); }
-    #panel-tokens { --theme-color: var(--color-violet); }
-    #panel-quality { --theme-color: var(--color-emerald); }
+
+    #panel-latency {
+      --theme-color: var(--color-emerald);
+    }
+
+    #panel-traffic {
+      --theme-color: var(--color-blue);
+    }
+
+    #panel-error {
+      --theme-color: var(--color-rose);
+    }
+
+    #panel-cost {
+      --theme-color: var(--color-amber);
+    }
+
+    #panel-tokens {
+      --theme-color: var(--color-violet);
+    }
+
+    #panel-quality {
+      --theme-color: var(--color-emerald);
+    }
 
     .panel-header {
       display: flex;
@@ -180,16 +222,27 @@
       font-weight: 700;
       color: var(--text-main);
       margin: 4px 0 8px;
-      font-variant-numeric: tabular-nums; /* Bí quyết giúp số không nhảy giật */
+      font-variant-numeric: tabular-nums;
+      /* Bí quyết giúp số không nhảy giật */
       line-height: 1.2;
     }
 
     .value-updated {
       animation: valuePop 0.4s ease-out;
     }
+
     @keyframes valuePop {
-      0% { color: var(--theme-color); transform: scale(1.03); text-shadow: 0 0 12px rgba(0,0,0,0.1); }
-      100% { color: var(--text-main); transform: scale(1); text-shadow: none; }
+      0% {
+        color: var(--theme-color);
+        transform: scale(1.03);
+        text-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+      }
+
+      100% {
+        color: var(--text-main);
+        transform: scale(1);
+        text-shadow: none;
+      }
     }
 
     .hint {
@@ -200,7 +253,11 @@
     }
 
     /* Status Pills */
-    .status-wrap { min-height: 24px; margin-bottom: 12px; }
+    .status-wrap {
+      min-height: 24px;
+      margin-bottom: 12px;
+    }
+
     .pill {
       display: inline-flex;
       align-items: center;
@@ -211,9 +268,24 @@
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
-    .pill.ok { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
-    .pill.warn { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-    .pill.danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+    .pill.ok {
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .pill.warn {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    .pill.danger {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
 
     /* Breakdown List */
     .error-list {
@@ -228,9 +300,22 @@
       display: grid;
       gap: 4px;
     }
-    .error-list:empty { display: none; }
-    .error-list li { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(244,63,94,0.2); padding-bottom: 4px; }
-    .error-list li:last-child { border: none; padding-bottom: 0; }
+
+    .error-list:empty {
+      display: none;
+    }
+
+    .error-list li {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed rgba(244, 63, 94, 0.2);
+      padding-bottom: 4px;
+    }
+
+    .error-list li:last-child {
+      border: none;
+      padding-bottom: 0;
+    }
 
     /* =========================================
        4. SPARKLINE CHARTS
@@ -242,26 +327,56 @@
       margin-left: -24px;
       margin-bottom: -2px;
     }
-    svg.spark { width: 100%; height: 100%; overflow: visible; display: block; }
-    .spark .grid-line { stroke: var(--border-light); stroke-width: 1; stroke-dasharray: 4 4; }
-    .spark .chart-line { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .spark .chart-last { stroke: #fff; stroke-width: 2.5; r: 4; }
-    .spark .threshold-label { font-size: 10px; font-weight: 600; font-family: var(--font-sans); }
+
+    svg.spark {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      display: block;
+    }
+
+    .spark .grid-line {
+      stroke: var(--border-light);
+      stroke-width: 1;
+      stroke-dasharray: 4 4;
+    }
+
+    .spark .chart-line {
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .spark .chart-last {
+      stroke: #fff;
+      stroke-width: 2.5;
+      r: 4;
+    }
+
+    .spark .threshold-label {
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+    }
 
     /* =========================================
        5. PRO TERMINAL LOGS
        ========================================= */
     .log-panel {
-      background: #0f172a; /* Slate 900 */
+      background: #0f172a;
+      /* Slate 900 */
       border-radius: 12px;
       box-shadow: var(--shadow-md);
       overflow: hidden;
-      color: #e2e8f0; /* Slate 200 */
+      color: #e2e8f0;
+      /* Slate 200 */
     }
 
     .log-header {
       padding: 16px 24px;
-      background: #020617; /* Slate 950 */
+      background: #020617;
+      /* Slate 950 */
       border-bottom: 1px solid #1e293b;
       display: flex;
       justify-content: space-between;
@@ -279,9 +394,15 @@
       gap: 8px;
     }
 
-    .log-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-    
-    .log-controls input, .log-controls select {
+    .log-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .log-controls input,
+    .log-controls select {
       background: #0f172a;
       border: 1px solid #334155;
       color: #f8fafc;
@@ -292,7 +413,11 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    .log-controls input:focus, .log-controls select:focus { border-color: var(--color-blue); }
+
+    .log-controls input:focus,
+    .log-controls select:focus {
+      border-color: var(--color-blue);
+    }
 
     .log-stream {
       max-height: 480px;
@@ -301,14 +426,31 @@
       font-family: var(--font-mono);
       font-size: 0.8rem;
     }
-    
-    /* Terminal Custom Scrollbar */
-    .log-stream::-webkit-scrollbar { width: 8px; }
-    .log-stream::-webkit-scrollbar-track { background: transparent; }
-    .log-stream::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-    .log-stream::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-    .log-empty { color: #64748b; text-align: center; padding: 40px 0; font-family: var(--font-sans); }
+    /* Terminal Custom Scrollbar */
+    .log-stream::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .log-stream::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .log-stream::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 10px;
+    }
+
+    .log-stream::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    .log-empty {
+      color: #64748b;
+      text-align: center;
+      padding: 40px 0;
+      font-family: var(--font-sans);
+    }
 
     .log-row {
       display: flex;
@@ -319,90 +461,162 @@
       transition: background 0.15s;
       margin-bottom: 2px;
     }
-    .log-row:hover { background: rgba(255, 255, 255, 0.03); }
+
+    .log-row:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
 
     /* Row Colors based on Level */
-    .log-row.level-info { border-left-color: var(--color-blue); }
-    .log-row.level-warning { border-left-color: var(--color-amber); background: rgba(245, 158, 11, 0.05); }
-    .log-row.level-error { border-left-color: var(--color-rose); background: rgba(244, 63, 94, 0.1); }
-    .log-row.level-critical { border-left-color: #e11d48; background: rgba(225, 29, 72, 0.15); }
-
-    .log-ts { color: #64748b; min-width: 75px; flex-shrink: 0; padding-top: 2px; }
-    .log-level { 
-      min-width: 65px; flex-shrink: 0; 
-      font-weight: 700; text-transform: uppercase; font-size: 0.7rem; 
-      padding-top: 2px; letter-spacing: 0.05em;
+    .log-row.level-info {
+      border-left-color: var(--color-blue);
     }
-    
-    .level-info .log-level { color: #38bdf8; }
-    .level-warning .log-level { color: #fbbf24; }
-    .level-error .log-level { color: #f87171; }
-    .level-critical .log-level { color: #ef4444; }
 
-    .log-main { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-    .log-topline { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-    .log-service { color: #a78bfa; font-weight: 600; font-size: 0.75rem; }
-    .log-event { color: #f8fafc; font-weight: 600; }
-    
-    .log-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+    .log-row.level-warning {
+      border-left-color: var(--color-amber);
+      background: rgba(245, 158, 11, 0.05);
+    }
+
+    .log-row.level-error {
+      border-left-color: var(--color-rose);
+      background: rgba(244, 63, 94, 0.1);
+    }
+
+    .log-row.level-critical {
+      border-left-color: #e11d48;
+      background: rgba(225, 29, 72, 0.15);
+    }
+
+    .log-ts {
+      color: #64748b;
+      min-width: 75px;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+
+    .log-level {
+      min-width: 65px;
+      flex-shrink: 0;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      padding-top: 2px;
+      letter-spacing: 0.05em;
+    }
+
+    .level-info .log-level {
+      color: #38bdf8;
+    }
+
+    .level-warning .log-level {
+      color: #fbbf24;
+    }
+
+    .level-error .log-level {
+      color: #f87171;
+    }
+
+    .level-critical .log-level {
+      color: #ef4444;
+    }
+
+    .log-main {
+      flex-grow: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .log-topline {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .log-service {
+      color: #a78bfa;
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+
+    .log-event {
+      color: #f8fafc;
+      font-weight: 600;
+    }
+
+    .log-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
     .log-tag {
-      font-size: 0.7rem; padding: 2px 6px; border-radius: 4px;
-      background: rgba(255, 255, 255, 0.08); color: #cbd5e1; 
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .log-tag strong { color: #94a3b8; margin-right: 4px; font-weight: 500; }
-    .log-tag.warn { border-color: rgba(245, 158, 11, 0.3); color: #fcd34d; }
-    .log-tag.alert { border-color: rgba(244, 63, 94, 0.3); color: #fca5a5; }
+
+    .log-tag strong {
+      color: #94a3b8;
+      margin-right: 4px;
+      font-weight: 500;
+    }
+
+    .log-tag.warn {
+      border-color: rgba(245, 158, 11, 0.3);
+      color: #fcd34d;
+    }
+
+    .log-tag.alert {
+      border-color: rgba(244, 63, 94, 0.3);
+      color: #fca5a5;
+    }
 
     .log-message {
-      color: #94a3b8; word-break: break-word; font-size: 0.75rem;
-      background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px; margin-top: 4px;
-    }
-
-    .log-raw-wrap {
-      margin-top: 6px;
-      border: 1px solid rgba(148, 163, 184, 0.16);
-      border-radius: 8px;
-      background: rgba(2, 6, 23, 0.58);
-      overflow: hidden;
-    }
-
-    .log-raw-label {
-      display: block;
-      padding: 6px 10px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: #93c5fd;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-      background: rgba(15, 23, 42, 0.88);
-    }
-
-    .log-raw {
-      margin: 0;
-      padding: 10px 12px;
-      white-space: pre-wrap;
+      color: #94a3b8;
       word-break: break-word;
-      font-size: 0.73rem;
-      line-height: 1.55;
-      color: #dbeafe;
-      max-width: 100%;
-      overflow-x: auto;
+      font-size: 0.75rem;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin-top: 4px;
     }
 
     /* =========================================
        6. RESPONSIVE QUERIES
        ========================================= */
     @media (max-width: 768px) {
-      .head { flex-direction: column; align-items: flex-start; }
-      .meta { text-align: left; }
-      .log-row { flex-wrap: wrap; gap: 4px; }
-      .log-ts { display: inline; margin-right: 8px; }
-      .log-level { display: inline; }
+      .head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .meta {
+        text-align: left;
+      }
+
+      .log-row {
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .log-ts {
+        display: inline;
+        margin-right: 8px;
+      }
+
+      .log-level {
+        display: inline;
+      }
     }
   </style>
 </head>
+
 <body>
   <main class="wrap">
     <header class="head">
@@ -485,7 +699,10 @@
     <section class="log-panel" id="panel-logs">
       <div class="log-header">
         <h2>
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="4 17 10 11 4 5"></polyline>
+            <line x1="12" y1="19" x2="20" y2="19"></line>
+          </svg>
           Live System Logs
         </h2>
         <div class="log-controls">
@@ -522,12 +739,12 @@
     // --- Utilities ---
     const formatNum = (val, digits = 2) => Number(val || 0).toFixed(digits);
     const pill = (type, text) => `<span class="pill ${type}">${text}</span>`;
-    const escapeHtml = (val) => String(val).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    const escapeHtml = (val) => String(val).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 
     // Debounce cho ô Search Input
     function debounce(func, wait) {
       let timeout;
-      return function(...args) {
+      return function (...args) {
         clearTimeout(timeout);
         timeout = setTimeout(() => func.apply(this, args), wait);
       };
@@ -575,28 +792,28 @@
     function drawSpark(svgId, values, options = {}) {
       const svg = document.getElementById(svgId);
       if (!svg) return;
-      
+
       const rect = svg.getBoundingClientRect();
       const width = rect.width || 350;
       const height = rect.height || 85;
       const padTop = 10, padBottom = 5;
       const chartHeight = height - padTop - padBottom;
-      
+
       const themeColor = options.color || "#10b981";
       const minValue = options.min ?? Math.min(...values, 0);
       const maxValue = options.max ?? Math.max(...values, 1);
-      
+
       const points = toPoints(values, width, chartHeight, minValue, maxValue, padTop);
       const linePath = smoothPath(points);
       const first = points[0], last = points[points.length - 1];
-      
+
       const areaPath = points.length > 1
         ? `M ${first.x.toFixed(2)} ${height} L ${points.map(p => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" L ")} L ${last.x.toFixed(2)} ${height} Z`
         : "";
 
       let thresholdLine = "";
       const range = Math.max(1e-9, maxValue - minValue);
-      
+
       if (typeof options.threshold === "number") {
         const y = chartHeight - ((options.threshold - minValue) / range) * chartHeight + padTop;
         thresholdLine += `<line x1="0" y1="${y.toFixed(2)}" x2="${width}" y2="${y.toFixed(2)}" stroke="#94a3b8" stroke-dasharray="4 4" stroke-width="1.2" />`;
@@ -647,22 +864,22 @@
 
       setAnimatedText("errorValue", `${formatNum(errorRate, 2)}%`);
       document.getElementById("errorStatus").innerHTML = errorRate < 1 ? pill("ok", "Stable") : pill("danger", "Alert P1");
-      
+
       const breakdown = snapshot.error_breakdown || {};
       const errList = document.getElementById("errorBreakdown");
       const errHtml = Object.keys(breakdown).length ? Object.entries(breakdown).map(([k, v]) => `<li><span>${escapeHtml(k)}</span> <strong>${v}</strong></li>`).join("") : "";
-      if(errHtml) { errList.style.display = 'grid'; errList.innerHTML = errHtml; } else { errList.style.display = 'none'; }
+      if (errHtml) { errList.style.display = 'grid'; errList.innerHTML = errHtml; } else { errList.style.display = 'none'; }
 
       setAnimatedText("costValue", `$${formatNum(snapshot.total_cost_usd, 4)}`);
       setAnimatedText("tokenValue", `In: ${snapshot.tokens_in_total || 0} | Out: ${snapshot.tokens_out_total || 0}`);
-      
+
       setAnimatedText("qualityValue", formatNum(snapshot.quality_avg, 2));
       document.getElementById("qualityStatus").innerHTML = snapshot.quality_avg >= 0.7 ? pill("ok", "Good") : pill("warn", "Review");
 
       // Draw Charts
       const lastPts = history.slice(-MAX_POINTS);
       drawSpark("latencyChart", lastPts.map(h => Number(h.snapshot.latency_p95 || 0)), { color: "#10b981", min: 0, max: Math.max(2000, snapshot.latency_p95), threshold: 1000, threshold2: 1500 });
-      drawSpark("trafficChart", lastPts.map((h, i) => i === 0 ? 0 : Math.max(0, (h.snapshot.traffic || 0) - (lastPts[i-1].snapshot.traffic || 0)) / Math.max(1, (h.time - lastPts[i-1].time) / 1000)), { color: "#3b82f6", min: 0 });
+      drawSpark("trafficChart", lastPts.map((h, i) => i === 0 ? 0 : Math.max(0, (h.snapshot.traffic || 0) - (lastPts[i - 1].snapshot.traffic || 0)) / Math.max(1, (h.time - lastPts[i - 1].time) / 1000)), { color: "#3b82f6", min: 0 });
       drawSpark("errorChart", lastPts.map(h => { const t = h.snapshot.traffic || 0; const e = Object.values(h.snapshot.error_breakdown || {}).reduce((a, b) => a + b, 0); return t > 0 ? (e / t) * 100 : 0; }), { color: "#f43f5e", min: 0, max: Math.max(2, errorRate), threshold: 1 });
       drawSpark("costChart", lastPts.map(h => Number(h.snapshot.total_cost_usd || 0)), { color: "#f59e0b", min: 0, threshold: 5 });
       drawSpark("tokenChart", lastPts.map(h => Number(h.snapshot.tokens_out_total || 0)), { color: "#8b5cf6", min: 0, threshold: 50000 });
@@ -689,13 +906,13 @@
       stream.innerHTML = filtered.map(r => {
         const level = (r.level || 'info').toLowerCase();
         let ts = '-';
-        try { 
-          const d = new Date(r.ts); 
-          ts = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')}.${d.getMilliseconds().toString().padStart(3,'0')}`;
-        } catch {}
-        
+        try {
+          const d = new Date(r.ts);
+          ts = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}.${d.getMilliseconds().toString().padStart(3, '0')}`;
+        } catch { }
+
         const tags = [];
-        const mkTag = (l, v, c='') => `<span class="log-tag ${c}"><strong>${l}</strong>${escapeHtml(v)}</span>`;
+        const mkTag = (l, v, c = '') => `<span class="log-tag ${c}"><strong>${l}</strong>${escapeHtml(v)}</span>`;
 
         if (r.correlation_id && r.correlation_id !== 'MISSING') tags.push(mkTag('CID', r.correlation_id.slice(0, 8)));
         if (r.latency_ms != null) tags.push(mkTag('Lat', `${r.latency_ms}ms`, r.latency_ms > 1000 ? 'warn' : ''));
@@ -706,15 +923,7 @@
         const msgBits = [];
         if (r.payload?.detail) msgBits.push(r.payload.detail);
         if (r.payload?.message_preview) msgBits.push(r.payload.message_preview);
-        if (r.payload?.answer_preview) msgBits.push(r.payload.answer_preview);
         const msgHtml = msgBits.length ? `<div class="log-message">${escapeHtml(msgBits.join(' | '))}</div>` : '';
-        const rawJson = escapeHtml(JSON.stringify(r, null, 2));
-        const rawHtml = `
-          <div class="log-raw-wrap">
-            <div class="log-raw-label">Full JSON log line</div>
-            <pre class="log-raw">${rawJson}</pre>
-          </div>
-        `;
 
         return `
           <div class="log-row level-${level}">
@@ -727,7 +936,6 @@
               </div>
               ${tags.length ? `<div class="log-tags">${tags.join('')}</div>` : ''}
               ${msgHtml}
-              ${rawHtml}
             </div>
           </div>
         `;
@@ -757,7 +965,7 @@
       try {
         const res = await fetch(`/logs?n=${n}`, { cache: 'no-store' });
         if (res.ok) renderLogs(await res.json());
-      } catch (err) {}
+      } catch (err) { }
     }
 
     // --- Init & Event Listeners ---
@@ -775,4 +983,5 @@
     }, 200));
   </script>
 </body>
+
 </html>
