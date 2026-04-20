@@ -56,17 +56,20 @@
 
 ## 5. Individual Contributions & Evidence
 
-### [MEMBER_A_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: (Link to specific commit or PR)
+### [Kiều Đức Lâm]
+
+- [TASKS_COMPLETED]: logging + PII
+- [EVIDENCE_LINK]: [\(Link to specific commit or PR)](https://github.com/BanBannBannn/Day13-C401-X3/commit/15362623edd3c3577c6bb4f4b88e34b4752b14b3)
 
 ### [Trần Văn Gia Bân]
+
 - [TASKS_COMPLETED]: fix tracing.py
 - [EVIDENCE_LINK]: https://github.com/BanBannBannn/Day13-C401-X3/tree/811405621b1c34ccca31645f37385d4e1bfa4e49
 
 ### [MEMBER_C_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+
+- [TASKS_COMPLETED]:
+- [EVIDENCE_LINK]:
 
 ### Nguyễn Tùng Lâm
 - [TASKS_COMPLETED]:  UI(frontend)
@@ -79,6 +82,7 @@
 ---
 
 ## 6. Bonus Items (Optional)
+
 - [BONUS_COST_OPTIMIZATION]: (Description + Evidence)
 - [BONUS_AUDIT_LOGS]: (Description + Evidence)
 - [BONUS_CUSTOM_METRIC]: (Description + Evidence)

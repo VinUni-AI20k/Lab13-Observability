@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import os
 from typing import Any
+import dotenv
 
+dotenv.load_dotenv()
 try:
     from langfuse.decorators import observe, langfuse_context
 except Exception:  # pragma: no cover
