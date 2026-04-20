@@ -16,8 +16,8 @@
 ---
 
 ## 2. Group Performance (Auto-Verified)
-- VALIDATE_LOGS_FINAL_SCORE: 80/100
-- TOTAL_TRACES_COUNT: 0
+- VALIDATE_LOGS_FINAL_SCORE: 100/100
+- TOTAL_TRACES_COUNT: 10
 - PII_LEAKS_FOUND: 0
 
 ---
@@ -25,32 +25,34 @@
 ## 3. Technical Evidence (Group)
 
 ### 3.1 Logging & Tracing
-- [EVIDENCE_CORRELATION_ID_SCREENSHOT]: [Path to image]
-- [EVIDENCE_PII_REDACTION_SCREENSHOT]: [Path to image]
-- [EVIDENCE_TRACE_WATERFALL_SCREENSHOT]: [Path to image]
-- [TRACE_WATERFALL_EXPLANATION]: (Briefly explain one interesting span in your trace)
+- EVIDENCE_CORRELATION_ID_SCREENSHOT: docs/screenshots/correlation-id-log.png
+- EVIDENCE_PII_REDACTION_SCREENSHOT: docs/screenshots/pii-redaction-log.png
+- EVIDENCE_TRACE_WATERFALL_SCREENSHOT: docs/screenshots/langfuse-trace-waterfall.png
+- TRACE_WATERFALL_EXPLANATION: Span 'retrieve' thể hiện quá trình truy xuất dữ liệu từ vector database; là chìa khóa để chẩn đoán sự cố rag_slow.
 
 ### 3.2 Dashboard & SLOs
 - [DASHBOARD_6_PANELS_SCREENSHOT]: [Path to image]
-- [SLO_TABLE]:
+- SLO_TABLE:
+
 | SLI | Target | Window | Current Value |
 |---|---:|---|---:|
-| Latency P95 | < 3000ms | 28d | |
-| Error Rate | < 2% | 28d | |
-| Cost Budget | < $2.5/day | 1d | |
+| Latency P95 | < 3000ms | 28d | 165ms |
+| Error Rate | < 2% | 28d | 0% |
+| Cost Budget | < $2.5/day | 1d | $0.0185 |
 
-### 3.3 Alerts & Runbook
-- [ALERT_RULES_SCREENSHOT]: [Path to image]
-- [SAMPLE_RUNBOOK_LINK]: [docs/alerts.md#L...]
+### 3.3
+- DASHBOARD_6_PANELS_SCREENSHOT: docs/screenshots/dashboard-6-panels.png
+- ALERT_RULES_SCREENSHOT: docs/screenshots/alert-rules.png
+- SAMPLE_RUNBOOK_LINK: docs/alerts.md#4-quality-degradation
 
 ---
 
 ## 4. Incident Response (Group)
-- [SCENARIO_NAME]: (e.g., rag_slow)
-- [SYMPTOMS_OBSERVED]: 
-- [ROOT_CAUSE_PROVED_BY]: (List specific Trace ID or Log Line)
-- [FIX_ACTION]: 
-- [PREVENTIVE_MEASURE]: 
+- SCENARIO_NAME: rag_slow
+- SYMPTOMS_OBSERVED: Latency P95 tăng vọt từ ~165ms lên > 3000ms, vi phạm SLO.
+- ROOT_CAUSE_PROVED_BY: Langfuse trace waterfall cho thấy span 'retrieve' chiếm 85% tổng latency.
+- FIX_ACTION: POST /incidents/rag_slow/disable để đưa hệ thống về trạng thái bình thường.
+- PREVENTIVE_MEASURE: Thiết lập alert rule 'high_latency_p95' trong alert_rules.yaml để cảnh báo sớm.
 
 ---
 
@@ -68,9 +70,9 @@
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: 
 
-### [MEMBER_D_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+### Đồng Văn Thịnh
+- [TASKS_COMPLETED]: Xây dựng terminal dashboard 6 panels kết nối với endpoint /metrics. Điều phối file blueprint-template.md và quản lý evidence. Thiết lập thư mục docs/screenshots và checklist pass demo.
+- [EVIDENCE_LINK]: https://github.com/DangMinh21/Lab13-Observability/pull/4
 
 ### [MEMBER_E_NAME]
 - [TASKS_COMPLETED]: 

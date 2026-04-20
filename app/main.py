@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 
 load_dotenv()
-from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, JSONResponse
 from structlog.contextvars import bind_contextvars
 
 from .agent import LabAgent
@@ -23,6 +24,12 @@ log = get_logger()
 audit = get_audit_logger()
 app = FastAPI(title="Day 13 Observability Lab")
 app.add_middleware(CorrelationIdMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 agent = LabAgent()
 
 
@@ -49,6 +56,13 @@ async def health() -> dict:
 @app.get("/metrics")
 async def metrics() -> dict:
     return snapshot()
+
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard() -> str:
+    path = os.path.join(os.path.dirname(__file__), "dashboard.html")
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
 
 
 @app.post("/chat", response_model=ChatResponse)
