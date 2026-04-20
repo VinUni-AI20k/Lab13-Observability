@@ -2,15 +2,18 @@ service: day13-observability-lab
 window: 28d
 slis:
   latency_p95_ms:
-    objective: 3000
+    objective: 2500
     target: 99.5
-    note: Replace with your group's target
+    note: "Group target: P95 < 2.5s in normal load (tighter than default 3s)"
   error_rate_pct:
-    objective: 2
+    objective: 1
     target: 99.0
+    note: "Group target: error rate < 1% over 28-day window"
   daily_cost_usd:
-    objective: 2.5
+    objective: 2.0
     target: 100.0
+    note: "Group target: daily cost < $2.0 (below default $2.5 budget)"
   quality_score_avg:
     objective: 0.75
     target: 95.0
+    note: "Heuristic answer quality must stay at or above 0.75 on average"
