@@ -67,7 +67,7 @@
 
 ### Nguyễn Quốc Nam - 2A202600201
 - TASKS_COMPLETED: Implemented Correlation ID Middleware and added regex patterns for PII scrubbing.
-- EVIDENCE_LINK: [Điền link PR/commit của Quốc Nam vào đây]
+- EVIDENCE_LINK: [link PR](https://github.com/bangils37/Lab13-Observability/tree/245e36c5a5e03da780e1c280af53338864c4b2d7)
 
 ### Bùi Trọng Anh - 2A202600010
 - TASKS_COMPLETED: Executed load testing scripts and managed incident injection to test alerts.
