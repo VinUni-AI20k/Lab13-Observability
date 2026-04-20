@@ -63,9 +63,9 @@
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: 
 
-### [MEMBER_C_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+### [MEMBER_C_NAME] (SLO & Alerts)
+- [TASKS_COMPLETED]: Thiết kế và định nghĩa hoàn chỉnh 4 SLO (bao gồm Quality và Token Budget) trong `config/slo.yaml` với cơ chế tính error budget. Xây dựng 5 luật cảnh báo (symptom-based) trong `config/alert_rules.yaml`, tự phát hiện lỗi logic của Lab và linh hoạt hạ ngưỡng threshold xuống 2000ms để bắt đúng sự cố rag_slow. Hoàn thiện tài liệu Runbook `docs/alerts.md` xử lý sự cố. Cập nhật và fix lỗi Unicode/Pytest cho các công cụ checker (`check_slo.py`, `evaluate_alerts.py`) giúp toàn bộ 25/25 auto-tests báo xanh.
+- [EVIDENCE_LINK]: [Liên kết ](https://github.com/trunglap923/Nhom10-403-Day13/commit/bfb66910d39e92b44dc406c791ce560a863815d0)
 
 ### [MEMBER_D_NAME]
 - [TASKS_COMPLETED]: 
