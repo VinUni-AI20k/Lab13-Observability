@@ -3,21 +3,21 @@
 > **Instruction**: Fill in all sections below. This report is designed to be parsed by an automated grading assistant. Ensure all tags (e.g., `[GROUP_NAME]`) are preserved.
 
 ## 1. Team Metadata
-- [GROUP_NAME]: 
-- [REPO_URL]: 
+- [GROUP_NAME]: Lab13-Observability-Team
+- [REPO_URL]: [Insert Repo URL here]
 - [MEMBERS]:
-  - Member A: [Name] | Role: Logging & PII
-  - Member B: [Name] | Role: Tracing & Enrichment
-  - Member C: [Name] | Role: SLO & Alerts
-  - Member D: [Name] | Role: Load Test & Dashboard
-  - Member E: [Name] | Role: Demo & Report
+  - Member A: Nguyễn Bằng Anh - 2A202600136 | Role: dashboard + evidence + blueprint + demo lead
+  - Member B: Đỗ Thị Thùy Trang - 2A202600041 | Role: SLO + alerts
+  - Member C: Nguyễn Thị Thanh Huyền - 2A202600211 | Role: tracing + tags
+  - Member D: Nguyễn Quốc Nam - 2A202600201 | Role: logging + PII
+  - Member E: Bùi Trọng Anh - 2A202600010 | Role: load test + incident injection
 
 ---
 
 ## 2. Group Performance (Auto-Verified)
-- [VALIDATE_LOGS_FINAL_SCORE]: /100
-- [TOTAL_TRACES_COUNT]: 
-- [PII_LEAKS_FOUND]: 
+- [VALIDATE_LOGS_FINAL_SCORE]: 100/100
+- [TOTAL_TRACES_COUNT]: 20
+- [PII_LEAKS_FOUND]: 0
 
 ---
 
@@ -45,35 +45,35 @@
 ---
 
 ## 4. Incident Response (Group)
-- [SCENARIO_NAME]: (e.g., rag_slow)
-- [SYMPTOMS_OBSERVED]: 
-- [ROOT_CAUSE_PROVED_BY]: (List specific Trace ID or Log Line)
-- [FIX_ACTION]: 
-- [PREVENTIVE_MEASURE]: 
+- [SCENARIO_NAME]: rag_slow
+- [SYMPTOMS_OBSERVED]: P95 latency spikes heavily from ~1000ms to > 10000ms. End-users experience long waits for responses.
+- [ROOT_CAUSE_PROVED_BY]: In Langfuse traces, the `rag_retrieval` span takes > 10000ms compared to the baseline < 500ms. Alert rules trigger for `HighLatency`.
+- [FIX_ACTION]: Investigate the RAG retrieval service, ensure database indexes are optimized, and increase timeout constraints or implement a circuit breaker. Disable the incident using `scripts/inject_incident.py --scenario rag_slow --disable`.
+- [PREVENTIVE_MEASURE]: Implement stricter timeouts for downstream services and provide fallback caching mechanisms.
 
 ---
 
 ## 5. Individual Contributions & Evidence
 
-### [MEMBER_A_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: (Link to specific commit or PR)
+### Nguyễn Bằng Anh - 2A202600136
+- [TASKS_COMPLETED]: Created the blueprint report, set up the initial repository, generated dashboard specification, and orchestrated demo.
+- [EVIDENCE_LINK]: [Link to commit or PR]
 
-### [MEMBER_B_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+### Đỗ Thị Thùy Trang - 2A202600041
+- [TASKS_COMPLETED]: Configured `alert_rules.yaml` and documented the alert runbooks in `alerts.md`.
+- [EVIDENCE_LINK]: [Link to commit or PR]
 
-### [MEMBER_C_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+### Nguyễn Thị Thanh Huyền - 2A202600211
+- [TASKS_COMPLETED]: Added log enrichment in `main.py` and validated traces in Langfuse.
+- [EVIDENCE_LINK]: [Link to commit or PR]
 
-### [MEMBER_D_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+### Nguyễn Quốc Nam - 2A202600201
+- [TASKS_COMPLETED]: Implemented Correlation ID Middleware and added regex patterns for PII scrubbing.
+- [EVIDENCE_LINK]: [Link to commit or PR]
 
-### [MEMBER_E_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+### Bùi Trọng Anh - 2A202600010
+- [TASKS_COMPLETED]: Executed load testing scripts and managed incident injection to test alerts.
+- [EVIDENCE_LINK]: [Link to commit or PR]
 
 ---
 
