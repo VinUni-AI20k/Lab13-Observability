@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from dotenv import load_dotenv
+load_dotenv()
+
 import json
 import os
 from pathlib import Path
@@ -23,6 +26,13 @@ app = FastAPI(title="Day 13 Observability Lab")
 app.add_middleware(CorrelationIdMiddleware)
 agent = LabAgent()
 STATIC_DIR = Path(__file__).resolve().parent / "static"
+
+
+@app.on_event("shutdown")
+async def shutdown() -> None:
+    if tracing_enabled():
+        from langfuse import get_client
+        get_client().flush()
 
 
 @app.on_event("startup")

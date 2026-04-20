@@ -3,6 +3,7 @@ from __future__ import annotations
 import time
 
 from .incidents import STATE
+from .tracing import observe
 
 CORPUS = {
     "refund": ["Refunds are available within 7 days with proof of purchase."],
@@ -20,6 +21,7 @@ CORPUS = {
 }
 
 
+@observe(name="rag-retrieve")
 def retrieve(message: str) -> list[str]:
     # Original incidents
     if STATE["tool_fail"]:
