@@ -28,8 +28,13 @@ class LabAgent:
 
     @observe(capture_input=False, capture_output=False)
     def run(self, user_id: str, feature: str, session_id: str, message: str) -> AgentResult:
+        # Banking-specific incident: Core banking system fail (Member D)
         if STATE.get("core_banking_fail", False):
             raise RuntimeError("Lỗi hệ thống khi móc nối API Core Banking")
+        
+        # Banking-specific incident: Credit check fail (Member D)
+        if feature == "credit_inquiry" and STATE.get("credit_check_fail", False):
+            raise RuntimeError("Credit check service unavailable")
 
         started = time.perf_counter()
         docs = retrieve(message)

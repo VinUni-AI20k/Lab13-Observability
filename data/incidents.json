@@ -1,5 +1,68 @@
 {
-  "rag_slow": "Retrieval latency spike. Students should find slow RAG span in trace.",
-  "tool_fail": "Vector store or tool error. Students should identify error_type from logs.",
-  "cost_spike": "Token usage spike. Students should explain higher output token cost."
+  "incidents": [
+    {
+      "name": "rag_slow",
+      "description": "Knowledge base retrieval responds slowly (2.5s delay)",
+      "impact": "P95 latency spike, customer frustration",
+      "root_cause": "Vector database query timeout",
+      "detection": "Monitor latency_p95 > 3000ms for 5 minutes",
+      "mitigation": "Add caching layer, optimize vector search"
+    },
+    {
+      "name": "tool_fail",
+      "description": "Vector store is completely unavailable",
+      "impact": "Cannot retrieve context, 500 errors",
+      "root_cause": "Vector database connection timeout or network issue",
+      "detection": "Monitor error_rate > 10% with RuntimeError",
+      "mitigation": "Fallback to cached documents, retry with exponential backoff"
+    },
+    {
+      "name": "cost_spike",
+      "description": "LLM generates 4x more tokens than normal",
+      "impact": "Cost spike, budget overrun",
+      "root_cause": "LLM generating unnecessarily long responses",
+      "detection": "Monitor avg_tokens_out > 600, cost_usd spike",
+      "mitigation": "Add prompt constraint, use cheaper model, implement response truncation"
+    },
+    {
+      "name": "account_lookup_slow",
+      "description": "Account lookup service responds slowly (2-3s delay)",
+      "impact": "P95 latency spike for account_balance and loan_status features",
+      "root_cause": "Database query timeout on account_lookup table",
+      "detection": "Monitor latency_p95 > 3000ms for account_balance feature",
+      "mitigation": "Add Redis caching layer, optimize SQL query with indexes"
+    },
+    {
+      "name": "credit_check_fail",
+      "description": "Credit check service is down",
+      "impact": "Cannot process credit inquiries, 500 errors for credit_inquiry feature",
+      "root_cause": "Credit bureau API timeout or network issue",
+      "detection": "Monitor error_rate > 10% for credit_inquiry feature",
+      "mitigation": "Fallback to cached credit data, retry with exponential backoff, notify customer"
+    },
+    {
+      "name": "rate_limiter_triggered",
+      "description": "Rate limiter kicks in due to high traffic",
+      "impact": "429 Too Many Requests errors, degraded service",
+      "root_cause": "Concurrent requests exceed rate limit threshold (20+ concurrent)",
+      "detection": "Monitor 429 error count, check request rate",
+      "mitigation": "Increase rate limit, implement queue, scale horizontally, use CDN"
+    },
+    {
+      "name": "high_token_usage",
+      "description": "Queries use 2x tokens (verbose responses)",
+      "impact": "Cost spike, budget overrun, slower response time",
+      "root_cause": "LLM generating unnecessarily long responses for banking queries",
+      "detection": "Monitor avg_tokens_out > 300, cost_usd spike",
+      "mitigation": "Shorten prompts, add response length constraint, use cheaper model for simple queries"
+    },
+    {
+      "name": "core_banking_fail",
+      "description": "Core banking system is unavailable",
+      "impact": "Cannot process any banking transactions, all features affected",
+      "root_cause": "Core banking API down or network partition",
+      "detection": "Monitor error_rate > 50% across all features",
+      "mitigation": "Show maintenance page, queue requests, notify customers, escalate to P1"
+    }
+  ]
 }

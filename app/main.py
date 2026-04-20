@@ -119,6 +119,12 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
         raise HTTPException(status_code=500, detail=error_type) from exc
 
 
+@app.get("/incidents/status")
+async def incidents_status() -> dict:
+    """Get current status of all incidents"""
+    return status()
+
+
 @app.post("/incidents/{name}/enable")
 async def enable_incident(name: str) -> JSONResponse:
     try:

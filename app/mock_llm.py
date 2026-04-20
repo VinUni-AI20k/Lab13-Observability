@@ -28,8 +28,15 @@ class FakeLLM:
         time.sleep(0.15)
         input_tokens = max(20, len(prompt) // 4)
         output_tokens = random.randint(80, 180)
+        
+        # Original incidents
         if STATE["cost_spike"]:
             output_tokens *= 4
+        
+        # Banking-specific incidents (Member D)
+        if STATE["high_token_usage"]:
+            output_tokens *= 2  # Verbose responses
+        
         answer = (
             "Starter answer. Teams should improve this output logic and add better quality checks. "
             "Use retrieved context and keep responses concise."
