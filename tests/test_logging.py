@@ -17,6 +17,7 @@ import app.main as main_module
 
 
 def test_correlation_id_middleware_generates_and_propagates_headers() -> None:
+    # Middleware phải tạo request ID và trả lại đúng ID đó trong response headers.
     middleware = CorrelationIdMiddleware(app=lambda scope, receive, send: None)
     request = SimpleNamespace(headers={}, state=SimpleNamespace())
 
@@ -31,6 +32,7 @@ def test_correlation_id_middleware_generates_and_propagates_headers() -> None:
 
 
 def test_chat_logs_include_member_a_context(tmp_path: Path, monkeypatch) -> None:
+    # Handler /chat phải ghi log API có đầy đủ context đã enrich cho request này.
     log_path = tmp_path / "logs.jsonl"
     logging_config.LOG_PATH = log_path
     clear_contextvars()
