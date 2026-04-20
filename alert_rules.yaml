@@ -1,0 +1,32 @@
+groups:
+- name: observability_lab_alerts
+  rules:
+  - alert: HighLatency
+    expr: histogram_quantile(0.95, sum(rate(request_latency_ms_bucket[5m])) by (le)) > 5000
+    for: 30m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High Latency (P95 > 5s)"
+      description: "The 95th percentile of request latency has been over 5 seconds for the last 30 minutes."
+      runbook_url: "docs/alerts.md#1-high-latency-p95"
+
+  - alert: HighErrorRate
+    expr: sum(rate(request_errors_total[5m])) / sum(rate(requests_total[5m])) * 100 > 5
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High Error Rate (> 5%)"
+      description: "More than 5% of requests have failed in the last 5 minutes."
+      runbook_url: "docs/alerts.md#2-high-error-rate"
+
+  - alert: CostSpike
+    expr: sum(rate(llm_cost_usd_total[15m])) > 2 * sum(rate(llm_cost_usd_total[1h] offset 1w))
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: "LLM Cost Spike (> 2x baseline)"
+      description: "The LLM cost in the last 15 minutes is more than 2x the normal baseline."
+      runbook_url: "docs/alerts.md#3-cost-budget-spike"
