@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
+from dotenv import load_dotenv
 from structlog.contextvars import bind_contextvars
 
 from .agent import LabAgent
@@ -15,6 +19,7 @@ from .pii import hash_user_id, summarize_text
 from .schemas import ChatRequest, ChatResponse
 from .tracing import tracing_enabled
 
+load_dotenv()
 configure_logging()
 log = get_logger()
 app = FastAPI(title="Day 13 Observability Lab")
@@ -32,6 +37,17 @@ async def startup() -> None:
     )
 
 
+@app.on_event("shutdown")
+async def shutdown() -> None:
+    if tracing_enabled():
+        try:
+            from langfuse.decorators import langfuse_context
+            langfuse_context.flush()
+            log.info("langfuse_flushed", service="api")
+        except Exception:
+            pass
+
+
 @app.get("/health")
 async def health() -> dict:
     return {"ok": True, "tracing_enabled": tracing_enabled(), "incidents": status()}
@@ -44,8 +60,14 @@ async def metrics() -> dict:
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
-    # TODO: Enrich logs with request context (user_id_hash, session_id, feature, model, env)
-    # bind_contextvars(...)
+    # Enrich logs with request context (user_id_hash, session_id, feature, model, env)
+    bind_contextvars(
+        user_id_hash=hash_user_id(body.user_id),
+        session_id=body.session_id,
+        feature=body.feature,
+        model="gpt-4-turbo",
+        env=os.getenv("APP_ENV", "dev")
+    )
     
     log.info(
         "request_received",
