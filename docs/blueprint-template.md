@@ -54,7 +54,7 @@ SLO_TABLE: | SLI | Target | Window | Current Value | |---|---:|---|---:| | Laten
 
 ### Đỗ Thị Thùy Trang - 2A202600041
 - TASKS_COMPLETED: Configured `alert_rules.yaml` and documented the alert runbooks in `alerts.md`.
-- EVIDENCE_LINK: [Điền link PR/commit của Thùy Trang vào đây]
+- EVIDENCE_LINK: [link commit](https://github.com/bangils37/Lab13-Observability/commit/a031e62a6f0e33c62cf2768a796580de2f3efb10)
 
 ### Nguyễn Thị Thanh Huyền - 2A202600211
 - TASKS_COMPLETED: Added log enrichment in `main.py` and validated traces in Langfuse.
