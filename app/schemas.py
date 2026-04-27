@@ -11,6 +11,7 @@ class ChatRequest(BaseModel):
     session_id: str = Field(..., examples=["s_demo_01"])
     feature: str = Field(default="qa", examples=["qa", "summary"])
     message: str = Field(..., min_length=1)
+    persona: str = Field(default="default", examples=["default", "brief", "verbose", "english"])
 
 
 class ChatResponse(BaseModel):
@@ -21,6 +22,8 @@ class ChatResponse(BaseModel):
     tokens_out: int
     cost_usd: float
     quality_score: float
+    issue_type: str = "UNKNOWN"
+    model_used: str = ""
 
 
 class LogRecord(BaseModel):
@@ -40,4 +43,6 @@ class LogRecord(BaseModel):
     cost_usd: float | None = None
     error_type: str | None = None
     tool_name: str | None = None
+    issue_type: str | None = None
+    model_used: str | None = None
     payload: dict[str, Any] | None = None
