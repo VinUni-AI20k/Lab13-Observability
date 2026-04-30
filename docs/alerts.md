@@ -38,3 +38,16 @@
   - shorten prompts
   - route easy requests to cheaper model
   - apply prompt cache
+
+## 4. Low quality score
+- Severity: P2
+- Trigger: `quality_score_avg < 0.6 for 10m`
+- Impact: AI Agent responses are inaccurate or unhelpful
+- First checks:
+  1. Inspect traces in Langfuse with low scores
+  2. Check if PII redaction is over-triggering (causing score drop)
+  3. Verify if RAG retrieval is returning irrelevant documents
+- Mitigation:
+  - adjust retrieval top_k
+  - refine system prompt instructions
+  - disable specific features or models if they underperform

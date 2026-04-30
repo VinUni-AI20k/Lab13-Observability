@@ -5,10 +5,14 @@ import re
 
 PII_PATTERNS: dict[str, str] = {
     "email": r"[\w\.-]+@[\w\.-]+\.\w+",
-    "phone_vn": r"(?:\+84|0)[ \.-]?\d{3}[ \.-]?\d{3}[ \.-]?\d{3,4}", # Matches 090 123 4567, 090.123.4567, etc.
+    # CCCD must come before phone_vn — both can start with 0; longer match takes priority
     "cccd": r"\b\d{12}\b",
+    "phone_vn": r"(?:\+84|0)[ \.-]?\d{3}[ \.-]?\d{3}[ \.-]?\d{3,4}", # Matches 090 123 4567, 090.123.4567, etc.
     "credit_card": r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b",
-    # TODO: Add more patterns (e.g., Passport, Vietnamese address keywords)
+    # Vietnamese passport: 1 uppercase letter followed by 7-8 digits (e.g., B1234567, C12345678)
+    "passport_vn": r"\b[A-Z]\d{7,8}\b",
+    # Vietnamese address fragments with location keywords + following name/number
+    "address_vn": r"\b(?:\d+\s+)?(?:đường|phường|quận|huyện|tỉnh|xã|thành phố|tp\.?)\s+[\w\sÀ-ỹ]{2,40}",
 }
 
 
